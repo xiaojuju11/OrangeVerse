@@ -1,3 +1,4 @@
+import { createGuardianFox } from "./fox-companion.js";
 import * as T from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
@@ -511,6 +512,8 @@ export function createIsland(
   });
   const player = makeHiker();
   scene.add(player);
+  // 🦊 3D 守护狐狸：刷新在小女孩正前方 (x: 0, z: 2.2)，面朝小女孩
+  const guardianFox = createGuardianFox(scene, { x: 0.0, z: 2.2, scale: 0.85 });
   let playerPosition = [...SPAWN];
   player.position.set(SPAWN[0], groundHeight(...SPAWN) + 0.06, SPAWN[1]);
   player.rotation.y = 0.25;
@@ -870,6 +873,9 @@ export function createIsland(
       ) - Math.PI;
     player.rotation.y += diff * (1 - Math.exp(-dt * 10));
     animateHiker(player, walkTime, moveSpeed, reduced.matches);
+    if (guardianFox && guardianFox.update) {
+      guardianFox.update(dt, now / 1000, playerPosition);
+    }
     shadow.position.set(
       playerPosition[0],
       groundHeight(...playerPosition) + 0.025,
