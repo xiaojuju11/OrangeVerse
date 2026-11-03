@@ -8,14 +8,17 @@ const MODEL_URL = "/fox.glb";
 
 export function createGuardianFox(scene, options = {}) {
   const foxGroup = new THREE.Group();
-  // 放在小岛中心水池旁边的草坪坐标 (例如 x: 1.6, z: 0.8)
+  
+  // 放在小女孩初始出生点 [0, 4.4] 正前方附近 [0.0, 2.2]
   const posX = options.x ?? 0.0;
-  const posZ = options.z ?? 2.0;
+  const posZ = options.z ?? 2.2;
   const posY = groundHeight(posX, posZ) + 0.05;
   
   foxGroup.position.set(posX, posY, posZ);
-  // 默认比例微调适配小岛小人 (小人高度约 1.2，狐狸缩放到约 0.95 高度)
-  const scale = options.scale ?? 0.85;
+  // 初始面朝正南（即朝向出生点的小女孩）
+  foxGroup.rotation.y = Math.PI;
+
+  const scale = options.scale ?? 0.95;
   foxGroup.scale.set(scale, scale, scale);
   scene.add(foxGroup);
 
@@ -137,39 +140,48 @@ export function createGuardianFox(scene, options = {}) {
   loader.setDRACOLoader(dracoLoader);
   loader.setMeshoptDecoder(MeshoptDecoder);
 
-  loader.load(MODEL_URL, (gltf) => {
-    const model = gltf.scene;
-    model.rotation.y = -Math.PI / 2 - 0.16;
-    model.updateMatrixWorld(true);
+  loader.load(
+    MODEL_URL,
+    (gltf) => {
+      const model = gltf.scene;
+      model.rotation.y = -Math.PI / 2 - 0.16;
+      model.updateMatrixWorld(true);
 
-    const box = new THREE.Box3().setFromObject(model);
-    const size = new THREE.Vector3();
-    const centre = new THREE.Vector3();
-    box.getSize(size);
-    box.getCenter(centre);
+      const box = new THREE.Box3().setFromObject(model);
+      const size = new THREE.Vector3();
+      const centre = new THREE.Vector3();
+      box.getSize(size);
+      box.getCenter(centre);
 
-    const s = 2 / size.y;
-    const fit = new THREE.Matrix4()
-      .makeScale(s, s, s)
-      .multiply(new THREE.Matrix4().makeTranslation(-centre.x, -box.min.y, -centre.z));
+      const s = 2 / size.y;
+      const fit = new THREE.Matrix4()
+        .makeScale(s, s, s)
+        .multiply(new THREE.Matrix4().makeTranslation(-centre.x, -box.min.y, -centre.z));
 
-    model.traverse((child) => {
-      if (child.isMesh) {
-        const geom = child.geometry.clone();
-        geom.applyMatrix4(fit.clone().multiply(child.matrixWorld));
-        geom.computeBoundingSphere();
-        const mat = child.material.clone();
-        mat.metalness = 0;
-        mat.roughness = 1;
-        mat.onBeforeCompile = bendHead;
+      model.traverse((child) => {
+        if (child.isMesh) {
+          const geom = child.geometry.clone();
+          geom.applyMatrix4(fit.clone().multiply(child.matrixWorld));
+          geom.computeBoundingSphere();
+          const mat = child.material.clone();
+          mat.metalness = 0;
+          mat.roughness = 1;
+          mat.onBeforeCompile = bendHead;
 
-        const mesh = new THREE.Mesh(geom, mat);
-        mesh.castShadow = true;
-        mesh.frustumCulled = false;
-        foxGroup.add(mesh);
-      }
-    });
-  });
+          const mesh = new THREE.Mesh(geom, mat);
+          mesh.castShadow = true;
+          mesh.receiveShadow = true;
+          mesh.frustumCulled = false;
+          foxGroup.add(mesh);
+        }
+      });
+      console.log("3D Guardian Fox loaded and spawned at:", posX, posY, posZ);
+    },
+    undefined,
+    (err) => {
+      console.error("Failed to load /fox.glb", err);
+    }
+  );
 
   // 瞄准与光标追踪
   const aim = new THREE.Vector2();
@@ -189,21 +201,9 @@ export function createGuardianFox(scene, options = {}) {
   const euler = new THREE.Euler(0, 0, 0, "YXZ");
   const tempMatrix4 = new THREE.Matrix4();
 
-  // 每一帧更新（由主循环调用）
   return {
     group: foxGroup,
     update: (dt, elapsed, playerPos) => {
-      // 狐狸整体朝向：当玩家小人在附近时，狐狸身体轻微转向小人
-      if (playerPos) {
-        const dx = playerPos[0] - posX;
-        const dz = playerPos[1] - posZ;
-        const dist = Math.hypot(dx, dz);
-        if (dist < 4.5) {
-          const targetBodyAngle = Math.atan2(dx, dz);
-          foxGroup.rotation.y = THREE.MathUtils.lerp(foxGroup.rotation.y, targetBodyAngle, 0.05);
-        }
-      }
-
       const idle = performance.now() - lastMove > 3500;
       if (idle) {
         aim.set(
@@ -231,7 +231,6 @@ export function createGuardianFox(scene, options = {}) {
         rightEyeMesh.rotation.set(ey * eyePitch, ex * eyeYaw - rightEyeMesh.userData.side * eyeToe, 0, "YXZ");
       }
 
-      // 轻微呼吸
       foxGroup.position.y = posY + Math.sin(elapsed * 1.7) * 0.015;
     }
   };

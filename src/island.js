@@ -29,6 +29,14 @@ import {
   coral,
   landmark,
   fish,
+  clocheRose,
+  miniVolcano,
+  vintageBiplane,
+  lamplighterPost,
+  astronomerTelescope,
+  celestialRings,
+  sleepyFox,
+  wheatPatch,
 } from "./models.js";
 const TAU = Math.PI * 2,
   RADIUS = 13.8;
@@ -436,6 +444,63 @@ export function createIsland(
       props.add(prop);
       if (id === "ocean" && i === 0) animated[id].push(prop);
     });
+
+    // =========================================================================
+    // The Little Prince (B-612) Poetic Landmarks Integration
+    // =========================================================================
+    // 1. Central Lakeside Dais: The Glass Cloche Rose & Mini Volcano
+    const roseX = -1.0, roseZ = 1.05;
+    const roseY = groundHeight(roseX, roseZ);
+    mesh(props, new T.CylinderGeometry(0.92, 1.08, 0.26, 16), id === "desert" ? "#cfbfa6" : "#d8d3c5", [roseX, roseY + 0.13, roseZ]);
+    const rose = clocheRose(props, roseX, roseY + 0.26, roseZ, 1.05);
+    const roseLight = new T.PointLight("#ff3b56", 0.75, 4.2);
+    roseLight.position.set(roseX, roseY + 1.2, roseZ);
+    props.add(roseLight);
+
+    const volX = -3.2, volZ = -0.3;
+    const volY = groundHeight(volX, volZ);
+    const volcano = miniVolcano(props, volX, volY, volZ, 0.85);
+    animated[id].push(volcano);
+
+    // 2. Code Harbor (Projects): Saint-Exupery's Vintage Yellow Biplane
+    const planeX = 7.5, planeZ = 1.7;
+    const planeY = groundHeight(planeX, planeZ);
+    const plane = vintageBiplane(props, planeX, planeY, planeZ, 0.76, id === "desert" ? "#d69e38" : "#e2b13c");
+    plane.rotation.y = -2.15;
+    plane.rotation.z = -0.06;
+    animated[id].push(plane);
+
+    // 3. Practice Camp (Work): Golden Wheat Field & Sleepy Fox
+    wheatPatch(props, -5.2, groundHeight(-5.2, 2.2), 2.2, 22, 1.15);
+    wheatPatch(props, -5.8, groundHeight(-5.8, 1.6), 1.6, 16, 1.0);
+    const fox = sleepyFox(props, -4.8, groundHeight(-4.8, 2.8), 2.8, 1.1);
+    fox.rotation.y = 1.25;
+
+    // 4. Fountain of Wisdom (Knowledge & Bookshelf): Lamplighter Post & Telescope
+    const lamp1X = 3.6, lamp1Z = -4.6;
+    const lamp1Y = groundHeight(lamp1X, lamp1Z);
+    const lamp1 = lamplighterPost(props, lamp1X, lamp1Y, lamp1Z, 0.95);
+    const lampLight1 = new T.PointLight("#ffbe3b", 0.85, 4.5);
+    lampLight1.position.set(lamp1X, lamp1Y + 3.0, lamp1Z);
+    props.add(lampLight1);
+
+    const scopeX = 6.3, scopeZ = -4.3;
+    const scopeY = groundHeight(scopeX, scopeZ);
+    const scope = astronomerTelescope(props, scopeX, scopeY, scopeZ, 0.92);
+    scope.rotation.y = -0.7;
+
+    // 5. Tower of Stars (Vibe Coding Lab): Celestial Armillary Rings & Crossroads Lamp
+    const cX = -5.9, cZ = -5.8;
+    const cY = groundHeight(cX, cZ) + 3.6;
+    const celestial = celestialRings(props, cX, cY, cZ, 1.05);
+    animated[id].push(celestial);
+
+    const lamp2X = -3.8, lamp2Z = -3.2;
+    const lamp2Y = groundHeight(lamp2X, lamp2Z);
+    const lamp2 = lamplighterPost(props, lamp2X, lamp2Y, lamp2Z, 0.9);
+    const lampLight2 = new T.PointLight("#ffbe3b", 0.8, 4.2);
+    lampLight2.position.set(lamp2X, lamp2Y + 2.8, lamp2Z);
+    props.add(lampLight2);
     if (id === "ocean") {
       for (let i = 0; i < 6; i++) {
         const f = fish(root, i % 2 ? "#dfb88e" : "#a2c8d4", 0.35);
@@ -462,8 +527,8 @@ export function createIsland(
   const sparkles = new T.Points(
     sparkGeo,
     new T.PointsMaterial({
-      color: "#fff6d3",
-      size: 0.045,
+      color: "#ffe082",
+      size: 0.085,
       transparent: true,
       opacity: 0.65,
       depthWrite: false,
@@ -989,6 +1054,18 @@ export function createIsland(
           Math.sin(a) * 15.8,
         );
         g.rotation.y = -a - Math.PI / 2;
+      } else if (g.userData.type === "biplane") {
+        const prop = g.children.find((c) => c.userData.isPropeller);
+        if (prop) prop.rotation.z += 0.15;
+      } else if (g.userData.type === "celestialRings") {
+        g.rotation.y += 0.007;
+        g.rotation.x = Math.sin(t * 0.5) * 0.12;
+      } else if (g.userData.type === "miniVolcano") {
+        const smoke = g.children.find((c) => c.userData.isSmoke);
+        if (smoke) {
+          smoke.position.y = 1.6 + Math.sin(t * 2.2) * 0.09;
+          smoke.rotation.y = t * 0.35;
+        }
       } else
         g.position.y =
           groundHeight(...categories[0].position) + Math.sin(t * 1.3) * 0.15;

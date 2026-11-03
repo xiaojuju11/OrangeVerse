@@ -538,3 +538,367 @@ export function landmark(theme, index) {
   }
   return g;
 }
+
+
+// ============================================================================
+// THE LITTLE PRINCE (B-612) POETIC WORLD ASSETS
+// ============================================================================
+
+/**
+ * The Little Prince's Rose under the Glass Cloche.
+ * Translucent glass bell dome, delicate blooming red rose with emissive core,
+ * mahogany base, fallen petals, and magical aura.
+ */
+export function clocheRose(parent, x = 0, y = 0, z = 0, s = 1) {
+  const g = group(parent, [x, y, z]);
+  g.userData.type = "clocheRose";
+
+  // Mahogany Pedestal Base
+  cyl(g, "#523624", [0, 0.08 * s, 0], [0.85 * s, 0.16 * s, 0.85 * s]);
+  cyl(g, "#6a4630", [0, 0.17 * s, 0], [0.72 * s, 0.04 * s, 0.72 * s]);
+
+  // Fallen Petals on the wood platter
+  ball(g, "#d92338", [-0.22 * s, 0.2 * s, 0.15 * s], [0.1 * s, 0.02 * s, 0.08 * s]);
+  ball(g, "#c41e32", [0.26 * s, 0.2 * s, -0.1 * s], [0.08 * s, 0.02 * s, 0.11 * s]);
+  ball(g, "#b81a2c", [-0.08 * s, 0.2 * s, -0.22 * s], [0.07 * s, 0.02 * s, 0.07 * s]);
+
+  // Slender curved green stem
+  rod(g, "#3e6e44", [0, 0.18 * s, 0], [0.02 * s, 0.65 * s, 0], 0.03 * s);
+  rod(g, "#3e6e44", [0.02 * s, 0.65 * s, 0], [-0.03 * s, 1.15 * s, 0.02 * s], 0.026 * s);
+
+  // Fresh green leaves
+  const l1 = ball(g, "#4d8054", [-0.14 * s, 0.6 * s, 0.08 * s], [0.18 * s, 0.025 * s, 0.1 * s]);
+  l1.rotation.set(0.2, 0.4, -0.3);
+  const l2 = ball(g, "#4d8054", [0.15 * s, 0.85 * s, -0.05 * s], [0.16 * s, 0.025 * s, 0.09 * s]);
+  l2.rotation.set(-0.2, -0.3, 0.4);
+
+  // Flower calyx
+  cyl(g, "#3e6e44", [-0.03 * s, 1.16 * s, 0.02 * s], [0.09 * s, 0.08 * s, 0.09 * s]);
+
+  // Blooming Red Rose Petals with inner luminous glow
+  const roseCoreMat = mat("#ff2240", {
+    emissive: "#ff2a44",
+    emissiveIntensity: 0.85,
+    roughness: 0.45,
+  });
+  const rosePetalMat = mat("#d62038", { roughness: 0.6 });
+
+  // Outer Petals
+  for (let i = 0; i < 5; i++) {
+    const angle = (i * Math.PI * 2) / 5;
+    const px = -0.03 * s + Math.cos(angle) * 0.12 * s;
+    const pz = 0.02 * s + Math.sin(angle) * 0.12 * s;
+    const petal = ball(g, rosePetalMat, [px, 1.28 * s, pz], [0.13 * s, 0.15 * s, 0.08 * s]);
+    petal.rotation.y = -angle;
+    petal.rotation.z = 0.35;
+  }
+  // Middle & Inner luminous heart
+  for (let i = 0; i < 3; i++) {
+    const angle = i * 2.1 + 0.5;
+    const px = -0.03 * s + Math.cos(angle) * 0.06 * s;
+    const pz = 0.02 * s + Math.sin(angle) * 0.06 * s;
+    ball(g, roseCoreMat, [px, 1.34 * s, pz], [0.1 * s, 0.14 * s, 0.09 * s]);
+  }
+  ball(g, roseCoreMat, [-0.03 * s, 1.38 * s, 0.02 * s], [0.08 * s, 0.12 * s, 0.08 * s]);
+
+  // Glass Bell Cloche (Semi-transparent with soft highlights)
+  const glassMat = mat("#c4eef2", {
+    transparent: true,
+    opacity: 0.36,
+    roughness: 0.08,
+    metalness: 0.15,
+  });
+  // Dome cylinder
+  mesh(
+    g,
+    new T.CylinderGeometry(0.65 * s, 0.65 * s, 1.1 * s, 24, 1, true),
+    glassMat,
+    [0, 0.74 * s, 0]
+  );
+  // Dome top hemisphere
+  mesh(
+    g,
+    new T.SphereGeometry(0.65 * s, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2),
+    glassMat,
+    [0, 1.29 * s, 0]
+  );
+  // Glass handle bead
+  ball(g, glassMat, [0, 1.98 * s, 0], [0.12 * s, 0.12 * s, 0.12 * s]);
+
+  return g;
+}
+
+/**
+ * B-612 Mini Volcano with chimney smoke puffs.
+ */
+export function miniVolcano(parent, x = 0, y = 0, z = 0, s = 1) {
+  const g = group(parent, [x, y, z]);
+  g.userData.type = "miniVolcano";
+
+  // Volcanic cone
+  const coneGeo = new T.CylinderGeometry(0.38 * s, 1.35 * s, 1.45 * s, 7);
+  mesh(g, coneGeo, "#695e56", [0, 0.72 * s, 0]);
+
+  // Molten vent glow
+  cyl(
+    g,
+    mat("#ff6622", { emissive: "#ff5011", emissiveIntensity: 0.95 }),
+    [0, 1.44 * s, 0],
+    [0.32 * s, 0.06 * s, 0.32 * s]
+  );
+
+  // Smoke puffs group (animated in render loop)
+  const smokeGroup = group(g, [0, 1.6 * s, 0]);
+  smokeGroup.userData.isSmoke = true;
+  const smokeMat = mat("#ffffff", {
+    transparent: true,
+    opacity: 0.48,
+    roughness: 0.9,
+  });
+  ball(smokeGroup, smokeMat, [0, 0.15 * s, 0], [0.16 * s, 0.16 * s, 0.16 * s]);
+  ball(smokeGroup, smokeMat, [0.08 * s, 0.5 * s, -0.05 * s], [0.24 * s, 0.22 * s, 0.24 * s]);
+  ball(smokeGroup, smokeMat, [-0.06 * s, 0.92 * s, 0.08 * s], [0.32 * s, 0.3 * s, 0.32 * s]);
+  ball(smokeGroup, smokeMat, [0.1 * s, 1.4 * s, 0], [0.4 * s, 0.36 * s, 0.4 * s]);
+
+  return g;
+}
+
+/**
+ * Saint-Exupéry's Vintage Yellow Biplane with spinning propeller.
+ */
+export function vintageBiplane(parent, x = 0, y = 0, z = 0, s = 1, color = "#e2b13c") {
+  const g = group(parent, [x, y, z]);
+  g.userData.type = "biplane";
+
+  // Fuselage body (streamlined capsule)
+  const fuse = capsule(g, color, [0, 0.85 * s, 0], [0.55 * s, 2.3 * s, 0.55 * s]);
+  fuse.rotation.x = Math.PI / 2;
+
+  // Dark Engine Cowling & Nose
+  ball(g, "#3c3836", [0, 0.85 * s, 1.15 * s], [0.38 * s, 0.38 * s, 0.42 * s]);
+
+  // Upper & Lower Wings
+  const lowerWing = block(g, color, [0, 0.65 * s, 0.25 * s], [4.4 * s, 0.07 * s, 0.85 * s]);
+  const upperWing = block(g, color, [0, 1.58 * s, 0.3 * s], [4.6 * s, 0.07 * s, 0.9 * s]);
+
+  // Wing connecting struts
+  for (const side of [-1, 1]) {
+    rod(g, "#4a3c30", [side * 1.5 * s, 0.68 * s, 0.05 * s], [side * 1.5 * s, 1.55 * s, 0.05 * s], 0.035 * s);
+    rod(g, "#4a3c30", [side * 1.5 * s, 0.68 * s, 0.5 * s], [side * 1.5 * s, 1.55 * s, 0.5 * s], 0.035 * s);
+  }
+
+  // Cockpit cutout
+  block(g, "#262322", [0, 1.12 * s, 0.1 * s], [0.4 * s, 0.25 * s, 0.6 * s]);
+  // Tiny windscreen
+  const windshield = block(
+    g,
+    mat("#cceef4", { transparent: true, opacity: 0.65 }),
+    [0, 1.25 * s, 0.48 * s],
+    [0.35 * s, 0.18 * s, 0.04 * s]
+  );
+  windshield.rotation.x = -0.3;
+
+  // Tail fin & Stabilizers
+  block(g, color, [0, 1.35 * s, -1.05 * s], [0.06 * s, 0.7 * s, 0.55 * s]);
+  block(g, color, [0, 1.0 * s, -1.05 * s], [1.6 * s, 0.06 * s, 0.45 * s]);
+
+  // Landing Gear Wheels
+  for (const side of [-1, 1]) {
+    rod(g, "#3a3028", [side * 0.25 * s, 0.65 * s, 0.55 * s], [side * 0.65 * s, 0.25 * s, 0.55 * s], 0.04 * s);
+    cyl(g, "#222224", [side * 0.7 * s, 0.25 * s, 0.55 * s], [0.45 * s, 0.12 * s, 0.45 * s]).rotation.z = Math.PI / 2;
+    ball(g, "#a09070", [side * 0.76 * s, 0.25 * s, 0.55 * s], [0.08 * s, 0.08 * s, 0.08 * s]);
+  }
+
+  // Wooden Propeller (Rotates in render loop!)
+  const propHub = group(g, [0, 0.85 * s, 1.58 * s]);
+  propHub.userData.isPropeller = true;
+  block(propHub, "#6a4528", [0, 0, 0], [1.4 * s, 0.12 * s, 0.035 * s]);
+  ball(propHub, "#d4af37", [0, 0, 0.03 * s], [0.12 * s, 0.12 * s, 0.12 * s]);
+
+  // Pilot's travel trunk and logbook resting nearby
+  block(g, "#85532f", [1.3 * s, 0.22 * s, -0.4 * s], [0.75 * s, 0.42 * s, 0.48 * s]);
+  block(g, "#a86c3d", [1.3 * s, 0.46 * s, -0.4 * s], [0.78 * s, 0.08 * s, 0.5 * s]);
+  book(g, 1.3 * s, 0.52 * s, -0.4 * s);
+  lantern(g, 1.9 * s, 0.05 * s, -0.3 * s);
+
+  return g;
+}
+
+/**
+ * The Lamplighter's Vintage Streetlamp.
+ * Ornate iron pole with warm glowing amber lantern.
+ */
+export function lamplighterPost(parent, x = 0, y = 0, z = 0, s = 1) {
+  const g = group(parent, [x, y, z]);
+  g.userData.type = "lamplighter";
+
+  // Stepped Iron Base
+  cyl(g, "#2d3330", [0, 0.12 * s, 0], [0.42 * s, 0.24 * s, 0.42 * s]);
+  cyl(g, "#3b423f", [0, 0.3 * s, 0], [0.3 * s, 0.16 * s, 0.3 * s]);
+
+  // Fluted Lamp Pole
+  cyl(g, "#323a37", [0, 1.6 * s, 0], [0.12 * s, 2.5 * s, 0.12 * s]);
+
+  // Crossbar Ladder Rest
+  rod(g, "#2d3330", [-0.35 * s, 2.5 * s, 0], [0.35 * s, 2.5 * s, 0], 0.035 * s);
+
+  // Decorative Lantern Collar & Brackets
+  cyl(g, "#3b423f", [0, 2.85 * s, 0], [0.28 * s, 0.1 * s, 0.28 * s]);
+
+  // Glowing Amber Lantern Housing
+  const glowMat = mat("#fff0a3", {
+    emissive: "#ffbe3b",
+    emissiveIntensity: 0.95,
+  });
+  cyl(g, glowMat, [0, 3.12 * s, 0], [0.22 * s, 0.46 * s, 0.22 * s]);
+
+  // Lantern Outer Glass Cage Ribs
+  for (let i = 0; i < 4; i++) {
+    const a = (i * Math.PI) / 2;
+    rod(g, "#262b29", [Math.cos(a) * 0.23 * s, 2.9 * s, Math.sin(a) * 0.23 * s], [Math.cos(a) * 0.23 * s, 3.35 * s, Math.sin(a) * 0.23 * s], 0.025 * s);
+  }
+
+  // Lantern Cap & Finial Peak
+  mesh(g, new T.ConeGeometry(0.36 * s, 0.32 * s, 4), "#2c312f", [0, 3.48 * s, 0]);
+  ball(g, "#d4af37", [0, 3.68 * s, 0], [0.06 * s, 0.06 * s, 0.06 * s]);
+
+  // Gentle ground warm-glow disc
+  mesh(
+    g,
+    new T.CircleGeometry(1.6 * s, 16),
+    mat("#ffe180", {
+      transparent: true,
+      opacity: 0.18,
+      roughness: 1,
+    }),
+    [0, 0.01 * s, 0]
+  ).rotation.x = -Math.PI / 2;
+
+  return g;
+}
+
+/**
+ * The Stargazer's Brass Astronomical Telescope.
+ */
+export function astronomerTelescope(parent, x = 0, y = 0, z = 0, s = 1) {
+  const g = group(parent, [x, y, z]);
+  g.userData.type = "telescope";
+
+  // Sturdy Tripod Legs
+  for (let a of [0, 2.1, 4.2]) {
+    rod(g, "#4e3522", [0, 1.4 * s, 0], [Math.cos(a) * 0.75 * s, 0, Math.sin(a) * 0.75 * s], 0.045 * s);
+  }
+  // Brass Swivel Mount
+  cyl(g, "#d4af37", [0, 1.45 * s, 0], [0.14 * s, 0.16 * s, 0.14 * s]);
+
+  // Long Gleaming Brass Barrel pointed up to stars
+  const barrelGroup = group(g, [0, 1.55 * s, 0]);
+  barrelGroup.rotation.z = -0.55; // Angle ~35 deg towards cosmos
+  cyl(barrelGroup, "#d4af37", [0, 0.3 * s, 0], [0.11 * s, 1.4 * s, 0.11 * s]);
+  cyl(barrelGroup, "#b89228", [0, 0.98 * s, 0], [0.15 * s, 0.25 * s, 0.15 * s]); // Lens hood
+  cyl(barrelGroup, "#3a2b16", [0, -0.42 * s, 0], [0.07 * s, 0.3 * s, 0.07 * s]); // Eyepiece
+
+  // Star Map Chart Table nearby
+  const chartTable = group(g, [0.95 * s, 0, 0.4 * s]);
+  cyl(chartTable, "#61442d", [0, 0.55 * s, 0], [0.65 * s, 0.08 * s, 0.65 * s]);
+  rod(chartTable, "#442f1f", [0, 0, 0], [0, 0.55 * s, 0], 0.08 * s);
+  // Rolled parchment map
+  cyl(chartTable, "#f3ebd1", [0.08 * s, 0.63 * s, 0], [0.06 * s, 0.45 * s, 0.06 * s]).rotation.x = Math.PI / 2;
+
+  return g;
+}
+
+/**
+ * Celestial Armillary Rings (Slowly rotating golden cosmos rings).
+ */
+export function celestialRings(parent, x = 0, y = 0, z = 0, s = 1) {
+  const g = group(parent, [x, y, z]);
+  g.userData.type = "celestialRings";
+  g.userData.isCelestial = true;
+
+  // Outer Golden Ring
+  const ring1 = torus(g, "#e6be57", [0, 0, 0], 1.6 * s, 0.028 * s);
+  ring1.rotation.x = 0.5;
+  ring1.rotation.y = 0.2;
+
+  // Middle Cyan/Silver Starlight Ring
+  const ring2 = torus(g, "#8fd4df", [0, 0, 0], 1.25 * s, 0.022 * s);
+  ring2.rotation.x = -0.65;
+  ring2.rotation.z = 0.4;
+
+  // Inner Golden Zodiac Ring
+  const ring3 = torus(g, "#ffd777", [0, 0, 0], 0.88 * s, 0.02 * s);
+  ring3.rotation.y = 0.8;
+
+  // Floating Micro-Asteroids on the orbits
+  const orbMat1 = mat("#ffd970", { emissive: "#ffca40", emissiveIntensity: 0.8 });
+  const orbMat2 = mat("#9be2ee", { emissive: "#72d5e5", emissiveIntensity: 0.8 });
+  ball(ring1, orbMat1, [1.6 * s, 0, 0], [0.1 * s, 0.1 * s, 0.1 * s]);
+  ball(ring2, orbMat2, [0, 1.25 * s, 0], [0.08 * s, 0.08 * s, 0.08 * s]);
+  ball(ring3, orbMat1, [0, 0, 0.88 * s], [0.07 * s, 0.07 * s, 0.07 * s]);
+
+  return g;
+}
+
+/**
+ * Peaceful Sleepy Fox curled up under the shade.
+ * Little Prince's beloved companion with fluffy white-tipped brush tail.
+ */
+export function sleepyFox(parent, x = 0, y = 0, z = 0, s = 1) {
+  const g = group(parent, [x, y, z]);
+  g.userData.type = "sleepyFox";
+
+  const orange = "#db6826";
+  const white = "#ffffff";
+  const dark = "#222222";
+
+  // Body curled up
+  ball(g, orange, [0, 0.22 * s, 0], [0.46 * s, 0.3 * s, 0.38 * s]);
+
+  // Big Fluffy Tail wrapping around
+  ball(g, orange, [0.22 * s, 0.18 * s, 0.24 * s], [0.38 * s, 0.22 * s, 0.22 * s]);
+  // Pure White Tail Tip
+  ball(g, white, [0.44 * s, 0.2 * s, 0.06 * s], [0.22 * s, 0.18 * s, 0.18 * s]);
+
+  // Head resting down
+  ball(g, orange, [-0.26 * s, 0.28 * s, -0.06 * s], [0.26 * s, 0.22 * s, 0.24 * s]);
+  // White muzzle
+  ball(g, white, [-0.38 * s, 0.2 * s, -0.08 * s], [0.16 * s, 0.14 * s, 0.16 * s]);
+  // Tiny black button nose
+  ball(g, dark, [-0.48 * s, 0.23 * s, -0.08 * s], [0.035 * s, 0.035 * s, 0.035 * s]);
+
+  // Alert pointed ears with white fluff
+  const earL = mesh(g, new T.ConeGeometry(0.08 * s, 0.18 * s, 3), orange, [-0.22 * s, 0.44 * s, 0.05 * s]);
+  earL.rotation.set(-0.2, 0.2, -0.2);
+  const earR = mesh(g, new T.ConeGeometry(0.08 * s, 0.18 * s, 3), orange, [-0.22 * s, 0.44 * s, -0.17 * s]);
+  earR.rotation.set(0.2, -0.2, -0.2);
+
+  return g;
+}
+
+/**
+ * Patch of Golden Wheat Stalks (The Wheat Field of the Fox).
+ */
+export function wheatPatch(parent, x = 0, y = 0, z = 0, count = 18, s = 1) {
+  const g = group(parent, [x, y, z]);
+  g.userData.type = "wheatPatch";
+
+  const gold = "#dfb448";
+  const stalkColor = "#c29d38";
+
+  for (let i = 0; i < count; i++) {
+    const angle = (i / count) * Math.PI * 2 + (i % 3) * 0.4;
+    const r = Math.sqrt((i + 1) / count) * 0.9 * s;
+    const px = Math.cos(angle) * r;
+    const pz = Math.sin(angle) * r;
+    const h = (0.75 + (i % 5) * 0.12) * s;
+
+    // Slender stalk
+    rod(g, stalkColor, [px, 0, pz], [px + 0.05 * s, h * 0.8, pz + 0.04 * s], 0.018 * s);
+    // Golden ear of wheat
+    const ear = capsule(g, gold, [px + 0.08 * s, h * 0.95, pz + 0.06 * s], [0.06 * s, 0.28 * s, 0.06 * s]);
+    ear.rotation.z = -0.18;
+  }
+
+  return g;
+}
