@@ -1,6 +1,8 @@
 import { mountVaporType } from "./vapor-type.js";
 import "./style.css";
 import "./exhibits.css";
+import "./viscous-menu.css";
+import { initViscousMenu } from "./viscous-menu.js";
 import { mountExhibit } from "./exhibits.js";
 import { categories, themes, profile } from "./content.js";
 import { escapeHTML } from "./schema.js";
@@ -318,3 +320,8 @@ initMagneticHover("[data-magnetic]", {
   damping: 0.16,
   tilt: 0.12
 });
+
+// ═════════════════════════════════════════════════════════════════════════
+// 初始化 Jhey Tompkins 风格流体物理粘性下拉菜单 & 粘度调参实验室
+// ═════════════════════════════════════════════════════════════════════════
+initViscousMenu();

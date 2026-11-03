@@ -6,7 +6,7 @@
 .viscous-menu-wrapper {
   position: relative;
   display: inline-block;
-  z-index: 80;
+  z-index: 85;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -35,11 +35,13 @@
 .viscous-trigger-btn:hover {
   border-color: rgba(160, 240, 210, 0.85);
   box-shadow: 0 6px 20px rgba(16, 36, 28, 0.45), 0 0 16px rgba(119, 219, 181, 0.3);
+  transform: translateY(-1px);
 }
 
 .viscous-trigger-btn:active,
 .viscous-trigger-btn.dragging {
   cursor: grabbing;
+  transform: scale(0.98);
 }
 
 .viscous-trigger-btn .liquid-icon {
@@ -74,7 +76,7 @@
   transform: translateX(-50%);
   width: 320px;
   pointer-events: none;
-  z-index: 70;
+  z-index: 75;
 }
 
 .viscous-menu-wrapper.open .viscous-liquid-stage,
@@ -88,7 +90,7 @@
   top: -24px;
   left: 0;
   width: 100%;
-  height: 480px;
+  height: 520px;
   pointer-events: none;
   filter: url(#jh3y-gooey-viscosity);
   -webkit-filter: url(#jh3y-gooey-viscosity);
@@ -105,7 +107,7 @@
 .viscous-svg-mesh path {
   fill: #11201c;
   stroke: rgba(119, 219, 181, 0.35);
-  stroke-width: 1px;
+  stroke-width: 1.5px;
   transition: fill 0.3s;
 }
 
@@ -287,7 +289,7 @@
   position: fixed;
   left: 24px;
   bottom: 24px;
-  z-index: 60;
+  z-index: 65;
   font-family: inherit;
   user-select: none;
   -webkit-user-select: none;
@@ -457,4 +459,25 @@
 .viscosity-readout-item span {
   font-family: monospace;
   color: #92e0be;
+}
+
+/* 移动端自适应 */
+@media (max-width: 768px) {
+  .viscous-liquid-stage {
+    left: auto;
+    right: 0;
+    transform: none;
+    width: 290px;
+  }
+  .viscous-menu-card {
+    width: 280px;
+    padding: 12px;
+  }
+  .viscosity-lab-widget {
+    left: 14px;
+    bottom: 14px;
+  }
+  .viscosity-lab-card {
+    width: 240px;
+  }
 }

@@ -24,8 +24,8 @@ export function initViscousMenu(options = {}) {
     </svg>
 
     <div class="viscous-menu-wrapper" id="viscous-menu-wrap">
-      <!-- 顶部主触发胶囊按钮 -->
-      <button class="viscous-trigger-btn" id="viscous-trigger" aria-expanded="false" aria-haspopup="true" aria-label="展开橘域流体导航菜单" title="点击展开，或按住向下拖拽拉扯">
+      <!-- 顶部主触发胶囊按钮 (支持点击与向下拖拽拉扯) -->
+      <button class="viscous-trigger-btn" id="viscous-trigger" data-magnetic aria-expanded="false" aria-haspopup="true" aria-label="展开橘域流体导航菜单" title="点击展开，或按住向下拖拽拉扯">
         <span class="liquid-icon">💧</span>
         <span class="viscous-trigger-text">流体探索</span>
         <span class="caret-icon">▼</span>
@@ -190,7 +190,7 @@ export function initViscousMenu(options = {}) {
     isOpen: false,
     isDragging: false,
     currentY: 0,           // 菜单卡片当前垂直位移
-    targetY: 0,            // 目标垂直位移 (展开时约 200px)
+    targetY: 0,            // 目标垂直位移 (展开时约 210px)
     velocityY: 0,
     openY: 210,            // 展开状态基准高度
     dragPointerStartY: 0,
@@ -198,6 +198,7 @@ export function initViscousMenu(options = {}) {
     rippleTime: 0,         // 涟漪衰减计时
     rippleAmp: 0,          // 涟漪振幅
     lastTime: performance.now(),
+    hasPlayedSettleSound: false,
   };
 
   // 预设参数配置表
@@ -207,6 +208,49 @@ export function initViscousMenu(options = {}) {
     syrup: { val: 0.78, name: "糖浆 (Syrup)", blur: 14 },
     gel:   { val: 0.95, name: "凝胶 (Gel)", blur: 16 }
   };
+
+  // 合成流体水滴 / 气泡微音效 (Web Audio API)
+  function playLiquidSound(type = "snap", mu = 0.45) {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      if (type === "snap") {
+        // 液滴拉伸断开或弹出
+        const baseFreq = 420 + (1 - mu) * 280;
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(baseFreq * 0.75, now);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.35, now + 0.05);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq, now + 0.11);
+
+        gain.gain.setValueAtTime(0.045, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.11);
+      } else {
+        // 沉降涟漪水珠回落
+        const baseFreq = 540 + (1 - mu) * 220;
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(baseFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.48, now + 0.14);
+
+        gain.gain.setValueAtTime(0.04, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.14);
+      }
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.15);
+      setTimeout(() => {
+        try { ctx.close(); } catch(e){}
+      }, 300);
+    } catch (e) {
+      // 允许静音模式忽略
+    }
+  }
 
   function setViscosity(v, presetKey = null) {
     state.viscosity = Math.max(0.05, Math.min(1.0, v));
@@ -255,6 +299,7 @@ export function initViscousMenu(options = {}) {
       const prevY = state.currentY;
       state.currentY += (state.targetY - state.currentY) * dragLag;
       state.velocityY = (state.currentY - prevY) / dt;
+      state.hasPlayedSettleSound = false;
       if (readoutState) readoutState.textContent = "拉伸拖拽中";
     } else {
       // 自由回弹模式：二阶阻尼弹簧运动
@@ -270,6 +315,10 @@ export function initViscousMenu(options = {}) {
       if (dist < 0.5 && Math.abs(state.velocityY) < 1.0) {
         state.currentY = state.targetY;
         state.velocityY = 0;
+        if (!state.hasPlayedSettleSound && state.isOpen) {
+          playLiquidSound("settle", mu);
+          state.hasPlayedSettleSound = true;
+        }
         if (readoutState) readoutState.textContent = state.isOpen ? "已展开沉降" : "已闭合静止";
       } else {
         if (readoutState) readoutState.textContent = state.velocityY > 0 ? "下落流动" : "粘性回缩";
@@ -385,19 +434,23 @@ export function initViscousMenu(options = {}) {
   function openMenu() {
     state.isOpen = true;
     state.targetY = state.openY;
+    state.hasPlayedSettleSound = false;
     wrap.classList.add("open");
     triggerBtn.setAttribute("aria-expanded", "true");
     state.rippleAmp = 18 * (1 - state.viscosity * 0.5);
     state.rippleTime = 0;
+    playLiquidSound("snap", state.viscosity);
   }
 
   function closeMenu() {
     state.isOpen = false;
     state.targetY = 0;
+    state.hasPlayedSettleSound = false;
     wrap.classList.remove("open");
     triggerBtn.setAttribute("aria-expanded", "false");
     state.rippleAmp = 10;
     state.rippleTime = 0;
+    playLiquidSound("settle", state.viscosity);
   }
 
   function toggleMenu() {
@@ -454,7 +507,6 @@ export function initViscousMenu(options = {}) {
 
   // 绑定拖拽发起点（胶囊按钮与卡片底部的物理手柄）
   triggerBtn.addEventListener("pointerdown", (e) => {
-    // 左键点击
     if (e.button === 0) handlePointerDown(e);
   });
   if (dragHandle) {
@@ -487,6 +539,7 @@ export function initViscousMenu(options = {}) {
       const p = btn.dataset.preset;
       if (PRESETS[p]) {
         setViscosity(PRESETS[p].val, p);
+        playLiquidSound("snap", PRESETS[p].val);
       }
     });
   });
@@ -506,36 +559,30 @@ export function initViscousMenu(options = {}) {
 
       switch (act) {
         case "explore-island": {
-          // 漫游主岛：聚焦原点视角
           const homeBtn = document.getElementById("home");
           if (homeBtn) homeBtn.click();
           break;
         }
         case "open-bookshelf": {
-          // 打开 3D 书架
           window.open("/bookshelf.html", "_blank", "noopener");
           break;
         }
         case "open-articles": {
-          // 掘金专栏
           const articlesBtn = document.getElementById("articles-nav-btn");
           if (articlesBtn) articlesBtn.click();
           break;
         }
         case "open-resume": {
-          // 简历
           const resumeBtn = document.getElementById("resume-btn");
           if (resumeBtn) resumeBtn.click();
           break;
         }
         case "open-fox": {
-          // 守护狐狸
           const foxBtn = document.getElementById("fox-portal-btn");
           if (foxBtn) foxBtn.click();
           break;
         }
         case "toggle-theme": {
-          // 循环切换主题：森屿 -> 沙洲 -> 浅海
           const themeBtns = Array.from(document.querySelectorAll(".theme-picker button"));
           const activeIndex = themeBtns.findIndex(b => b.getAttribute("aria-pressed") === "true");
           const nextIndex = (activeIndex + 1) % themeBtns.length;
