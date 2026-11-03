@@ -27,6 +27,7 @@
           >
         </button>
         <div class="top-controls">
+          <button id="articles-nav-btn" class="articles-nav-button" aria-label="查看掘金专栏与学习书本"><span>📚</span> 掘金专栏 / 书本</button>
           <button id="resume-btn" class="resume-nav-button" aria-label="查看个人在线简历"><span>📄</span> 简历 (Resume)</button>
           <div class="theme-picker" role="group" aria-label="小岛主题">
             <button data-theme="forest" aria-pressed="true">
@@ -330,6 +331,64 @@
                 <p class="item-desc">《告别各写各的！打造 React Native 客户端公共动效基础设施》、《别再被官方文档劝退了！Reanimated 实战通关》、《模型总说瞎话？RAG 技术私域数据精准校准》、《彻底搞懂跨域 6 种解决方案》等多篇硬核技术长文。</p>
               </div>
             </section>
+          </div>
+        </div>
+      </div>
+
+    
+      <!-- 🌟 右下角交互：全息虚拟伴侣（支持鼠标视差追踪与姿态响应） -->
+      <aside id="cyber-companion" class="cyber-companion-widget" aria-label="OrangeVerse 全息伴侣">
+        <div class="companion-widget-card" id="companion-widget">
+          <header class="companion-widget-bar">
+            <div class="companion-status">
+              <span class="status-dot"></span>
+              <span class="status-text">AI Companion · 橘域伴侣</span>
+            </div>
+            <button id="companion-toggle" class="companion-toggle-btn" aria-label="折叠/展开伴侣" title="折叠/展开">_</button>
+          </header>
+
+          <div class="companion-display-box" id="companion-box">
+            <div class="companion-halo" id="companion-halo"></div>
+            <div class="companion-wrap" id="companion-wrap">
+              <img class="companion-pose active" src="/character/pose_0.jpg" alt="全息姿态0" />
+              <img class="companion-pose"        src="/character/pose_1.jpg" alt="全息姿态1" />
+              <img class="companion-pose"        src="/character/pose_2.jpg" alt="全息姿态2" />
+              <img class="companion-pose"        src="/character/pose_3.jpg" alt="全息姿态3" />
+              <div class="companion-scanlines"></div>
+            </div>
+          </div>
+          
+          <footer class="companion-footer">
+            <p class="companion-tip">移动鼠标 · 头部与眼球实时追踪</p>
+          </footer>
+        </div>
+      </aside>
+
+      <!-- 📚 掘金专栏与个人学习书本 Modal -->
+      <div id="article-modal" class="article-modal" hidden aria-label="掘金专栏与学习书本">
+        <div class="article-backdrop" id="close-article-backdrop"></div>
+        <div class="article-card">
+          <button id="close-article-modal" class="close-button" aria-label="关闭">×</button>
+          
+          <header class="article-modal-header">
+            <div class="article-header-left">
+              <h2>📚 掘金技术专栏 & 《AI-Daily-Learning》书架</h2>
+              <p class="article-header-sub">是你的小橘呀 · 掘力值 1571 · 15,500+ 阅读 · 550+ 点赞</p>
+            </div>
+            <a href="https://juejin.cn/user/1989458366301708" target="_blank" rel="noopener" class="juejin-profile-btn">关注掘金主页 ↗</a>
+          </header>
+
+          <div class="article-modal-body">
+            <!-- 列表视图 -->
+            <div id="juejin-list-container" class="juejin-grid"></div>
+            
+            <!-- 详情阅读器视图 -->
+            <div id="article-reader" class="article-reader-view" hidden>
+              <button id="back-to-list" class="back-list-btn">← 返回文章目录</button>
+              <h3 id="reader-title"></h3>
+              <div id="reader-meta" class="reader-meta-text"></div>
+              <div id="reader-content" class="reader-content-body"></div>
+            </div>
           </div>
         </div>
       </div>

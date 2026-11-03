@@ -248,3 +248,12 @@ document.addEventListener("keydown", (e) => {
     closeResume();
   }
 });
+
+// ═════════════════════════════════════════════════════════════════════════
+// 初始化伴侣与掘金阅读器模块
+// ═════════════════════════════════════════════════════════════════════════
+import { initCyberCompanion } from "./companion.js";
+import { initJuejinArticleViewer } from "./articles.js";
+
+initCyberCompanion();
+initJuejinArticleViewer();
