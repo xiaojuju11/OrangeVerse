@@ -1,4 +1,3 @@
-import { createGuardianFox } from "./fox-companion.js";
 import * as T from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
@@ -871,9 +870,6 @@ export function createIsland(
       ) - Math.PI;
     player.rotation.y += diff * (1 - Math.exp(-dt * 10));
     animateHiker(player, walkTime, moveSpeed, reduced.matches);
-    if (guardianFox && guardianFox.update) {
-      guardianFox.update(dt, now / 1000, playerPosition);
-    }
     shadow.position.set(
       playerPosition[0],
       groundHeight(...playerPosition) + 0.025,
