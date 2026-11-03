@@ -1,0 +1,286 @@
+{
+  "version": 1,
+  "profile": {
+    "name": "是你的小橘呀",
+    "title": "OrangeVerse · 橘域",
+    "subtitle": "A LITTLE WORLD OF VIBE CODING & AI",
+    "intro": "一个小橘的 AI 全栈与 Vibe Coding 个人宇宙。在这里漫游探索万界科技实习实践、GitHub 开源仓库、AI-Daily-Learning 知识书本、掘金技术专栏以及交互实验室。",
+    "links": [
+      {
+        "label": "GitHub",
+        "url": "https://github.com/xiaojuju11"
+      },
+      {
+        "label": "掘金主页",
+        "url": "https://juejin.cn/user/1989458366301708"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "id": "internship",
+      "name": "万界科技实战营",
+      "short": "实习实践",
+      "kind": "projects",
+      "english": "PRACTICE & ENGINEERING",
+      "intro": "万界科技 AI 全栈实习：将大模型多轮智能对话与现代全栈工程落地于真实业务场景。",
+      "description": "深入一线业务，负责 AI 赋能、多模型工作流编排以及现代化全栈客户端交付。",
+      "timeline": [
+        {
+          "period": "实习阶段",
+          "title": "万界科技 · AI 全栈实习工程师",
+          "text": "负责核心业务智能化赋能，探索 Agent 工作流编排、前端沉浸式交互及后端稳定交付。"
+        }
+      ],
+      "items": [
+        {
+          "title": "万界科技 · AI 全栈业务赋能与工程实践",
+          "summary": "在万界科技担任 AI 全栈实习工程师，深度参与大模型应用落地、全栈架构调优与智能体工作流设计。",
+          "kicker": "万界科技 · 实践营地",
+          "url": "https://github.com/xiaojuju11",
+          "metrics": [
+            {
+              "value": "AI + 全栈",
+              "label": "核心定位"
+            },
+            {
+              "value": "100%",
+              "label": "工程落地"
+            }
+          ],
+          "chapters": [
+            {
+              "title": "工程挑战",
+              "text": "如何将不可控的大模型输出与复杂的业务状态机融合，保证前端毫秒级渲染与后端流式传输的健壮性。"
+            },
+            {
+              "title": "技术架构与行动",
+              "text": "打通端到端智能化链路，结合 Coze 工作流自动化与高质量提示工程，重塑移动端与 Web 端的智能化人机交互体验。"
+            },
+            {
+              "title": "实战收获",
+              "text": "深刻理解了企业级 AI 应用落地的工程范式，从单纯的 Prompt 尝试迈向具备生产级韧性的 AI 全栈工程师。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "opensource",
+      "name": "开源代码港湾",
+      "short": "开源仓库",
+      "kind": "gallery",
+      "english": "OPEN SOURCE REPOSITORIES",
+      "intro": "xiaojuju11 的 GitHub 代表作精选，涵盖智能教育、在线沙箱与情感交互。",
+      "description": "从 React 19 全栈架构到浏览器沙箱编译，追求干净的代码设计与极致的使用体验。",
+      "items": [
+        {
+          "title": "童心智伴 (parent_kid_edu)",
+          "summary": "面向 0-12 岁低龄家庭的移动端智能亲子教育平台。集成 Coze 工作流拍照识物与语音播报，DeepSeek 大模型多轮亲子对话，React 19 + Koa 3 全栈架构。",
+          "kicker": "移动端 AI 亲子平台",
+          "url": "https://github.com/xiaojuju11/parent_kid_edu",
+          "metrics": [
+            {
+              "value": "React 19",
+              "label": "前端框架"
+            },
+            {
+              "value": "DeepSeek",
+              "label": "大模型对话"
+            }
+          ],
+          "reflection": "通过引入 JWT + bcrypt 体系与多模型工作流，为低龄家庭打造安全、温情且交互丝滑的 AI 启蒙伙伴。"
+        },
+        {
+          "title": "React 在线代码沙箱 (react-playground)",
+          "summary": "基于 Monaco Editor 与浏览器端 Babel 的轻量 React 在线编译与预览平台。支持 TSX 实时编译、iframe 沙箱隔离、ATA 类型推导与 Import Map 动态注入。",
+          "kicker": "浏览器端 IDE 原型",
+          "url": "https://github.com/xiaojuju11/react-playground",
+          "metrics": [
+            {
+              "value": "Monaco",
+              "label": "编辑器核心"
+            },
+            {
+              "value": "Babel",
+              "label": "浏览器端实时编译"
+            }
+          ],
+          "reflection": "脱离构建工具与本地配置，让开发者打开网页即享完整 React TSX 编写与实时渲染沙箱。"
+        },
+        {
+          "title": "Idol 情绪价值聊天室 (chatbox-demo)",
+          "summary": "一款专注于提供满满情绪价值的角色对话与交流聊天工具，探索 AI 在人际心理陪伴与情感共鸣维度的温度。",
+          "kicker": "情感陪伴智能体",
+          "url": "https://github.com/xiaojuju11/chatbox-demo",
+          "metrics": [
+            {
+              "value": "Python",
+              "label": "后端驱动"
+            },
+            {
+              "value": "情绪陪伴",
+              "label": "产品定位"
+            }
+          ],
+          "reflection": "探索技术除了提升生产力之外，如何给人类提供慰藉与心灵陪伴。"
+        }
+      ]
+    },
+    {
+      "id": "knowledge",
+      "name": "智慧书本与掘金专栏",
+      "short": "学习书本",
+      "kind": "research",
+      "english": "KNOWLEDGE BOOK & ARTICLES",
+      "intro": "系统化沉淀：《AI-Daily-Learning 个人学习书》与掘金高赞技术专栏精选。",
+      "description": "涵盖 React Native 动效底层、RAG 大模型私域校准、网络协议硬核手写与全栈架构进阶指南。",
+      "items": [
+        {
+          "title": "《AI-Daily-Learning》个人系统化学习书本",
+          "summary": "从前端核心到 AI Agent 架构、MCP 协议、RAG 知识库与高频硬核手写的完整进阶知识体系。",
+          "kicker": "个人核心知识库",
+          "url": "https://github.com/xiaojuju11/AI-Daily-Learning",
+          "metrics": [
+            {
+              "value": "全栈 + AI",
+              "label": "体系覆盖"
+            },
+            {
+              "value": "持续更新",
+              "label": "成长状态"
+            }
+          ],
+          "chapters": [
+            {
+              "title": "核心理念",
+              "text": "技术不是零散代码片段的堆砌，而是结构化的逻辑书本。通过每日手写、源码研读与智能体协议探索，形成肌肉记忆。"
+            },
+            {
+              "title": "知识架构",
+              "text": "涵盖基础协议、React/TS 全家桶进阶、大文件切片上传/虚拟列表/并发调度手写，以及前沿的 MCP 协议与 Mini-Transformer 实践。"
+            },
+            {
+              "title": "书本沉淀",
+              "text": "打造属于自己的技术字典，每一行代码均附带详尽思考与场景反思，作为技术路上的灯塔。"
+            }
+          ]
+        },
+        {
+          "title": "掘金专栏：打造 React Native 客户端公共动效基础设施",
+          "summary": "告别各写各的！从 0 到 1 构建可复用、丝滑流畅的 React Native 客户端动效基建与 Reanimated 实战通关指南。",
+          "kicker": "掘金高赞专栏",
+          "url": "https://juejin.cn/post/7695579556079321122",
+          "metrics": [
+            {
+              "value": "Reanimated",
+              "label": "动效引擎"
+            },
+            {
+              "value": "基建架构",
+              "label": "工程方案"
+            }
+          ],
+          "chapters": [
+            {
+              "title": "痛点溯源",
+              "text": "跨端项目中动效代码碎片化、多页面重复实现，且往往引发主线程丢帧与交互卡顿。"
+            },
+            {
+              "title": "解决方案",
+              "text": "利用 UI 线程运行的工作流（worklet）机制，抽离统一的声明式动画规范与手势响应层，实现 60fps 满帧交互。"
+            }
+          ]
+        },
+        {
+          "title": "掘金专栏：RAG 技术私域数据大模型精准校准",
+          "summary": "模型总说瞎话？深入解析检索增强生成 (RAG) 的向量切分、相似度检索与私域知识库对齐实战。",
+          "kicker": "AI 落地核心指南",
+          "url": "https://juejin.cn/post/7644369679423242282",
+          "metrics": [
+            {
+              "value": "RAG",
+              "label": "知识检索"
+            },
+            {
+              "value": "精准校准",
+              "label": "幻觉消除"
+            }
+          ],
+          "chapters": [
+            {
+              "title": "大模型幻觉之殇",
+              "text": "通用大模型缺乏企业私域垂直知识，在专业问答中极易产生置信度高但事实错误的'幻觉'。"
+            },
+            {
+              "title": "落地实战",
+              "text": "构建文档解析、Embedding 向量化、Top-K 混合检索与 Prompt 注入链路，让大模型回答每一次都有据可查。"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vibecoding",
+      "name": "星辰之塔 · 实验室",
+      "short": "Vibe作品",
+      "kind": "gallery",
+      "english": "VIBE CODING & LABS",
+      "intro": "Vibe Coding 实验场：3D 交互、全息光影与前沿组件灵感集合。",
+      "description": "探索 AI 时代全新的编程心流，预留 Motion Sites 与 React Bits Pro 顶级动效升级接口。",
+      "items": [
+        {
+          "title": "OrangeVerse · 橘域 3D 漫游综合站",
+          "summary": "本项目本体。基于 Three.js、Vite 与 Procedural Island 构建的 3D 漫游岛屿，集合全屏在线简历、知识书本与全站雷达导航。",
+          "kicker": "Vibe Coding 旗舰代表作",
+          "url": "https://github.com/xiaojuju11",
+          "metrics": [
+            {
+              "value": "Three.js",
+              "label": "3D 视界"
+            },
+            {
+              "value": "Vibe Coding",
+              "label": "心流开发"
+            }
+          ],
+          "reflection": "打破传统平面个人主页的沉闷，用游戏般的交互体验探索新一代开发者数字空间。"
+        },
+        {
+          "title": "全息科技 404 视差光标追踪页",
+          "summary": "纯独立单文件打造的深色星空科技感 404 页面。具备 220+ 动态星辰、光标多姿势毫秒级响应、全息网格与视差空间倾斜。",
+          "kicker": "全息交互实验",
+          "url": "https://github.com/xiaojuju11",
+          "metrics": [
+            {
+              "value": "Parallax",
+              "label": "3D 视差"
+            },
+            {
+              "value": "100dvh",
+              "label": "响应式视口"
+            }
+          ],
+          "reflection": "通过数学视差与平滑插值算法，在纯静态 Web 环境中呈现出类似 3D 模型的呼吸感与动态追踪灵性。"
+        },
+        {
+          "title": "动效实验室 (Motion Sites & React Bits Pro)",
+          "summary": "顶级现代交互与微动效拓展插槽，后续直接装载流光边框、3D 磁吸卡片、粒子光斑与毛玻璃交互组件。",
+          "kicker": "次世代动效展台",
+          "url": "https://github.com/xiaojuju11",
+          "metrics": [
+            {
+              "value": "Pro UI",
+              "label": "组件体系"
+            },
+            {
+              "value": "Ready",
+              "label": "插槽预留"
+            }
+          ],
+          "reflection": "面向未来的可插拔组件插槽设计，为后续视觉与质感的持续升维做好工程准备。"
+        }
+      ]
+    }
+  ]
+}

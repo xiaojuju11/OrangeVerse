@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="theme-color" content="#d5eef0" />
+    <meta
+      name="description"
+      content="欢迎来到漫游作品集。在森屿、沙洲和浅海自由漫游，发现创作、黑客松、论文与产品实践。"
+    />
+    <title>漫游作品集 · 个人作品集</title>
+  </head>
+  <body data-theme="forest">
+    <main id="app">
+      <div id="world" aria-label="漫游作品集三维场景"></div>
+      <div class="edge-light" aria-hidden="true"></div>
+      <div id="loading" role="status">
+        <div class="loading-island">✳</div>
+        <p>正在抵达你的好奇心小岛…</p>
+        <span>A LITTLE WORLD, A LOT TO DISCOVER.</span>
+      </div>
+      <header class="topbar">
+        <button id="home" class="brand" aria-label="显示欢迎介绍">
+          <span class="brand-mark">t<span>·</span></span
+          ><span class="brand-copy"
+            >漫游作品集<small>A UNIVERSE OF CURIOSITY</small></span
+          >
+        </button>
+        <div class="top-controls">
+          <button id="resume-btn" class="resume-nav-button" aria-label="查看个人在线简历"><span>📄</span> 简历 (Resume)</button>
+          <div class="theme-picker" role="group" aria-label="小岛主题">
+            <button data-theme="forest" aria-pressed="true">
+              <span>♧</span> 森屿</button
+            ><button data-theme="desert" aria-pressed="false">
+              <span>☼</span> 沙洲</button
+            ><button data-theme="ocean" aria-pressed="false">
+              <span>≈</span> 浅海
+            </button>
+          </div>
+          <button
+            id="sound"
+            class="round-button"
+            aria-label="开启环境音"
+            aria-pressed="false"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path d="M10 5 5 9H2v6h3l5 4V5Z" />
+              <path id="sound-waves" d="m16 9 5 6m0-6-5 6" />
+            </svg></button
+          ><button id="help" class="round-button" aria-label="查看玩法">
+            ?
+          </button>
+        </div>
+      </header>
+      <section id="welcome" class="welcome">
+        <p class="eyebrow"><span></span> A WORLD OF YOUR OWN</p>
+        <h1>
+          欢迎来到<br /><span>漫游作品集<span class="title-dot">。</span></span>
+        </h1>
+        <p class="welcome-story">
+          用你自己的经历，开启这段旅程。
+        </p>
+        <div class="welcome-instructions">
+          <p>
+            <span class="instruction-symbol">↔</span><b>拖动环顾</b
+            ><span>360° 看看这座小岛</span>
+          </p>
+          <p>
+            <span class="instruction-symbol">⌖</span><b>点击行走</b
+            ><span>走近微光，发现我的故事</span>
+          </p>
+        </div>
+        <button id="explore" class="primary-button">
+          出发，去逛逛 <span>↗</span></button
+        ><button id="channel" class="channel-link">
+          与我联系 <span>↗</span>
+        </button>
+        <p class="welcome-note">也可以使用 WASD / 方向键自由行走</p>
+      </section>
+      <div id="camp-labels" aria-label="岛上的营地"></div>
+      <aside id="work" class="work-panel" aria-label="作品分类详情" hidden>
+        <button id="close-work" class="close-button" aria-label="关闭详情">
+          ×
+        </button>
+        <div class="panel-scene">
+          <span id="panel-number"></span
+          ><svg
+            id="panel-art"
+            viewBox="0 0 240 120"
+            fill="none"
+            aria-hidden="true"
+          >
+            <ellipse
+              cx="125"
+              cy="102"
+              rx="79"
+              ry="9"
+              fill="currentColor"
+              opacity=".08"
+            />
+            <path
+              d="M45 100 116 24l75 76H45Z"
+              stroke="currentColor"
+              stroke-width="1.4"
+            />
+            <path
+              d="m116 24-3 76m0-48-30 48m30-48 28 48M45 100l-15 8m161-8 15 8"
+              stroke="currentColor"
+              stroke-width="1.4"
+            />
+            <circle cx="189" cy="31" r="12" stroke="currentColor" />
+            <path
+              d="M201 31h9m-21-21V3m-20 28h-8m28 21v9"
+              stroke="currentColor"
+            />
+            <path
+              d="m39 63 4-6 4 6m-4-6v17m151 8 3-5 3 5m-3-5v12"
+              stroke="currentColor"
+            />
+          </svg>
+          <p id="panel-english"></p>
+        </div>
+        <div class="panel-body">
+          <p class="eyebrow" id="panel-category"></p>
+          <h2 id="work-title"></h2>
+          <p id="work-intro" class="work-intro"></p>
+          <p id="work-description"></p>
+          <div id="work-sections"></div>
+          <button id="continue" class="continue-button">
+            继续逛小岛 <span>→</span>
+          </button>
+        </div>
+      </aside>
+      <dialog id="evidence-dialog" aria-label="查看完整图片">
+        <button id="close-evidence" aria-label="关闭图片">×</button
+        ><img alt="" />
+        <p></p>
+      </dialog>
+      <aside class="island-tools">
+        <button id="overview" class="overview-button">
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <circle cx="12" cy="12" r="8" />
+            <path d="M4 12h16M12 4c5 4 5 12 0 16-5-4-5-12 0-16Z" />
+          </svg>
+          全岛视角 <span>↗</span>
+        </button>
+        <div class="minimap" aria-label="全岛位置图">
+          <span class="map-north">N</span>
+          <div class="map-island">
+            <span class="map-lake"></span>
+            <div id="map-sites"></div>
+            <span id="map-player" aria-label="你的位置"></span>
+          </div>
+          <span class="map-caption"><i></i> 你在这里</span>
+        </div>
+        <div class="compass" aria-hidden="true">
+          <span id="compass-needle">↑</span><span>N</span>
+        </div>
+      </aside>
+      <footer class="bottom-bar">
+        <div class="world-caption">
+          <span id="theme-english">FOREST ISLAND</span>
+          <p id="theme-caption">把好奇心，走成一座岛。</p>
+        </div>
+        <nav
+          id="category-nav"
+          class="category-nav"
+          aria-label="前往作品分类"
+        ></nav>
+        <div class="discovery">
+          <span id="visited-count">00</span
+          ><span>/ <b id="camp-total">04</b><small>营地探索</small></span>
+        </div>
+      </footer>
+      <div id="walk-status" class="walk-status" role="status">
+        点击地面，自由探索
+      </div>
+      <div class="touch-pad" aria-label="移动方向控制">
+        <button data-dir="0,-1" aria-label="向前走">↑</button
+        ><button data-dir="-1,0" aria-label="向左走">←</button><span>✦</span
+        ><button data-dir="1,0" aria-label="向右走">→</button
+        ><button data-dir="0,1" aria-label="向后走">↓</button>
+      </div>
+      <div id="toast" role="status" hidden></div>
+      <dialog id="help-dialog">
+        <button id="close-help" class="close-button" aria-label="关闭玩法">
+          ×
+        </button>
+        <p class="eyebrow">A FIELD GUIDE</p>
+        <h2>小岛漫游指南</h2>
+        <p class="help-intro">
+          不必按顺序，也没有规定路线。<br />找到微光，就能找到一个故事。
+        </p>
+        <dl>
+          <div>
+            <dt>环顾小岛</dt>
+            <dd>鼠标按住拖动 / 单指拖动，360° 旋转；视角俯仰有边界。</dd>
+          </div>
+          <div>
+            <dt>靠近风景</dt>
+            <dd>滚轮 / 双指捏合缩放，始终停留在舒适的观看范围。</dd>
+          </div>
+          <div>
+            <dt>自由行走</dt>
+            <dd>点击地面，或使用 WASD / 方向键。手机可按住左下方向按钮。</dd>
+          </div>
+          <div>
+            <dt>发现故事</dt>
+            <dd>
+              走进发光圆点会打开营地。点击分类或地图标记，也会带你走过去。
+            </dd>
+          </div>
+          <div>
+            <dt>切换世界</dt>
+            <dd>森屿、沙洲、浅海拥有不同风景，营地故事和你的位置保持不变。</dd>
+          </div>
+        </dl>
+        <p class="help-foot">
+          湖泊和岸边会挡住脚步，不会掉出小岛。<br />按 Esc 可关闭详情或指南。
+        </p>
+        <button id="help-done" class="primary-button">知道了，出发 ↗</button>
+      </dialog>
+      <div id="fallback" hidden>
+        <h2>这座小岛需要 WebGL 支持</h2>
+        <p>仍可通过下方分类阅读内容。换用支持 WebGL 的浏览器即可自由漫游。</p>
+      </div>
+    
+      <!-- 专属在线交互式简历 Modal -->
+      <div id="resume-modal" class="resume-modal" hidden aria-label="小橘的在线简历">
+        <div class="resume-backdrop" id="close-resume-backdrop"></div>
+        <div class="resume-card">
+          <button id="close-resume" class="close-button" aria-label="关闭简历">×</button>
+          
+          <header class="resume-header">
+            <div class="resume-title-wrap">
+              <h2>是你的小橘呀 <span class="subname">(xiaojuju11)</span></h2>
+              <p class="resume-subtitle">AI 全栈开发者 · Vibe Coder · 知识构建者</p>
+              <div class="resume-tags">
+                <span class="rtag">React 19 / Next.js</span>
+                <span class="rtag">TypeScript</span>
+                <span class="rtag">Node / Koa</span>
+                <span class="rtag">Three.js 3D</span>
+                <span class="rtag">AI Agent / Coze</span>
+                <span class="rtag">RAG 私域校准</span>
+              </div>
+            </div>
+            <div class="resume-actions">
+              <button id="print-resume" class="resume-action-btn primary"><span>🖨️</span> 导出 / 打印 PDF</button>
+              <a href="https://github.com/xiaojuju11" target="_blank" rel="noopener" class="resume-action-btn secondary"><span>🐙</span> GitHub</a>
+              <a href="https://juejin.cn/user/1989458366301708" target="_blank" rel="noopener" class="resume-action-btn secondary"><span>💎</span> 掘金主页</a>
+            </div>
+          </header>
+
+          <div class="resume-body">
+            <!-- 模块 1：工作实践经历 -->
+            <section class="resume-section">
+              <div class="section-badge">💼 工作与实习实践</div>
+              <div class="resume-item">
+                <div class="item-header">
+                  <h3>万界科技 · AI 全栈实习工程师</h3>
+                  <span class="item-time">企业级实战</span>
+                </div>
+                <p class="item-desc">深入业务一线，负责企业级核心应用智能化赋能，主导大模型多轮交互、Coze 智能体工作流设计以及现代化全栈客户端交付。</p>
+                <ul class="item-points">
+                  <li><b>智能对话与工作流编排：</b>打通端到端智能化链路，结合 Coze 工作流自动化与高质量提示工程，消除幻觉与状态漂移。</li>
+                  <li><b>全栈架构交付：</b>推进前后端协同，保障高并发请求与大模型流式传输响应的稳定性与极致渲染性能。</li>
+                </ul>
+              </div>
+            </section>
+
+            <!-- 模块 2：核心代表开源项目 -->
+            <section class="resume-section">
+              <div class="section-badge">🚀 精选开源与项目作品</div>
+              
+              <div class="resume-item">
+                <div class="item-header">
+                  <h3>童心智伴 (parent_kid_edu)</h3>
+                  <span class="item-tag">React 19 · Koa 3 · DeepSeek · Coze</span>
+                </div>
+                <p class="item-desc">面向 0-12 岁低龄家庭的移动端智能亲子教育平台。安全可靠的 JWT + bcrypt 认证体系，Coze 驱动拍照识物与语音播报，DeepSeek 赋能多轮亲子智能对话，rem 自适应响应式架构。</p>
+              </div>
+
+              <div class="resume-item">
+                <div class="item-header">
+                  <h3>React 在线代码沙箱 (react-playground)</h3>
+                  <span class="item-tag">TypeScript · Monaco Editor · Babel 实时编译</span>
+                </div>
+                <p class="item-desc">浏览器端轻量 React 在线编译与预览平台。支持 TSX 实时编译、iframe 沙箱隔离、ATA 智能类型提示、Import Map 依赖注入与分栏拖拽导出。</p>
+              </div>
+
+              <div class="resume-item">
+                <div class="item-header">
+                  <h3>OrangeVerse · 橘域 3D 漫游综合站</h3>
+                  <span class="item-tag">Three.js · Procedural Island · Vibe Coding</span>
+                </div>
+                <p class="item-desc">突破传统 2D 个人站框架的沉浸式 3D 作品集与数字空间。涵盖三维角色寻路、微缩雷达、知识书本与全屏在线简历。</p>
+              </div>
+            </section>
+
+            <!-- 模块 3：个人学习书本与技术专栏 -->
+            <section class="resume-section">
+              <div class="section-badge">📚 个人学习书本与专栏沉淀</div>
+              <div class="resume-item">
+                <div class="item-header">
+                  <h3>《AI-Daily-Learning》全栈进阶体系</h3>
+                  <span class="item-tag">持续沉淀 · 体系化代码字典</span>
+                </div>
+                <p class="item-desc">涵盖 HTML/CSS/JS 核心、React/TS 全家桶，到 AI Agent 架构、MCP 协议、RAG 知识库、Mini-Transformer、数据结构与高频手写（大文件切片/并发调度）。</p>
+              </div>
+
+              <div class="resume-item">
+                <div class="item-header">
+                  <h3>掘金高赞技术文章精选</h3>
+                  <span class="item-tag">影响力沉淀</span>
+                </div>
+                <p class="item-desc">《告别各写各的！打造 React Native 客户端公共动效基础设施》、《别再被官方文档劝退了！Reanimated 实战通关》、《模型总说瞎话？RAG 技术私域数据精准校准》、《彻底搞懂跨域 6 种解决方案》等多篇硬核技术长文。</p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
