@@ -257,3 +257,28 @@ import { initJuejinArticleViewer } from "./articles.js";
 
 initCyberCompanion();
 initJuejinArticleViewer();
+
+// ═════════════════════════════════════════════════════════════════════════
+// 3D 狐狸守护兽弹窗交互绑定
+// ═════════════════════════════════════════════════════════════════════════
+const foxModal = $("fox-modal");
+const foxPortalBtn = $("fox-portal-btn");
+const closeFoxBtn = $("close-fox-btn");
+const closeFoxBackdrop = $("close-fox-backdrop");
+
+function openFox() {
+  if (foxModal) foxModal.hidden = false;
+}
+function closeFox() {
+  if (foxModal) foxModal.hidden = true;
+}
+
+if (foxPortalBtn) foxPortalBtn.addEventListener("click", openFox);
+if (closeFoxBtn) closeFoxBtn.addEventListener("click", closeFox);
+if (closeFoxBackdrop) closeFoxBackdrop.addEventListener("click", closeFox);
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && foxModal && !foxModal.hidden) {
+    closeFox();
+  }
+});

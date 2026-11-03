@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小橘的 3D 沉浸式知识书架 · OrangeVerse Shelf Hero</title>
+  <meta name="description" content="一个小橘的 3D 知识书本与掘金专栏复盘书架。基于物理 3D 旋转、视差倾斜与水墨纸张破茧动效构建。">
+  
+  <!-- Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --paper: #EDEBE6;
+      --sheet: #F4F2ED;
+      --ink: #141414;
+      --muted: #6D6A63;
+      --cobalt: #1F3FB0;
+      --rule: rgba(20, 20, 20, 0.9);
+      --rule-light: rgba(20, 20, 20, 0.15);
+      --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+      --ease-sheet: cubic-bezier(0.76, 0, 0.18, 1);
+      --H: min(46vh, 31vw);
+      --ws: 65px;
+      --d: 200px;
+      --radius: 2px;
+    }
+
+    @media (max-width: 767px) {
+      :root {
+        --H: min(60vw, 40svh);
+      }
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--paper);
+      color: var(--ink);
+      font-family: "Inter Tight", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    @media (pointer: fine) {
+      html, body, button, a {
+        cursor: none !important;
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Typography & Utility Tokens
+       ══════════════════════════════════════════════════════════════ */
+    .lbl {
+      font-family: "Inter Tight", "Noto Sans SC", sans-serif;
+      font-weight: 600;
+      font-size: 10.5px;
+      line-height: 1;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 22px;
+      padding: 0 9px;
+      border: 1px solid var(--rule);
+      background: transparent;
+      color: var(--ink);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background-color 0.25s var(--ease), color 0.25s var(--ease), border-color 0.25s var(--ease);
+    }
+    .box:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .box.cobalt-btn {
+      border-color: var(--cobalt);
+      color: var(--cobalt);
+    }
+    .box.cobalt-btn:hover {
+      background: var(--cobalt);
+      color: #fff;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Procedural Paper Grain Layer
+       ══════════════════════════════════════════════════════════════ */
+    .paper-grain {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      pointer-events: none;
+      opacity: 0.55;
+      mix-blend-mode: multiply;
+      background-repeat: repeat;
+      background-size: 220px 220px;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Top Bar
+       ══════════════════════════════════════════════════════════════ */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 84px;
+      padding: 0 32px;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      z-index: 50;
+    }
+
+    .top-left {
+      justify-self: start;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .top-left a {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+    }
+
+    .brand-logo {
+      text-align: center;
+      text-decoration: none;
+      color: var(--cobalt);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .logo-cn {
+      font-family: "Noto Serif SC", serif;
+      font-weight: 700;
+      font-size: 21px;
+      letter-spacing: 0.06em;
+      line-height: 1.1;
+    }
+    .logo-en {
+      font-family: "Inter Tight", sans-serif;
+      font-weight: 600;
+      font-size: 8.5px;
+      letter-spacing: 0.36em;
+      padding-left: 0.36em; /* Optical centering */
+      opacity: 0.9;
+    }
+
+    .top-right {
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .career-label {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Category Tabs
+       ══════════════════════════════════════════════════════════════ */
+    .tabs-nav {
+      position: fixed;
+      left: 50%;
+      top: calc(50% - var(--H) / 2 - 82px);
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      z-index: 45;
+      background: transparent;
+    }
+
+    .tabs-track {
+      position: relative;
+      display: inline-flex;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+    }
+
+    .tab-indicator {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      background: var(--cobalt);
+      transition: transform 0.55s var(--ease), width 0.55s var(--ease);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .tab-btn {
+      position: relative;
+      z-index: 2;
+      border: none;
+      background: transparent;
+      height: 25px;
+      padding: 0 13px;
+      color: var(--ink);
+      font-family: "Inter Tight", "Noto Sans SC", sans-serif;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.4s var(--ease);
+      outline: none;
+      white-space: nowrap;
+    }
+    .tab-btn + .tab-btn {
+      border-left: 1px solid var(--rule);
+    }
+    .tab-btn.active {
+      color: #fff;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       The 3D Bookshelf Stage
+       ══════════════════════════════════════════════════════════════ */
+    .shelf-section {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: calc(50% - var(--H) / 2 - 40px);
+      height: calc(var(--H) + 80px);
+      perspective: 2200px;
+      perspective-origin: 50% 50%;
+      touch-action: pan-y;
+      z-index: 30;
+      overflow: visible;
+    }
+
+    .stage {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+    }
+
+    .tape {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .face {
+      position: absolute;
+      top: calc(var(--H) / -2);
+      height: var(--H);
+      backface-visibility: hidden;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background-size: 100% 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .face::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: #000;
+      pointer-events: none;
+      transition: opacity 0.1s linear;
+    }
+
+    /* Spine face */
+    .sp {
+      width: var(--ws);
+      left: calc(var(--ws) / -2);
+      transform: translateZ(calc(var(--d) / 2));
+      box-shadow: 1px 0 3px rgba(0,0,0,0.18), -1px 0 3px rgba(0,0,0,0.12);
+    }
+    .sp::after {
+      opacity: var(--shade-sp, 0);
+    }
+
+    /* Cover face */
+    .cv {
+      width: var(--d);
+      left: calc(var(--d) / -2);
+      transform: rotateY(90deg) translateZ(calc(var(--ws) / 2));
+      box-shadow: 0 32px 64px -24px rgba(20, 16, 10, 0.58), 0 6px 16px -4px rgba(20, 16, 10, 0.2);
+    }
+    .cv::after {
+      opacity: var(--shade-cv, 0.5);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Play / Read Floating Ring Button
+       ══════════════════════════════════════════════════════════════ */
+    .play-ring {
+      position: fixed;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1.2px solid var(--cobalt);
+      background: rgba(237, 235, 230, 0.85);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cobalt);
+      z-index: 46;
+      transform: translate(-50%, -50%) scale(0);
+      transform-origin: center;
+      transition: transform 0.28s var(--ease), background-color 0.2s, color 0.2s;
+      outline: none;
+    }
+    .play-ring:hover {
+      background: var(--cobalt);
+      color: #fff;
+    }
+    .play-ring svg {
+      width: 14px;
+      height: 14px;
+      margin-left: 2px;
+      fill: currentColor;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Masked Typography Caption
+       ══════════════════════════════════════════════════════════════ */
+    .caption-container {
+      position: fixed;
+      left: 50%;
+      top: calc(50% + var(--H) / 2 + 32px);
+      transform: translateX(-50%);
+      width: min(92vw, 780px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      pointer-events: none;
+      z-index: 42;
+      text-align: center;
+    }
+
+    .mask-line {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 38px;
+    }
+    .mask-line.subtitle-line {
+      height: 20px;
+    }
+    .mask-line.meta-line {
+      height: 18px;
+    }
+
+    .mask-line span {
+      display: block;
+      white-space: nowrap;
+      position: absolute;
+      will-change: transform;
+    }
+
+    .caption-title {
+      font-family: "Newsreader", "Noto Serif SC", Georgia, serif;
+      font-weight: 400;
+      font-size: 30px;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+    }
+
+    .caption-sub {
+      color: var(--cobalt);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+
+    .caption-meta {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      font-weight: 500;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Navigation Arrows
+       ══════════════════════════════════════════════════════════════ */
+    .arrow-btn {
+      position: fixed;
+      top: calc(50% + var(--H) / 2 + 36px);
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      color: var(--ink);
+      z-index: 45;
+      outline: none;
+      transition: background 0.25s, color 0.25s, border-color 0.25s;
+    }
+    .arrow-btn:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .arrow-left {
+      left: 28px;
+    }
+    .arrow-right {
+      right: 28px;
+    }
+    .arrow-btn svg {
+      width: 18px;
+      height: 10px;
+      stroke: currentColor;
+      stroke-width: 1.4;
+      fill: none;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Footer
+       ══════════════════════════════════════════════════════════════ */
+    .bottom-footer {
+      position: fixed;
+      left: 32px;
+      right: 32px;
+      bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 45;
+    }
+    .footer-left {
+      color: var(--muted);
+      font-size: 9.5px;
+      letter-spacing: 0.08em;
+    }
+    .footer-right {
+      display: flex;
+      gap: 16px;
+    }
+    .footer-link {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 9.5px;
+      letter-spacing: 0.08em;
+      transition: color 0.2s;
+    }
+    .footer-link:hover {
+      color: var(--cobalt);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Magnetic Custom Cursor
+       ══════════════════════════════════════════════════════════════ */
+    .custom-cursor {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 58px;
+      height: 58px;
+      margin-left: -29px;
+      margin-top: -29px;
+      pointer-events: none;
+      z-index: 100;
+      display: none;
+    }
+
+    @media (pointer: fine) {
+      .custom-cursor {
+        display: block;
+      }
+    }
+
+    .cursor-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1.4px solid var(--ink);
+      background-color: transparent;
+      transform: scale(1);
+      transition: transform 0.45s var(--ease), background-color 0.35s var(--ease), border-color 0.35s var(--ease);
+    }
+
+    .cursor-dot {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 6px;
+      height: 6px;
+      margin-left: -3px;
+      margin-top: -3px;
+      border-radius: 50%;
+      background: var(--ink);
+      transform: scale(1);
+      transition: transform 0.35s var(--ease);
+    }
+
+    .cursor-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-family: "Inter Tight", "Noto Sans SC", sans-serif;
+      font-weight: 700;
+      font-size: 9.5px;
+      line-height: 1.2;
+      letter-spacing: 0.08em;
+      text-align: center;
+      transform: scale(0);
+      transition: transform 0.4s var(--ease);
+      pointer-events: none;
+    }
+
+    /* Cursor states */
+    .custom-cursor.state-spine .cursor-ring {
+      transform: scale(0.72);
+    }
+    .custom-cursor.state-spine .cursor-dot {
+      transform: scale(1);
+    }
+
+    .custom-cursor.state-btn .cursor-ring {
+      transform: scale(0.55);
+    }
+    .custom-cursor.state-btn .cursor-dot {
+      transform: scale(0);
+    }
+
+    .custom-cursor.state-open .cursor-ring {
+      transform: scale(1.75);
+      background-color: var(--cobalt);
+      border-color: var(--cobalt);
+    }
+    .custom-cursor.state-open .cursor-dot {
+      transform: scale(0);
+    }
+    .custom-cursor.state-open .cursor-label {
+      transform: scale(1);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Paper Expansion & Ink Blot Detail Modal
+       ══════════════════════════════════════════════════════════════ */
+    .detail-dialog {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      background-color: var(--sheet);
+      visibility: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5vw;
+      padding: 100px 7vw 56px 8vw;
+      align-items: center;
+      overflow-y: auto;
+      overflow-x: hidden;
+      will-change: clip-path, transform;
+    }
+
+    .detail-close-btn {
+      position: absolute;
+      top: 32px;
+      left: 32px;
+      z-index: 70;
+    }
+
+    .detail-top-logo {
+      position: absolute;
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 70;
+      text-align: center;
+      color: var(--cobalt);
+      text-decoration: none;
+    }
+
+    .detail-left {
+      max-width: 540px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      justify-self: start;
+    }
+
+    .detail-mask {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .detail-mask > * {
+      display: block;
+      transform: translateY(110%);
+      will-change: transform;
+    }
+
+    .detail-subtitle {
+      color: var(--cobalt);
+      font-size: 11.5px;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+    }
+
+    .detail-title {
+      font-family: "Newsreader", "Noto Serif SC", serif;
+      font-weight: 400;
+      font-size: clamp(38px, 4.2vw, 68px);
+      line-height: 1.05;
+      letter-spacing: -0.025em;
+      color: var(--ink);
+    }
+
+    .detail-meta {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      font-weight: 600;
+    }
+
+    .detail-synopsis {
+      font-family: "Newsreader", "Noto Serif SC", serif;
+      font-size: 16.5px;
+      line-height: 1.6;
+      color: #2b2b2b;
+      max-width: 44ch;
+    }
+
+    .detail-chapters {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 4px;
+      padding: 12px 16px;
+      border-left: 2px solid var(--cobalt);
+      background: rgba(31, 63, 176, 0.04);
+    }
+    .detail-ch-item {
+      font-size: 12px;
+      line-height: 1.45;
+      color: #444;
+    }
+    .detail-ch-item b {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .detail-credit {
+      font-family: "Newsreader", serif;
+      font-style: italic;
+      font-size: 14.5px;
+      color: var(--muted);
+    }
+
+    .detail-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .read-action-btn {
+      height: 40px;
+      padding: 0 22px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      border: 1px solid var(--cobalt);
+      background: var(--cobalt);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: background 0.25s var(--ease), transform 0.2s;
+    }
+    .read-action-btn:hover {
+      background: #152d82;
+      transform: translateY(-1px);
+    }
+    .secondary-action-btn {
+      height: 40px;
+      padding: 0 18px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      border: 1px solid var(--rule);
+      background: transparent;
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.25s, color 0.25s;
+    }
+    .secondary-action-btn:hover {
+      background: var(--ink);
+      color: var(--paper);
+    }
+
+    /* Right column: Poster with SVG Ink Blot Mask */
+    .detail-right {
+      justify-self: center;
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .poster-svg {
+      width: 100%;
+      height: auto;
+      max-height: min(100%, 76vh);
+      aspect-ratio: 474 / 900;
+      border-radius: 4px;
+      box-shadow: 0 24px 60px -20px rgba(0,0,0,0.35);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Responsive Breakpoints (Mobile ≤ 767px)
+       ══════════════════════════════════════════════════════════════ */
+    @media (max-width: 767px) {
+      .top-bar {
+        height: 64px;
+        padding: 0 16px;
+      }
+      .logo-cn { font-size: 17px; }
+      .logo-en { font-size: 7.5px; }
+      .career-label { display: none; }
+
+      .tabs-nav {
+        top: calc(50% - var(--H) / 2 - 68px);
+      }
+      .tab-btn {
+        height: 22px;
+        padding: 0 8px;
+        font-size: 9px;
+      }
+
+      .caption-title { font-size: 22px; }
+      .arrow-left { left: 8px; }
+      .arrow-right { right: 8px; }
+
+      .bottom-footer {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+      }
+
+      .detail-dialog {
+        grid-template-columns: 1fr;
+        padding: 84px 20px 48px;
+        gap: 28px;
+      }
+      .detail-right {
+        order: -1;
+        max-width: 280px;
+      }
+      .poster-svg {
+        max-height: 44svh;
+      }
+      .detail-title {
+        font-size: 34px;
+      }
+      .detail-synopsis {
+        font-size: 15px;
+      }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       Reduced Motion
+       ══════════════════════════════════════════════════════════════ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Procedural Paper Grain Overlay -->
+  <div class="paper-grain" id="paperGrain" aria-hidden="true"></div>
+
+  <!-- Hidden SVG Ink Bleed Mask Definitions -->
+  <svg width="0" height="0" style="position: absolute; pointer-events: none;" aria-hidden="true">
+    <defs>
+      <!-- Turbulence filter for ragged organic ink bleeding -->
+      <filter id="inkFilter" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves="3" seed="7" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="120" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+
+      <!-- Ink mask with 7 expanding blob circles -->
+      <mask id="inkMask" maskUnits="userSpaceOnUse" x="-200" y="-200" width="874" height="1300">
+        <rect x="-200" y="-200" width="874" height="1300" fill="black" />
+        <g filter="url(#inkFilter)">
+          <circle id="blob1" cx="150" cy="330" r="0" fill="white" />
+          <circle id="blob2" cx="340" cy="600" r="0" fill="white" />
+          <circle id="blob3" cx="250" cy="120" r="0" fill="white" />
+          <circle id="blob4" cx="90"  cy="760" r="0" fill="white" />
+          <circle id="blob5" cx="400" cy="250" r="0" fill="white" />
+          <circle id="blob6" cx="260" cy="860" r="0" fill="white" />
+          <circle id="blob7" cx="230" cy="470" r="0" fill="white" />
+        </g>
+      </mask>
+    </defs>
+  </svg>
+
+  <!-- 1. Top Bar -->
+  <header class="top-bar">
+    <div class="top-left">
+      <a href="./index.html" class="box lbl" title="返回 3D 漫游主岛">← ISLAND / 返回主岛</a>
+    </div>
+
+    <a href="#" class="brand-logo" onclick="event.preventDefault()">
+      <span class="logo-cn">橘域 · 知识书架</span>
+      <span class="logo-en">AI & FULLSTACK KNOWLEDGE SHELF</span>
+    </a>
+
+    <div class="top-right">
+      <span class="lbl career-label">ARCHIVE 2024年〜2026年</span>
+      <a href="https://github.com/xiaojuju11/AI-Daily-Learning" target="_blank" rel="noopener" class="box lbl cobalt-btn">GITHUB ↗</a>
+    </div>
+  </header>
+
+  <!-- 2. Category Tabs -->
+  <nav class="tabs-nav" aria-label="知识分类切换">
+    <div class="tabs-track" id="tabsTrack">
+      <div class="tab-indicator" id="tabIndicator"></div>
+      <button class="tab-btn" data-cat="ALL">ALL / 全部</button>
+      <button class="tab-btn" data-cat="AI">AI · Agent</button>
+      <button class="tab-btn" data-cat="REACT">React & 跨端</button>
+      <button class="tab-btn" data-cat="NETWORK">底层与网络</button>
+      <button class="tab-btn" data-cat="ARCH">体系与手写</button>
+    </div>
+  </nav>
+
+  <!-- 3. The 3D Bookshelf Section -->
+  <section class="shelf-section" id="shelfSection" aria-label="3D 知识书架展示区">
+    <div class="stage" id="stage"></div>
+  </section>
+
+  <!-- 4. Floating Play/Read Ring -->
+  <button class="play-ring" id="playRing" aria-label="翻开阅读本书" title="翻开阅读本书">
+    <svg viewBox="0 0 24 24">
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  </button>
+
+  <!-- 5. Masked Caption Below Shelf -->
+  <div class="caption-container" aria-live="polite">
+    <div class="mask-line" id="captionTitleMask"></div>
+    <div class="mask-line subtitle-line" id="captionSubMask"></div>
+    <div class="mask-line meta-line" id="captionMetaMask"></div>
+  </div>
+
+  <!-- 6. Left / Right Arrows -->
+  <button class="arrow-btn arrow-left" id="prevBtn" aria-label="上一本书">
+    <svg viewBox="0 0 18 10">
+      <path d="M5 1 L1 5 L5 9 M1 5 L17 5" />
+    </svg>
+  </button>
+  <button class="arrow-btn arrow-right" id="nextBtn" aria-label="下一本书">
+    <svg viewBox="0 0 18 10">
+      <path d="M13 1 L17 5 L13 9 M17 5 L1 5" />
+    </svg>
+  </button>
+
+  <!-- 7. Footer -->
+  <footer class="bottom-footer">
+    <div class="lbl footer-left">© XIAOJUJU11 · 《AI-DAILY-LEARNING》全栈沉淀 · ALL RIGHTS RESERVED.</div>
+    <div class="footer-right">
+      <a href="https://juejin.cn/user/1989458366301708" target="_blank" rel="noopener" class="lbl footer-link">JUEJIN / 掘金</a>
+      <a href="https://github.com/xiaojuju11" target="_blank" rel="noopener" class="lbl footer-link">GITHUB</a>
+    </div>
+  </footer>
+
+  <!-- 8. Magnetic Custom Cursor -->
+  <div class="custom-cursor" id="customCursor" aria-hidden="true">
+    <div class="cursor-ring"></div>
+    <div class="cursor-dot"></div>
+    <div class="cursor-label">
+      <span>OPEN</span>
+      <span>翻阅</span>
+    </div>
+  </div>
+
+  <!-- 9. Detail Dialog (Paper Sheet & Ink Reveal) -->
+  <dialog class="detail-dialog" id="detailDialog" role="dialog" aria-modal="true" aria-label="书本与专栏沉淀详情">
+    <button class="box lbl detail-close-btn" id="closeDetailBtn">CLOSE / 关闭 ✕</button>
+
+    <div class="brand-logo detail-top-logo">
+      <span class="logo-cn">小橘 · 知识书本</span>
+      <span class="logo-en">ORANGEVERSE MONOGRAPH</span>
+    </div>
+
+    <!-- Left Column: Synopsis & Metadata -->
+    <div class="detail-left">
+      <div class="detail-mask">
+        <span class="lbl detail-subtitle" id="detSubtitle">AI & ARCHITECTURE</span>
+      </div>
+      <div class="detail-mask">
+        <h2 class="detail-title" id="detTitle">AI-Daily-Learning</h2>
+      </div>
+      <div class="detail-mask">
+        <span class="lbl detail-meta" id="detMeta">2025 / 体系架构 / 100+ 专题 / 掘力值 1571</span>
+      </div>
+      <div class="detail-mask">
+        <p class="detail-synopsis" id="detSynopsis"></p>
+      </div>
+      <div class="detail-mask">
+        <div class="detail-chapters" id="detChapters"></div>
+      </div>
+      <div class="detail-mask">
+        <p class="detail-credit">Written and curated by 是你的小橘呀. 学习沉淀作品.</p>
+      </div>
+      <div class="detail-mask">
+        <div class="detail-actions">
+          <a href="#" target="_blank" rel="noopener" class="lbl read-action-btn" id="detLink">
+            <span>READ FULL ARTICLE / 阅读笔记正文</span>
+            <span>↗</span>
+          </a>
+          <button class="lbl secondary-action-btn" id="detCopyLink">COPY LINK / 复制链接</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: SVG Cover with ragged Ink Mask -->
+    <div class="detail-right">
+      <svg class="poster-svg" viewBox="0 0 474 900" aria-hidden="true">
+        <image id="detailPosterImage" href="" x="0" y="0" width="474" height="900" preserveAspectRatio="none" mask="url(#inkMask)" />
+      </svg>
+    </div>
+  </dialog>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       Client Logic & 3D Shelf Engine
+       ══════════════════════════════════════════════════════════════ -->
+  <script>
+    // ══════════════════════════════════════════════════════════════
+    // 1. Data: The 12 Technical Books & Juejin Masterpieces
+    // ══════════════════════════════════════════════════════════════
+    const BOOKS_DATA = [
+      {
+        id: "ai-daily",
+        category: "ARCH",
+        title: "AI-Daily-Learning",
+        romaji: "QUANZHAN XUEXI SHU",
+        kanji: "全栈进阶知识字典",
+        year: "2025",
+        tag: "核心知识库",
+        views: "15,500+",
+        likes: "550+",
+        colorTheme: "#1F3FB0",
+        synopsis: "从前端底层、React/TS 全家桶，到 AI Agent 架构、MCP 协议、RAG 知识库与高频硬核手写的完整知识体系。打造属于自己的技术字典，每一行代码均附带详尽思考与场景反思。",
+        chapters: [
+          { title: "知识架构", text: "协议底层、React 19 渲染机制、并发调度、大文件切片上传与 Mini-Transformer 实践。" },
+          { title: "心法沉淀", text: "技术不是零碎代码片段的堆砌，而是结构化生长的逻辑书本，作为成长路上的灯塔。" }
+        ],
+        url: "https://github.com/xiaojuju11/AI-Daily-Learning"
+      },
+      {
+        id: "rn-motion",
+        category: "REACT",
+        title: "React Native 动效基建",
+        romaji: "DONGXIAO JICHU SHESHI",
+        kanji: "客户端公共动效工程",
+        year: "2025",
+        tag: "掘金高赞专栏",
+        views: "91",
+        likes: "5",
+        colorTheme: "#D64527",
+        synopsis: "告别各写各的！从 0 到 1 构建可复用、丝滑流畅的 React Native 客户端动效基建与 Reanimated 实战通关指南。利用 UI 线程 worklet 机制抽离统一声明式动画规范。",
+        chapters: [
+          { title: "痛点溯源", text: "跨端项目中动效代码碎片化、多页面重复实现，且往往引发 JS 主线程丢帧与手势卡顿。" },
+          { title: "解决方案", text: "统一抽象声明式配置，打通 UI 线程高精度贝塞尔与弹簧物理模型，确保 60fps 满帧。" }
+        ],
+        url: "https://juejin.cn/post/7695579556079321122"
+      },
+      {
+        id: "reanimated",
+        category: "REACT",
+        title: "Reanimated 实战通关指南",
+        romaji: "DONGHUA TONGGUAN ZHINAN",
+        kanji: "小白也能懂的丝滑手势",
+        year: "2025",
+        tag: "动效引擎进阶",
+        views: "53",
+        likes: "5",
+        colorTheme: "#1F3FB0",
+        synopsis: "别再被官方文档劝退了！深度拆解 Reanimated 3 核心概念：Shared Values、Worklet 线程切换机制与手势驱动动画，真正做到 0 基础小白也能看懂进阶。",
+        chapters: [
+          { title: "核心突破", text: "绕过 JavaScript Bridge 序列化开销，直接在 UI 线程根据触摸事件每帧计算新坐标。" },
+          { title: "工程实战", text: "封装弹性卡片展开、吸顶导航渐变与无障碍降级保护策略。" }
+        ],
+        url: "https://juejin.cn/post/7695604643288809487"
+      },
+      {
+        id: "rag-calibration",
+        category: "AI",
+        title: "RAG 大模型精准校准",
+        romaji: "RAG JINGZHUN JIAOZHUN",
+        kanji: "私域数据对齐消除幻觉",
+        year: "2025",
+        tag: "AI 核心落地",
+        views: "188",
+        likes: "10",
+        colorTheme: "#2A7B4C",
+        synopsis: "模型总说瞎话？深入解析检索增强生成 (RAG) 的向量切分、Embedding 相似度匹配、Top-K 混合重排与私域知识库注入实战，从源头消灭模型幻觉。",
+        chapters: [
+          { title: "大模型幻觉之殇", text: "通用大模型缺乏企业垂直领域实效知识，在专业问答中极易言之凿凿地给出荒谬答案。" },
+          { title: "精准对齐链路", text: "构建分段向量化、BM25 混合索引与 Prompt 上下文精准校准链路，让每一次回答有据可依。" }
+        ],
+        url: "https://juejin.cn/post/7644369679423242282"
+      },
+      {
+        id: "coze-agent",
+        category: "AI",
+        title: "Coze 工作流与 Agent 实战",
+        romaji: "COZE GONGZHUOLIU SHIZHAN",
+        kanji: "自动化智能体落地编排",
+        year: "2024",
+        tag: "智能体工程",
+        views: "376",
+        likes: "6",
+        colorTheme: "#E08A1E",
+        synopsis: "一句话生成基础 Agent 固然方便，但真正理解智能体必须亲自动手：多节点路由、参数转换、外部插件调用与异步状态管理全解析，打通生产级业务赋能链路。",
+        chapters: [
+          { title: "工程掌控感", text: "突破黑盒生成的限制，通过精确节点拓扑与容错机制应对不确定性输出。" },
+          { title: "实战交付", text: "落地万界科技智能伴侣工作流，支持拍照多模态识物与语音连麦。" }
+        ],
+        url: "https://juejin.cn/post/7637368708901453862"
+      },
+      {
+        id: "concurrent-request",
+        category: "NETWORK",
+        title: "高并发异步请求调度",
+        romaji: "BINGFA QINGQIU DIAODU",
+        kanji: "网络带宽调度与抗卡顿",
+        year: "2024",
+        tag: "网络底层性能",
+        views: "367",
+        likes: "7",
+        colorTheme: "#1F3FB0",
+        synopsis: "同样是处理并发请求，为什么别人的页面丝滑不卡顿？剖析浏览器并发限制机制，手写基于 Promise 的并发控制器、优先级队列与失败指数退避重试。",
+        chapters: [
+          { title: "网络瓶颈", text: "HTTP/1.1 下同一域名 6 个 TCP 链接限制带来的排队阻塞（Head-of-Line Blocking）。" },
+          { title: "调度器手写", text: "实现并发数动态限流、高优先级插队、超时中止控制器与取消令牌（AbortController）。" }
+        ],
+        url: "https://juejin.cn/post/7644480592949674020"
+      },
+      {
+        id: "cors-master",
+        category: "NETWORK",
+        title: "彻底搞懂跨域 6 种解法",
+        romaji: "CHEDI GAODONG KUAYU",
+        kanji: "同源策略与全解指南",
+        year: "2024",
+        tag: "前端高频核心",
+        views: "390",
+        likes: "5",
+        colorTheme: "#D64527",
+        synopsis: "在前端开发中跨域是绕不开的高频痛点。从浏览器同源策略底层安全模型出发，把 CORS 预检、Nginx 反向代理、WebSocket、postMessage 等 6 种方案原理讲透彻。",
+        chapters: [
+          { title: "安全模型本质", text: "理解为什么跨域限制是浏览器的沙箱防御，而非服务端的请求拦截。" },
+          { title: "场景选型", text: "开发环境反向代理、生产环境 CORS 细粒度白名单与带 Cookie 凭证踩坑指南。" }
+        ],
+        url: "https://juejin.cn/post/7633708438438903823"
+      },
+      {
+        id: "network-protocol",
+        category: "NETWORK",
+        title: "从 URL 到页面渲染全景",
+        romaji: "WANG LUO XIE YI QUAN JING",
+        kanji: "网络协议与渲染管线协作",
+        year: "2024",
+        tag: "硬核底层",
+        views: "212",
+        likes: "12",
+        colorTheme: "#2A7B4C",
+        synopsis: "每天都在和 URL 打交道，但背后到底是哪些协议在协作？从 DNS 递归查询、TCP 三次握手/TLS 1.3 密钥交换，到 HTTP 报文流转与浏览器 Blink 渲染管线。",
+        chapters: [
+          { title: "传输层到应用层", text: "详细梳理 SYN/ACK、TCP 拥塞控制、慢启动以及 TLS 证书链验证过程。" },
+          { title: "关键渲染路径", text: "DOM 树构建、CSSOM 样式计算、Layout 布局排版与 Composite 合成光栅化。" }
+        ],
+        url: "https://juejin.cn/post/7618602684732833798"
+      },
+      {
+        id: "rn-foundation",
+        category: "REACT",
+        title: "React Native 入门全攻略",
+        romaji: "RN RUMEN QUAN GONG LUE",
+        kanji: "从语法样式到常用 Hook",
+        year: "2024",
+        tag: "移动端基础",
+        views: "139",
+        likes: "3",
+        colorTheme: "#E08A1E",
+        synopsis: "React 与 React Native 到底是什么关系？深入理解 Yoga 弹性盒布局引擎与 Virtual DOM 在原生移动视图的映射，封装自动请求、输入防抖与全局 Loading 组件。",
+        chapters: [
+          { title: "核心差异", text: "没有 div 和 span，基于原生组件映射与 Flexbox 原生实现的像素级差异。" },
+          { title: "组件封装", text: "利用 useEffect 依赖项解构实现无循环触发的实时搜索与安全下拉刷新。" }
+        ],
+        url: "https://juejin.cn/post/7691003489858453539"
+      },
+      {
+        id: "parent-kid-edu",
+        category: "AI",
+        title: "童心智伴亲子平台架构",
+        romaji: "TONGXIN ZHIBAN JIAGOU",
+        kanji: "全栈 AI 亲子教育实战",
+        year: "2025",
+        tag: "全栈开源代表作",
+        views: "1,200+",
+        likes: "88",
+        colorTheme: "#D64527",
+        synopsis: "面向 0-12 岁低龄家庭的移动端智能亲子平台。集成 DeepSeek 大模型温情多轮对话、Coze 智能拍照识物与语音播报，React 19 + Koa 全栈端到端落地。",
+        chapters: [
+          { title: "系统架构", text: "JWT + bcrypt 安全体系，rem 自适应多端排版，SSE 流式智能对话响应。" },
+          { title: "情感温度", text: "探索除了效率工具之外，AI 在陪伴儿童心智启蒙与父母亲子沟通中的温暖角色。" }
+        ],
+        url: "https://github.com/xiaojuju11/parent_kid_edu"
+      },
+      {
+        id: "react-sandbox",
+        category: "ARCH",
+        title: "React 在线代码沙箱",
+        romaji: "REACT SHAXIANG SHIZHAN",
+        kanji: "浏览器端实时编译架构",
+        year: "2025",
+        tag: "Web IDE 原型",
+        views: "890",
+        likes: "42",
+        colorTheme: "#1F3FB0",
+        synopsis: "基于 Monaco Editor 与浏览器端 Babel 的轻量 React 在线实时编译与运行平台。支持 TSX 零配置编译、iframe 安全隔离、ATA 自动类型提示与 Import Map 动态模块注入。",
+        chapters: [
+          { title: "浏览器端编译", text: "直接在前端加载 Babel Standalone，将 TSX 语法树转为浏览器原生 ES Modules。" },
+          { title: "安全隔离", text: "借助 postMessage 通信与 iframe sandbox 属性，杜绝恶意脚本越权污染主应用。" }
+        ],
+        url: "https://github.com/xiaojuju11/react-playground"
+      },
+      {
+        id: "hardcore-handwriting",
+        category: "ARCH",
+        title: "前端高频硬核手写字典",
+        romaji: "GAOPIN YINGHE SHOUXIE",
+        kanji: "大厂面试源码级手写通关",
+        year: "2025",
+        tag: "硬核内功",
+        views: "2,400+",
+        likes: "160+",
+        colorTheme: "#2A7B4C",
+        synopsis: "大文件切片上传与 SparkMD5 增量 Hash、高性能虚拟长列表（支持不定高动态估算）、Promise/A+ 规范手写、深拷贝循环引用处理与发布订阅 EventEmitter 深度实战。",
+        chapters: [
+          { title: "切片与断点续传", text: "Web Worker 异步分块 Hash、并发切片上传池、后端断点进度感知与秒传合并。" },
+          { title: "虚拟列表排版", text: "动态计算可视区 paddingTop 与 paddingBottom，维持 10 万条数据毫秒级满帧滚动。" }
+        ],
+        url: "https://github.com/xiaojuju11/AI-Daily-Learning"
+      }
+    ];
+
+    // ══════════════════════════════════════════════════════════════
+    // 2. Procedural SVG Cover & Spine Artwork Generation (No 404s!)
+    // ══════════════════════════════════════════════════════════════
+    function generateSpineSVG(item, idx) {
+      const vol = String(idx + 1).padStart(2, "0");
+      const title = item.title.toUpperCase();
+      const color = item.colorTheme;
+      return `data:image/svg+xml;utf8,${encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 142 840" width="142" height="840">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#E1DFDA" />
+              <stop offset="35%" stop-color="#FAF8F5" />
+              <stop offset="75%" stop-color="#EDEBE6" />
+              <stop offset="100%" stop-color="#D8D5CE" />
+            </linearGradient>
+            <filter id="grain">
+              <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" result="noise" />
+              <feColorMatrix type="matrix" values="0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0.12 0" />
+              <feComposite in2="SourceGraphic" in="gl" operator="in" />
+            </filter>
+          </defs>
+          <!-- Paper background with aged edge vignette -->
+          <rect width="142" height="840" fill="url(#g)" />
+          <rect width="142" height="840" fill="none" stroke="rgba(20,20,20,0.18)" stroke-width="2" />
+
+          <!-- Top category badge & issue number -->
+          <rect x="16" y="24" width="110" height="26" fill="${color}" rx="2" />
+          <text x="71" y="41" fill="#FFFFFF" font-family="'Inter Tight', sans-serif" font-weight="700" font-size="11" text-anchor="middle" letter-spacing="2">VOL.${vol}</text>
+
+          <text x="71" y="78" fill="#141414" font-family="'Inter Tight', sans-serif" font-weight="600" font-size="9" text-anchor="middle" letter-spacing="1.5">${item.category}</text>
+          <line x1="24" y1="94" x2="118" y2="94" stroke="#141414" stroke-width="1.2" />
+
+          <!-- Vertical Title -->
+          <g transform="translate(71, 460) rotate(-90)">
+            <text x="0" y="5" fill="#141414" font-family="'Newsreader', 'Noto Serif SC', serif" font-weight="600" font-size="23" text-anchor="middle" letter-spacing="3.5">${title}</text>
+          </g>
+
+          <line x1="24" y1="710" x2="118" y2="710" stroke="#141414" stroke-width="1.2" />
+
+          <!-- Bottom Branding & Vintage Boxed Tag -->
+          <text x="71" y="736" fill="#141414" font-family="'Inter Tight', sans-serif" font-weight="700" font-size="11" text-anchor="middle" letter-spacing="2.5">XIAOJU</text>
+          
+          <rect x="36" y="756" width="70" height="28" fill="none" stroke="#141414" stroke-width="1.6" rx="2" />
+          <text x="71" y="775" fill="#141414" font-family="'Inter Tight', sans-serif" font-weight="700" font-size="11" text-anchor="middle" letter-spacing="1">MONO</text>
+
+          <text x="71" y="812" fill="#6D6A63" font-family="'Inter Tight', sans-serif" font-weight="500" font-size="8.5" text-anchor="middle" letter-spacing="1">ARCHIVE · 2025</text>
+        </svg>
+      `)}`;
+    }
+
+    function generateCoverSVG(item, idx) {
+      const vol = String(idx + 1).padStart(2, "0");
+      const color = item.colorTheme;
+      return `data:image/svg+xml;utf8,${encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 474 900" width="474" height="900">
+          <defs>
+            <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#F7F5F0" />
+              <stop offset="100%" stop-color="#E8E5DF" />
+            </linearGradient>
+            <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+              <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(20,20,20,0.04)" stroke-width="1" />
+            </pattern>
+          </defs>
+
+          <!-- Outer Cardboard Sheet -->
+          <rect width="474" height="900" fill="url(#bg)" />
+          <rect width="474" height="900" fill="url(#grid)" />
+          
+          <!-- Outer Double Border Line -->
+          <rect x="22" y="22" width="430" height="856" fill="none" stroke="#141414" stroke-width="1.6" />
+          <rect x="26" y="26" width="422" height="848" fill="none" stroke="#141414" stroke-width="0.8" opacity="0.4" />
+
+          <!-- Top Curated Tag -->
+          <text x="44" y="62" fill="${color}" font-family="'Inter Tight', sans-serif" font-weight="700" font-size="11" letter-spacing="2.5">A XIAOJU KNOWLEDGE MONOGRAPH · NO.${vol}</text>
+          <line x1="44" y1="76" x2="430" y2="76" stroke="#141414" stroke-width="1.2" />
+
+          <!-- Main Title -->
+          <text x="44" y="126" fill="#141414" font-family="'Newsreader', 'Noto Serif SC', serif" font-weight="600" font-size="34" letter-spacing="-0.5">${item.title}</text>
+          <text x="44" y="156" fill="${color}" font-family="'Inter Tight', sans-serif" font-weight="700" font-size="12" letter-spacing="2">${item.romaji}</text>
+          <text x="44" y="180" fill="#6D6A63" font-family="'Noto Sans SC', sans-serif" font-weight="500" font-size="12" letter-spacing="1">${item.kanji}</text>
+
+          <!-- Geometric Risograph Illustration Frame -->
+          <g transform="translate(44, 210)">
+            <rect width="386" height="420" fill="#141414" rx="3" />
+            
+            <!-- Abstract Duotone Risograph Shapes -->
+            <circle cx="193" cy="210" r="140" fill="none" stroke="${color}" stroke-width="3" opacity="0.85" />
+            <circle cx="193" cy="210" r="90" fill="none" stroke="#FFFFFF" stroke-width="1.5" stroke-dasharray="6,4" opacity="0.6" />
+            <rect x="80" y="90" width="226" height="240" fill="none" stroke="#FFFFFF" stroke-width="2" transform="rotate(45 193 210)" opacity="0.7" />
+            
+            <circle cx="193" cy="210" r="32" fill="${color}" />
+            <path d="M 120 340 Q 193 180 266 340" fill="none" stroke="#FFFFFF" stroke-width="3" opacity="0.9" />
+
+            <!-- Illustration Meta Labels -->
+            <text x="24" y="44" fill="#FFFFFF" font-family="'Inter Tight', sans-serif" font-weight="600" font-size="10" letter-spacing="2">SYSTEM MATRIX</text>
+            <text x="362" y="44" fill="#FFFFFF" font-family="'Inter Tight', sans-serif" font-weight="600" font-size="10" letter-spacing="1" text-anchor="end">REF // 0${idx + 1}</text>
+            <text x="24" y="394" fill="#FFFFFF" font-family="'Inter Tight', sans-serif" font-weight="500" font-size="9" letter-spacing="1.5">60FPS FULL ENGINE</text>
+          </g>
+
+          <!-- Summary Snippet & Data Badges -->
+          <text x="44" y="670" fill="#141414" font-family="'Newsreader', 'Noto Serif SC', serif" font-size="14.5" width="386">
+            <tspan x="44" dy="0">${item.synopsis.slice(0, 24)}</tspan>
+            <tspan x="44" dy="22">${item.synopsis.slice(24, 52)}...</tspan>
+          </text>
+
+          <!-- Footer Boxed Badges -->
+          <line x1="44" y1="740" x2="430" y2="740" stroke="#141414" stroke-width="1.2" />
+
+          <rect x="44" y="760" width="94" height="24" fill="none" stroke="#141414" stroke-width="1.2" />
+          <text x="91" y="776" fill="#141414" font-family="'Inter Tight', sans-serif" font-weight="700" font-size="10" text-anchor="middle" letter-spacing="1">${item.category}</text>
+
+          <rect x="146" y="760" width="86" height="24" fill="none" stroke="#141414" stroke-width="1.2" />
+          <text x="189" y="776" fill="#141414" font-family="'Inter Tight', sans-serif" font-weight="600" font-size="10" text-anchor="middle" letter-spacing="1">${item.year}</text>
+
+          <!-- VHS Box Badge -->
+          <g transform="translate(350, 754)">
+            <rect width="80" height="36" fill="${color}" rx="3" />
+            <text x="40" y="23" fill="#FFFFFF" font-family="'Inter Tight', sans-serif" font-weight="700" font-size="13" text-anchor="middle" letter-spacing="2">BOOK</text>
+          </g>
+
+          <text x="44" y="834" fill="#6D6A63" font-family="'Inter Tight', sans-serif" font-weight="500" font-size="9.5" letter-spacing="1">ISLAND ARCHIVE · ORANGEVERSE</text>
+          <text x="430" y="834" fill="#6D6A63" font-family="'Inter Tight', sans-serif" font-weight="600" font-size="9.5" letter-spacing="1" text-anchor="end">XIAOJU TECH</text>
+        </svg>
+      `)}`;
+    }
+
+    // Preload & Pre-generate image assets
+    BOOKS_DATA.forEach((b, i) => {
+      b.spineURL = generateSpineSVG(b, i);
+      b.coverURL = generateCoverSVG(b, i);
+      const img = new Image();
+      img.src = b.coverURL;
+    });
+
+    // Generate Procedural Paper Grain Tile SVG
+    (function initPaperGrain() {
+      const grainEl = document.getElementById("paperGrain");
+      const grainSVG = `data:image/svg+xml;utf8,${encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="220" height="220">
+          <filter id="f">
+            <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch" />
+            <feColorMatrix type="matrix" values="0 0 0 0 0.45  0 0 0 0 0.42  0 0 0 0 0.38  0 0 0 0.22 0" />
+          </filter>
+          <rect width="220" height="220" filter="url(#f)" />
+        </svg>
+      `)}`;
+      grainEl.style.backgroundImage = `url("${grainSVG}")`;
+    })();
+
+    // ══════════════════════════════════════════════════════════════
+    // 3. Motion & 3D Math Engine State
+    // ══════════════════════════════════════════════════════════════
+    const stage = document.getElementById("stage");
+    const shelfSection = document.getElementById("shelfSection");
+    const playRing = document.getElementById("playRing");
+    const tabIndicator = document.getElementById("tabIndicator");
+    const tabsTrack = document.getElementById("tabsTrack");
+    const customCursor = document.getElementById("customCursor");
+    const detailDialog = document.getElementById("detailDialog");
+
+    let W = window.innerWidth;
+    let H = 0;
+    let ws = 0;
+    let d = 0;
+    let gap = 0;
+    let cyPos = window.innerHeight / 2;
+
+    // Motion State
+    let s = 12; // Start in middle copy on book 0
+    let T = 12;
+    let hoverVirtual = -1;
+    let activeIdx = -1;
+    let mx = W / 2;
+    let my = window.innerHeight / 2;
+    let cx = W / 2;
+    let cy = window.innerHeight / 2;
+    let tiltX = 0;
+    let tiltY = 0;
+    let onCover = false;
+    let isOpen = false;
+
+    // Drag tracking
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartT = 0;
+    let hasDragged = false;
+    let wheelTimeout = null;
+
+    // Lifts for each tape: map virtualIndex -> current lift (0..1)
+    const tapeLifts = new Float32Array(36);
+
+    // ══════════════════════════════════════════════════════════════
+    // 4. Geometry Measure & Box Construction
+    // ══════════════════════════════════════════════════════════════
+    function measureDimensions() {
+      W = window.innerWidth;
+      cyPos = window.innerHeight / 2;
+      
+      // Probe H
+      const probe = document.createElement("div");
+      probe.style.cssText = "position:absolute;visibility:hidden;height:var(--H);";
+      document.body.appendChild(probe);
+      H = probe.getBoundingClientRect().height;
+      document.body.removeChild(probe);
+
+      ws = H * 142 / 840;
+      d = H * 474 / 900;
+      gap = H * 0.03;
+
+      stage.style.setProperty("--ws", `${ws.toFixed(2)}px`);
+      stage.style.setProperty("--d", `${d.toFixed(2)}px`);
+    }
+
+    // 36 Tapes: 3 copies of 12 books
+    const tapeElements = [];
+
+    function buildTapes() {
+      stage.innerHTML = "";
+      tapeElements.length = 0;
+
+      for (let v = 0; v < 36; v++) {
+        const bookIdx = v % 12;
+        const book = BOOKS_DATA[bookIdx];
+
+        const tape = document.createElement("div");
+        tape.className = "tape";
+        tape.dataset.v = v;
+        tape.dataset.idx = bookIdx;
+
+        // Spine face
+        const sp = document.createElement("div");
+        sp.className = "face sp";
+        sp.style.backgroundImage = `url("${book.spineURL}")`;
+
+        // Cover face
+        const cv = document.createElement("div");
+        cv.className = "face cv";
+        cv.style.backgroundImage = `url("${book.coverURL}")`;
+
+        tape.appendChild(sp);
+        tape.appendChild(cv);
+        stage.appendChild(tape);
+        tapeElements.push(tape);
+
+        // Hover tracking
+        tape.addEventListener("pointerenter", () => {
+          hoverVirtual = v;
+        });
+        tape.addEventListener("pointerleave", () => {
+          if (hoverVirtual === v) hoverVirtual = -1;
+        });
+
+        // Click on tape
+        tape.addEventListener("click", () => {
+          if (hasDragged) return;
+          let r = (v - s) % 36;
+          if (r > 18) r -= 36;
+          if (r < -18) r += 36;
+
+          if (Math.abs(r) < 0.5) {
+            openDetail();
+          } else {
+            T = Math.round(T + r);
+          }
+        });
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // 5. Physics Math Functions
+    // ══════════════════════════════════════════════════════════════
+    function smoothstep(val) {
+      const c = Math.max(0, Math.min(1, val));
+      return c * c * (3 - 2 * c);
+    }
+
+    function B(r) {
+      if (Math.abs(r) < 1) {
+        return (r + Math.sin(Math.PI * r) / Math.PI) / 2;
+      }
+      return Math.sign(r) * 0.5;
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // 6. Masked Caption Animation (+1 from below, -1 from above)
+    // ══════════════════════════════════════════════════════════════
+    const captionTitleMask = document.getElementById("captionTitleMask");
+    const captionSubMask = document.getElementById("captionSubMask");
+    const captionMetaMask = document.getElementById("captionMetaMask");
+
+    function swapCaption(newIdx, dir = 1) {
+      const book = BOOKS_DATA[newIdx];
+      const duration = 650;
+      const easing = "cubic-bezier(0.2, 0.8, 0.2, 1)";
+
+      function transitionLine(container, text, className = "") {
+        const oldSpans = Array.from(container.children);
+        oldSpans.forEach(sp => {
+          sp.animate([
+            { transform: "translateY(0%)" },
+            { transform: `translateY(${-dir * 105}%)` }
+          ], { duration, easing, fill: "forwards" }).onfinish = () => sp.remove();
+        });
+
+        const newSpan = document.createElement("span");
+        newSpan.textContent = text;
+        if (className) newSpan.className = className;
+        container.appendChild(newSpan);
+
+        newSpan.animate([
+          { transform: `translateY(${dir * 105}%)` },
+          { transform: "translateY(0%)" }
+        ], { duration, easing, fill: "forwards" });
+      }
+
+      transitionLine(captionTitleMask, book.title, "caption-title");
+      transitionLine(captionSubMask, `${book.romaji} / ${book.kanji}`, "caption-sub");
+      transitionLine(captionMetaMask, `${book.year} · ${book.category} · ${book.views} 阅读 · ${book.likes} 点赞`, "caption-meta");
+
+      updateTabs(book.category);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // 7. Tabs Indicator Synchronization
+    // ══════════════════════════════════════════════════════════════
+    const tabButtons = Array.from(document.querySelectorAll(".tab-btn"));
+
+    function updateTabs(activeCategory) {
+      tabButtons.forEach(btn => {
+        const cat = btn.dataset.cat;
+        if (cat === activeCategory) {
+          btn.classList.add("active");
+          tabIndicator.style.width = `${btn.offsetWidth}px`;
+          tabIndicator.style.transform = `translateX(${btn.offsetLeft}px)`;
+        } else {
+          btn.classList.remove("active");
+        }
+      });
+    }
+
+    tabButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const cat = btn.dataset.cat;
+        if (cat === "ALL") {
+          jumpToBook(0);
+          return;
+        }
+        const targetIdx = BOOKS_DATA.findIndex(b => b.category === cat);
+        if (targetIdx !== -1) {
+          jumpToBook(targetIdx);
+        }
+      });
+    });
+
+    function jumpToBook(targetIdx) {
+      const curBook = Math.round(s) % 12;
+      let diff = (targetIdx - curBook) % 12;
+      if (diff > 6) diff -= 12;
+      if (diff < -6) diff += 12;
+      T = Math.round(T + diff);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // 8. Main requestAnimationFrame Loop
+    // ══════════════════════════════════════════════════════════════
+    let lastTime = performance.now();
+
+    function renderLoop(now) {
+      let dt = (now - lastTime) / 1000;
+      lastTime = now;
+      if (dt > 0.05) dt = 0.05;
+
+      // Cursor spring follow
+      cx += (mx - cx) * (1 - Math.exp(-16 * dt));
+      cy += (my - cy) * (1 - Math.exp(-16 * dt));
+      customCursor.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+
+      // Scroll Spring
+      const k = isDragging ? 18 : 5.2;
+      s += (T - s) * (1 - Math.exp(-k * dt));
+
+      if (Math.abs(T - s) < 1e-4) s = T;
+
+      // Normalizing drift within ±4 loops
+      if (s > 24) { s -= 12; T -= 12; }
+      else if (s < 0) { s += 12; T += 12; }
+
+      // Detect active film change
+      const roundedFilm = (Math.round(s) % 12 + 12) % 12;
+      if (roundedFilm !== activeIdx) {
+        const dir = Math.sign(T - s) || 1;
+        activeIdx = roundedFilm;
+        swapCaption(activeIdx, dir);
+      }
+
+      // Check if cursor is on the open cover
+      onCover = Math.abs(mx - W / 2) < 0.55 * d &&
+                Math.abs(my - cyPos) < 0.55 * H &&
+                !isOpen &&
+                Math.abs(T - s) < 0.3;
+
+      // Cursor states
+      if (isOpen) {
+        customCursor.className = "custom-cursor";
+      } else if (onCover) {
+        customCursor.className = "custom-cursor state-open";
+      } else if (hoverVirtual !== -1) {
+        customCursor.className = "custom-cursor state-spine";
+      } else {
+        customCursor.className = "custom-cursor";
+      }
+
+      // Tilt Target
+      let targetTiltY = onCover ? ((mx - W / 2) / (0.55 * d)) * 9 : ((mx - W / 2) / W) * 5;
+      let targetTiltX = onCover ? -((my - cyPos) / (H / 2)) * 6 : 0;
+      tiltY += (targetTiltY - tiltY) * (1 - Math.exp(-7 * dt));
+      tiltX += (targetTiltX - tiltX) * (1 - Math.exp(-7 * dt));
+
+      // Render 36 Tapes
+      for (let v = 0; v < 36; v++) {
+        const tape = tapeElements[v];
+        let r = (v - s) % 36;
+        if (r > 18) r -= 36;
+        if (r < -18) r += 36;
+
+        // Horizontal formula
+        const x = r * (ws + gap) + (d - ws + 1.6 * gap) * B(r);
+
+        // Offscreen culling
+        if (Math.abs(x) > W / 2 + 1.5 * d) {
+          tape.style.visibility = "hidden";
+          continue;
+        } else {
+          tape.style.visibility = "visible";
+        }
+
+        // Lift animation
+        const isHovered = (hoverVirtual === v && Math.abs(r) > 0.5);
+        const targetLift = isHovered ? 1.0 : 0.0;
+        tapeLifts[v] += (targetLift - tapeLifts[v]) * (1 - Math.exp(-12 * dt));
+        const lift = tapeLifts[v];
+
+        // Openness & 3D Turning
+        const o = smoothstep(Math.max(0, 1 - Math.abs(r)));
+        const rotY = -90 * o + tiltY * o;
+        const rotX = tiltX * o;
+        const rotZ = -4.5 * o;
+        const transZ = o * 0.2 * H;
+        const transY = -o * 0.025 * H - lift * 0.045 * H;
+        const zIndex = Math.round(100 - Math.abs(r) * 4);
+
+        tape.style.transform = `translate3d(${x.toFixed(2)}px, ${transY.toFixed(2)}px, ${transZ.toFixed(2)}px) rotateZ(${rotZ.toFixed(2)}deg) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
+        tape.style.zIndex = zIndex;
+
+        // Shading overlays
+        tape.style.setProperty("--shade-sp", (o * 0.55).toFixed(3));
+        tape.style.setProperty("--shade-cv", ((1 - o) * 0.5).toFixed(3));
+      }
+
+      // Play Ring Position & Scale
+      const settled = smoothstep(Math.max(0, 1 - Math.abs(T - s) * 3));
+      const ringScale = isOpen ? 0 : settled;
+      const ringLeft = W / 2 - 0.5 * d - 6;
+      const ringTop = cyPos + 0.36 * H;
+
+      playRing.style.left = `${ringLeft.toFixed(1)}px`;
+      playRing.style.top = `${ringTop.toFixed(1)}px`;
+      playRing.style.transform = `translate(-50%, -50%) scale(${ringScale.toFixed(3)})`;
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // 9. User Input Event Listeners
+    // ══════════════════════════════════════════════════════════════
+    window.addEventListener("pointermove", (e) => {
+      mx = e.clientX;
+      my = e.clientY;
+    });
+
+    // Hover button cursor morph
+    document.querySelectorAll("button, a").forEach(el => {
+      el.addEventListener("pointerenter", () => {
+        if (!onCover) customCursor.classList.add("state-btn");
+      });
+      el.addEventListener("pointerleave", () => {
+        customCursor.classList.remove("state-btn");
+      });
+    });
+
+    // Arrow buttons
+    document.getElementById("prevBtn").addEventListener("click", () => {
+      T = Math.round(T) - 1;
+    });
+    document.getElementById("nextBtn").addEventListener("click", () => {
+      T = Math.round(T) + 1;
+    });
+
+    // Keyboard navigation
+    window.addEventListener("keydown", (e) => {
+      if (isOpen) {
+        if (e.key === "Escape") closeDetail();
+        return;
+      }
+      if (e.key === "ArrowLeft") {
+        T = Math.round(T) - 1;
+      } else if (e.key === "ArrowRight") {
+        T = Math.round(T) + 1;
+      } else if (e.key === "Enter") {
+        openDetail();
+      }
+    });
+
+    // Wheel navigation
+    shelfSection.addEventListener("wheel", (e) => {
+      if (isOpen) return;
+      e.preventDefault();
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      T += (delta / (ws + gap)) * 0.45;
+
+      clearTimeout(wheelTimeout);
+      wheelTimeout = setTimeout(() => {
+        T = Math.round(T);
+      }, 160);
+    }, { passive: false });
+
+    // Drag / Touch scrub on shelf
+    shelfSection.addEventListener("pointerdown", (e) => {
+      if (isOpen) return;
+      isDragging = true;
+      dragStartX = e.clientX;
+      dragStartT = T;
+      hasDragged = false;
+      shelfSection.setPointerCapture(e.pointerId);
+    });
+
+    shelfSection.addEventListener("pointermove", (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - dragStartX;
+      if (Math.abs(dx) > 5) hasDragged = true;
+      T = dragStartT - dx / (ws + gap);
+    });
+
+    const endDrag = (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      T = Math.round(T);
+      try { shelfSection.releasePointerCapture(e.pointerId); } catch (_) {}
+    };
+    shelfSection.addEventListener("pointerup", endDrag);
+    shelfSection.addEventListener("pointercancel", endDrag);
+
+    playRing.addEventListener("click", openDetail);
+
+    // ══════════════════════════════════════════════════════════════
+    // 10. Paper Sheet Expansion & Ink Bleed Details
+    // ══════════════════════════════════════════════════════════════
+    const blobDelays = [0, 120, 220, 300, 360, 420, 180];
+    const blobEls = [1,2,3,4,5,6,7].map(i => document.getElementById(`blob${i}`));
+    let inkAnimFrame = null;
+
+    function openDetail() {
+      if (isOpen) return;
+      isOpen = true;
+      T = Math.round(T);
+      const book = BOOKS_DATA[activeIdx];
+
+      // Populate Texts
+      document.getElementById("detSubtitle").textContent = `${book.category} // ${book.romaji}`;
+      document.getElementById("detTitle").textContent = book.title;
+      document.getElementById("detMeta").textContent = `${book.year} · ${book.tag} · ${book.views} 阅读 · ${book.likes} 点赞`;
+      document.getElementById("detSynopsis").textContent = book.synopsis;
+      
+      const chContainer = document.getElementById("detChapters");
+      chContainer.innerHTML = book.chapters.map(c => `
+        <div class="detail-ch-item">
+          <b>${c.title}：</b><span>${c.text}</span>
+        </div>
+      `).join("");
+
+      document.getElementById("detLink").href = book.url;
+      document.getElementById("detCopyLink").onclick = () => {
+        navigator.clipboard.writeText(book.url);
+        document.getElementById("detCopyLink").textContent = "COPIED / 已复制 ✓";
+        setTimeout(() => { document.getElementById("detCopyLink").textContent = "COPY LINK / 复制链接"; }, 2000);
+      };
+
+      // Set SVG Poster Image
+      document.getElementById("detailPosterImage").setAttribute("href", book.coverURL);
+
+      // Reset Ink Blobs
+      blobEls.forEach(b => b.setAttribute("r", "0"));
+
+      // Find active tape's cover element for projected screen rect
+      const activeVirtual = ((Math.round(s) % 36) + 36) % 36;
+      const activeTape = tapeElements[activeVirtual];
+      const coverFace = activeTape.querySelector(".cv");
+      const rect = coverFace.getBoundingClientRect();
+
+      detailDialog.style.visibility = "visible";
+      detailDialog.style.transformOrigin = `${rect.left + rect.width / 2}px ${rect.top + rect.height / 2}px`;
+
+      // Web Animations API: Sheet Expansion (1050ms)
+      const topPct = (rect.top / window.innerHeight) * 100;
+      const rightPct = ((window.innerWidth - rect.right) / window.innerWidth) * 100;
+      const bottomPct = ((window.innerHeight - rect.bottom) / window.innerHeight) * 100;
+      const leftPct = (rect.left / window.innerWidth) * 100;
+
+      detailDialog.animate([
+        {
+          clipPath: `inset(${topPct}% ${rightPct}% ${bottomPct}% ${leftPct}% round 3px)`,
+          transform: "rotate(-4.5deg)"
+        },
+        {
+          clipPath: "inset(0% 0% 0% 0% round 0px)",
+          transform: "rotate(0deg)"
+        }
+      ], {
+        duration: 1050,
+        easing: "cubic-bezier(0.76, 0, 0.18, 1)",
+        fill: "both"
+      });
+
+      // Text rise animations (Delays: 620ms + idx * 75ms)
+      const detailMaskChildren = document.querySelectorAll(".detail-mask > *");
+      detailMaskChildren.forEach((child, idx) => {
+        child.animate([
+          { transform: "translateY(110%)" },
+          { transform: "translateY(0%)" }
+        ], {
+          duration: 900,
+          delay: 620 + idx * 75,
+          easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+          fill: "both"
+        });
+      });
+
+      // Ink Bleed animation (start 520ms after open)
+      setTimeout(() => {
+        const inkStart = performance.now();
+        const inkDuration = 1250;
+
+        function stepInk(now) {
+          const elapsed = now - inkStart;
+          let allFinished = true;
+
+          blobEls.forEach((circle, i) => {
+            const delay = blobDelays[i];
+            const localElapsed = elapsed - delay;
+            if (localElapsed > 0) {
+              const p = Math.min(1, localElapsed / inkDuration);
+              // Ease-out cubic
+              const easeP = 1 - Math.pow(1 - p, 3);
+              const r = easeP * 720;
+              circle.setAttribute("r", r.toFixed(1));
+              if (p < 1) allFinished = false;
+            } else {
+              allFinished = false;
+            }
+          });
+
+          if (!allFinished && isOpen) {
+            inkAnimFrame = requestAnimationFrame(stepInk);
+          }
+        }
+        inkAnimFrame = requestAnimationFrame(stepInk);
+      }, 520);
+    }
+
+    function closeDetail() {
+      if (!isOpen) return;
+      cancelAnimationFrame(inkAnimFrame);
+
+      const activeVirtual = ((Math.round(s) % 36) + 36) % 36;
+      const activeTape = tapeElements[activeVirtual];
+      const coverFace = activeTape.querySelector(".cv");
+      const rect = coverFace.getBoundingClientRect();
+
+      const topPct = (rect.top / window.innerHeight) * 100;
+      const rightPct = ((window.innerWidth - rect.right) / window.innerWidth) * 100;
+      const bottomPct = ((window.innerHeight - rect.bottom) / window.innerHeight) * 100;
+      const leftPct = (rect.left / window.innerWidth) * 100;
+
+      const anim = detailDialog.animate([
+        {
+          clipPath: "inset(0% 0% 0% 0% round 0px)",
+          transform: "rotate(0deg)"
+        },
+        {
+          clipPath: `inset(${topPct}% ${rightPct}% ${bottomPct}% ${leftPct}% round 3px)`,
+          transform: "rotate(-4.5deg)"
+        }
+      ], {
+        duration: 850,
+        easing: "cubic-bezier(0.76, 0, 0.18, 1)",
+        fill: "both"
+      });
+
+      anim.onfinish = () => {
+        detailDialog.style.visibility = "hidden";
+        isOpen = false;
+      };
+    }
+
+    document.getElementById("closeDetailBtn").addEventListener("click", closeDetail);
+
+    // ══════════════════════════════════════════════════════════════
+    // 11. Resize & Initialization
+    // ══════════════════════════════════════════════════════════════
+    window.addEventListener("resize", () => {
+      measureDimensions();
+    });
+
+    measureDimensions();
+    buildTapes();
+    swapCaption(0, 1);
+    requestAnimationFrame(renderLoop);
+  </script>
+</body>
+</html>

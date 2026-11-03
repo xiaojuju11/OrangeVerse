@@ -27,7 +27,9 @@
           >
         </button>
         <div class="top-controls">
-          <button id="articles-nav-btn" class="articles-nav-button" aria-label="查看掘金专栏与学习书本"><span>📚</span> 掘金专栏 / 书本</button>
+          <button id="fox-portal-btn" class="fox-portal-button" aria-label="召唤3D守护狐狸"><span>🦊</span> 3D 守护狐狸</button>
+          <button id="articles-nav-btn" class="articles-nav-button" aria-label="查看掘金专栏与学习书本"><span>📚</span> 专栏 / 笔记</button>
+          <a href="/bookshelf.html" class="articles-nav-button shelf-btn-highlight" target="_blank" rel="noopener" aria-label="打开 3D 沉浸式知识书架" title="打开 VHS 磁带盒物理拟读书架"><span>📼</span> 3D 书架 ↗</a>
           <button id="resume-btn" class="resume-nav-button" aria-label="查看个人在线简历"><span>📄</span> 简历 (Resume)</button>
           <div class="theme-picker" role="group" aria-label="小岛主题">
             <button data-theme="forest" aria-pressed="true">
@@ -375,7 +377,7 @@
               <h2>📚 掘金技术专栏 & 《AI-Daily-Learning》书架</h2>
               <p class="article-header-sub">是你的小橘呀 · 掘力值 1571 · 15,500+ 阅读 · 550+ 点赞</p>
             </div>
-            <a href="https://juejin.cn/user/1989458366301708" target="_blank" rel="noopener" class="juejin-profile-btn">关注掘金主页 ↗</a>
+            <div style="display:flex;gap:8px;align-items:center;"><a href="/bookshelf.html" target="_blank" rel="noopener" class="juejin-profile-btn" style="background:#1F3FB0;color:#fff;border-color:#1F3FB0;"><span>📼</span> 开启 3D 实体书架 ↗</a><a href="https://juejin.cn/user/1989458366301708" target="_blank" rel="noopener" class="juejin-profile-btn">关注掘金主页 ↗</a></div>
           </header>
 
           <div class="article-modal-body">
@@ -390,6 +392,16 @@
               <div id="reader-content" class="reader-content-body"></div>
             </div>
           </div>
+        </div>
+      </div>
+
+    
+      <!-- 🦊 3D 狐狸守护兽沉浸浮窗 -->
+      <div id="fox-modal" class="fox-modal" hidden aria-label="3D 守护狐狸">
+        <div class="fox-modal-backdrop" id="close-fox-backdrop"></div>
+        <div class="fox-modal-card">
+          <button id="close-fox-btn" class="close-button" aria-label="关闭">×</button>
+          <iframe id="fox-iframe" src="/vulpa.html" class="fox-iframe" title="3D 守护狐狸"></iframe>
         </div>
       </div>
 
