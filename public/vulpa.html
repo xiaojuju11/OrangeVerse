@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>404 · Vulpa</title>
+<meta name="theme-color" content="#fbdc80"/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=Quicksand:wght@700&display=swap" rel="stylesheet"/>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<style>
+:root {
+  --sky-top: #fbd873;
+  --sky-mid: #fce595;
+  --sky-low: #fef1c9;
+  --mist: #fffaf0;
+  --ink: #121212;
+  --ink-soft: #6b6862;
+  --fox: #f28b3a;
+  --fox-deep: #e9741f;
+  --pad: clamp(18px, 4.2vw, 54px);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: "Manrope", system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--sky-top);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 70% at 50% 0%, #fbd568 0%, rgba(251, 213, 104, 0) 60%),
+    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 38%, var(--sky-low) 66%, var(--mist) 90%);
+}
+
+.sky {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.cloud {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(14px);
+  animation: drift 38s ease-in-out infinite alternate;
+  background:
+    radial-gradient(closest-side, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0)) 0% 70% / 46% 62% no-repeat,
+    radial-gradient(closest-side, rgba(255, 255, 255, .9), rgba(255, 255, 255, 0)) 34% 20% / 52% 78% no-repeat,
+    radial-gradient(closest-side, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0)) 78% 55% / 50% 70% no-repeat,
+    radial-gradient(closest-side, rgba(255, 255, 255, .8), rgba(255, 255, 255, 0)) 55% 100% / 90% 60% no-repeat;
+}
+
+.c1 { left: -9%; top: 33%; width: 30%; height: 30%; opacity: .75; }
+.c2 { left: 4%; top: 49%; width: 34%; height: 34%; opacity: .9; animation-duration: 46s; }
+.c3 { right: -8%; top: 22%; width: 30%; height: 34%; opacity: .85; animation-duration: 52s; animation-direction: alternate-reverse; }
+.c4 { right: 2%; top: 46%; width: 36%; height: 36%; opacity: .9; animation-duration: 42s; animation-direction: alternate-reverse; }
+.c5 { left: 8%; top: 27%; width: 14%; height: 12%; opacity: .45; }
+
+@keyframes drift {
+  from { transform: translateX(-1.5%); }
+  to { transform: translateX(1.5%); }
+}
+
+.mist {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: -6%;
+  height: 56%;
+  background:
+    radial-gradient(60% 70% at 18% 62%, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 70%),
+    radial-gradient(60% 70% at 82% 60%, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, rgba(255, 250, 240, 0) 0%, rgba(255, 250, 240, .85) 45%, var(--mist) 75%);
+}
+
+.top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--pad) * .72 + env(safe-area-inset-top)) var(--pad) 0;
+}
+
+.brand {
+  inline-flex;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #fff;
+  text-decoration: none;
+  font: 700 clamp(24px, 2.5vw, 32px)/1 "Quicksand", "Manrope", sans-serif;
+  letter-spacing: -.02em;
+  border-radius: 10px;
+}
+.brand svg {
+  width: 1.22em;
+  height: 1.22em;
+  flex: none;
+}
+
+.login {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: clamp(42px, 4vw, 50px);
+  padding: 0 clamp(14px, 1.3vw, 18px);
+  color: #fff;
+  font: 600 clamp(15px, 1.35vw, 17px)/1 "Manrope", sans-serif;
+  letter-spacing: -.01em;
+  text-decoration: none;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, .28));
+  border: 1px solid rgba(255, 255, 255, .7);
+  box-shadow: 0 6px 18px rgba(203, 150, 32, .22), inset 0 1px 0 rgba(255, 255, 255, .7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  text-shadow: 0 1px 2px rgba(176, 124, 20, .35);
+  transition: transform .2s ease, background .2s ease;
+}
+.login:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .62), rgba(255, 255, 255, .38));
+}
+
+.stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  container-type: size;
+}
+
+.digits {
+  position: absolute;
+  left: 50%;
+  bottom: 3.5%;
+  transform: translateX(-50%) scaleX(.86);
+  margin: 0;
+  font-family: "Manrope", sans-serif;
+  font-weight: 700;
+  font-size: min(116cqh, 52cqw);
+  line-height: .73;
+  letter-spacing: -.012em;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, .62);
+  mask-image: linear-gradient(180deg, #000 55%, rgba(0, 0, 0, .35) 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, rgba(0, 0, 0, .35) 100%);
+  user-select: none;
+  pointer-events: none;
+}
+
+#fox {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  touch-action: pan-y;
+  opacity: 0;
+  transition: opacity .7s ease;
+}
+#fox.ready {
+  opacity: 1;
+}
+
+.shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 1.2%;
+  width: min(34cqh, 40cqw);
+  height: 3.2cqh;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, rgba(196, 132, 40, .3), rgba(196, 132, 40, 0));
+  opacity: 0;
+  transition: opacity .7s ease;
+  pointer-events: none;
+}
+#fox.ready + .shadow {
+  opacity: 1;
+}
+
+.loading {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  transform: translate(-50%, -50%);
+  font: 600 14px/1 "Manrope", sans-serif;
+  color: rgba(140, 96, 18, .75);
+  letter-spacing: .02em;
+  transition: opacity .4s ease;
+}
+.loading.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.copy {
+  position: relative;
+  z-index: 2;
+  flex: none;
+  text-align: center;
+  padding: clamp(6px, 1.4vh, 16px) var(--pad) calc(clamp(14px, 2.3vh, 24px) + env(safe-area-inset-bottom));
+}
+.copy h1 {
+  margin: 0;
+  font: 600 clamp(29px, min(4.15vw, 7.4vh), 56px)/1.08 "Manrope", sans-serif;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+.copy p {
+  margin: clamp(6px, 1.3vh, 12px) 0 0;
+  font: 500 clamp(16px, min(1.95vw, 3.5vh), 26px)/1.25 "Manrope", sans-serif;
+  letter-spacing: -.03em;
+  color: var(--ink-soft);
+  text-wrap: balance;
+}
+
+.home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: clamp(12px, 2.4vh, 20px);
+  height: clamp(44px, 6.6vh, 50px);
+  padding: 0 16px 0 12px;
+  color: #fff;
+  font: 600 clamp(15px, 1.35vw, 17px)/1 "Manrope", sans-serif;
+  letter-spacing: -.01em;
+  text-decoration: none;
+  border-radius: 13px;
+  background: linear-gradient(180deg, #f7a258 0%, var(--fox) 45%, var(--fox-deep) 100%);
+  box-shadow: 0 10px 22px rgba(233, 116, 31, .34), 0 2px 4px rgba(190, 86, 12, .28), inset 0 1px 0 rgba(255, 255, 255, .45);
+  text-shadow: 0 1px 1px rgba(160, 70, 6, .4);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.home svg {
+  width: 18px;
+  height: 18px;
+  transition: transform .2s ease;
+}
+.home:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(233, 116, 31, .4), 0 2px 4px rgba(190, 86, 12, .28), inset 0 1px 0 rgba(255, 255, 255, .45);
+}
+.home:hover svg {
+  transform: translateX(-3px);
+}
+.home:active {
+  transform: translateY(0);
+}
+
+a:focus-visible {
+  outline: 3px solid #1a1a1a;
+  outline-offset: 3px;
+}
+
+@media (max-width: 640px) {
+  .cloud { filter: blur(10px); }
+  .c1 { width: 60%; left: -24%; }
+  .c2 { width: 64%; left: -20%; }
+  .c3 { width: 60%; right: -24%; }
+  .c4 { width: 66%; right: -20%; }
+  .digits { font-size: min(110cqh, 72cqw); bottom: 13%; }
+}
+@media (max-height: 430px) {
+  .top { padding-top: 12px; }
+  .copy p { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cloud { animation: none; }
+  .login, .home, .home svg, #fox, .shadow { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="sky" aria-hidden="true">
+    <span class="cloud c5"></span>
+    <span class="cloud c1"></span>
+    <span class="cloud c3"></span>
+    <span class="cloud c2"></span>
+    <span class="cloud c4"></span>
+    <span class="mist"></span>
+  </div>
+  <header class="top">
+    <a class="brand" href="/" aria-label="Vulpa home">
+      <svg viewBox="0 0 40 40" fill="currentColor">
+        <circle cx="20" cy="8.4" r="5.4"/>
+        <path d="M4.6 14.2c2.3-.9 4.6.1 5.7 2.4 1.7 3.6 5.3 6 9.7 6s8-2.4 9.7-6c1.1-2.3 3.4-3.3 5.7-2.4 2.4.9 3.4 3.5 2.4 5.9C34.7 28.1 27.9 33 20 33S5.3 28.1 2.2 20.1c-1-2.4 0-5 2.4-5.9Z"/>
+      </svg>
+      <span>Vulpa</span>
+    </a>
+    <a class="login" href="/login">Log on</a>
+  </header>
+  <main class="stage">
+    <p class="digits" aria-hidden="true">404</p>
+    <canvas id="fox" role="img" aria-label="A little anxious fox with a map, following your pointer"></canvas>
+    <span class="shadow" aria-hidden="true"></span>
+    <span class="loading" id="loading">Calling the fox…</span>
+  </main>
+  <section class="copy">
+    <h1>Uh-oh! This map is wrong</h1>
+    <p>We’ll guide you back to a place you know</p>
+    <a class="home" href="/">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 5l-7 7 7 7"/>
+      </svg>
+      Take me home
+    </a>
+  </section>
+</div>
+
+<script type="module">
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
+import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
+
+const MODEL_URL = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261014_013004_603cedaa-048c-46da-a737-4c013ad994ae.glb";
+
+// Rig constants
+const neck = [0.98, 1.14];
+const pivot = [-0.165, 1.02, 0.15];
+const eyeL = [-0.34, 1.30, 0.474];
+const eyeR = [0.011, 1.313, 0.496];
+const eyeSize = [0.108, 0.112, 0.075];
+const eyeTilt = 0.25;
+const eyeToe = 0.12;
+const headYaw = 0.42;
+const headPitch = 0.24;
+const eyeYaw = 0.5;
+const eyePitch = 0.38;
+
+const canvas = document.getElementById("fox");
+const loading = document.getElementById("loading");
+const stage = document.querySelector(".stage");
+
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+  alpha: true,
+  antialias: true
+});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const camera = new THREE.PerspectiveCamera(24, 1, 0.1, 100);
+const scene = new THREE.Scene();
+
+const hemiLight = new THREE.HemisphereLight(0xfffaf0, 0xf6cf86, 2.1);
+scene.add(hemiLight);
+
+const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.5);
+dirLight1.position.set(-2.5, 4, 5);
+scene.add(dirLight1);
+
+const dirLight2 = new THREE.DirectionalLight(0xffe2a8, 0.8);
+dirLight2.position.set(3, 2.5, -4);
+scene.add(dirLight2);
+
+// Shared head matrix uniform
+const uHead = { value: new THREE.Matrix3() };
+
+function bendHead(shader) {
+  shader.uniforms.uHead = uHead;
+  shader.vertexShader = shader.vertexShader.replace(
+    "#include <common>",
+    `#include <common>
+    uniform mat3 uHead;
+    float headWeight(vec3 p) {
+      float w = smoothstep(0.980, 1.140, p.y);
+      float tail = smoothstep(0.26, 0.36, p.x) * (1.0 - smoothstep(0.0, 0.14, p.z)) * (1.0 - smoothstep(1.18, 1.28, p.y));
+      float map = smoothstep(0.58, 0.66, p.z) * (1.0 - smoothstep(1.0, 1.06, p.y));
+      return w * (1.0 - tail) * (1.0 - map);
+    }`
+  );
+  shader.vertexShader = shader.vertexShader.replace(
+    "#include <beginnormal_vertex>",
+    `#include <beginnormal_vertex>
+    float hw = headWeight(position);
+    objectNormal = normalize(mix(objectNormal, uHead * objectNormal, hw));`
+  );
+  shader.vertexShader = shader.vertexShader.replace(
+    "#include <begin_vertex>",
+    `#include <begin_vertex>
+    vec3 P = vec3(-0.165, 1.020, 0.150);
+    transformed = mix(transformed, P + uHead * (transformed - P), hw);`
+  );
+}
+
+// Eye texture
+const eyeCanvas = document.createElement("canvas");
+eyeCanvas.width = 1024;
+eyeCanvas.height = 512;
+const ctx = eyeCanvas.getContext("2d");
+
+ctx.fillStyle = "#fffdf8";
+ctx.fillRect(0, 0, 1024, 512);
+
+// Outer dark disc r118
+ctx.beginPath();
+ctx.arc(256, 256, 118, 0, Math.PI * 2);
+ctx.fillStyle = "#4a2208";
+ctx.fill();
+
+// Iris disc r110 with radial gradient
+const grad = ctx.createRadialGradient(256, 282, 20, 256, 256, 110);
+grad.addColorStop(0, "#f2a04a");
+grad.addColorStop(0.55, "#c8661c");
+grad.addColorStop(1, "#7a3a0e");
+ctx.beginPath();
+ctx.arc(256, 256, 110, 0, Math.PI * 2);
+ctx.fillStyle = grad;
+ctx.fill();
+
+// Pupil r66
+ctx.beginPath();
+ctx.arc(256, 256, 66, 0, Math.PI * 2);
+ctx.fillStyle = "#140a04";
+ctx.fill();
+
+// White ellipse highlight at (222, 216)
+ctx.save();
+ctx.translate(222, 216);
+ctx.rotate(-0.5);
+ctx.beginPath();
+ctx.ellipse(0, 0, 24, 20, 0, 0, Math.PI * 2);
+ctx.fillStyle = "#ffffff";
+ctx.fill();
+ctx.restore();
+
+// Small white dot at (292, 296) r9
+ctx.beginPath();
+ctx.arc(292, 296, 9, 0, Math.PI * 2);
+ctx.fillStyle = "rgba(255,255,255,.85)";
+ctx.fill();
+
+const eyeTexture = new THREE.CanvasTexture(eyeCanvas);
+eyeTexture.colorSpace = THREE.SRGBColorSpace;
+eyeTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+
+const fox = new THREE.Group();
+scene.add(fox);
+
+const head = new THREE.Group();
+head.position.set(pivot[0], pivot[1], pivot[2]);
+fox.add(head);
+
+function makeEye(pos, side) {
+  const socket = new THREE.Group();
+  socket.position.set(pos[0] - pivot[0], pos[1] - pivot[1], pos[2] - pivot[2]);
+  socket.rotation.y = side * eyeTilt;
+  socket.scale.set(eyeSize[0], eyeSize[1], eyeSize[2]);
+
+  const geo = new THREE.SphereGeometry(1, 48, 32);
+  const mat = new THREE.MeshStandardMaterial({
+    map: eyeTexture,
+    roughness: 0.22,
+    metalness: 0
+  });
+  const sphere = new THREE.Mesh(geo, mat);
+  sphere.userData.side = side;
+  socket.add(sphere);
+  head.add(socket);
+  return sphere;
+}
+
+let leftEyeMesh, rightEyeMesh;
+leftEyeMesh = makeEye(eyeL, -1);
+rightEyeMesh = makeEye(eyeR, 1);
+
+let foxWidth = 1;
+
+// Load GLB
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.6/");
+
+const loader = new GLTFLoader();
+loader.setDRACOLoader(dracoLoader);
+loader.setMeshoptDecoder(MeshoptDecoder);
+
+loader.load(
+  MODEL_URL,
+  (gltf) => {
+    const model = gltf.scene;
+    model.rotation.y = -Math.PI / 2 - 0.16;
+    model.updateMatrixWorld(true);
+
+    const box = new THREE.Box3().setFromObject(model);
+    const size = new THREE.Vector3();
+    const centre = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(centre);
+
+    const s = 2 / size.y;
+    foxWidth = size.x * s;
+
+    const fit = new THREE.Matrix4()
+      .makeScale(s, s, s)
+      .multiply(new THREE.Matrix4().makeTranslation(-centre.x, -box.min.y, -centre.z));
+
+    model.traverse((child) => {
+      if (child.isMesh) {
+        const geom = child.geometry.clone();
+        geom.applyMatrix4(fit.clone().multiply(child.matrixWorld));
+        geom.computeBoundingSphere();
+        
+        const mat = child.material.clone();
+        mat.metalness = 0;
+        mat.roughness = 1;
+        if (mat.map) {
+          mat.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        }
+        mat.onBeforeCompile = bendHead;
+
+        const mesh = new THREE.Mesh(geom, mat);
+        mesh.frustumCulled = false;
+        fox.add(mesh);
+      }
+    });
+
+    resize();
+    canvas.classList.add("ready");
+    loading.classList.add("hide");
+    renderer.setAnimationLoop(frame);
+  },
+  undefined,
+  (error) => {
+    console.error(error);
+    loading.textContent = "Our fox got lost too. Please reload.";
+  }
+);
+
+// Pointer tracking
+const aim = new THREE.Vector2();
+const look = new THREE.Vector2();
+const turn = new THREE.Vector2();
+let lastMove = -1e9;
+
+function onPointer(e) {
+  const rect = canvas.getBoundingClientRect();
+  const faceWorld = new THREE.Vector3(pivot[0], eyeL[1], eyeL[2]);
+  faceWorld.applyMatrix4(fox.matrixWorld);
+  faceWorld.project(camera);
+
+  const faceX = rect.left + (faceWorld.x * 0.5 + 0.5) * rect.width;
+  const faceY = rect.top + (-faceWorld.y * 0.5 + 0.5) * rect.height;
+
+  const reach = Math.max(window.innerWidth, window.innerHeight) * 0.42;
+  aim.x = THREE.MathUtils.clamp((e.clientX - faceX) / reach, -1, 1);
+  aim.y = THREE.MathUtils.clamp((e.clientY - faceY) / reach, -1, 1);
+  lastMove = performance.now();
+}
+
+window.addEventListener("pointermove", onPointer, { passive: true });
+window.addEventListener("pointerdown", onPointer, { passive: true });
+document.addEventListener("pointerleave", () => {
+  lastMove = -1e9;
+});
+
+function resize() {
+  const w = stage.clientWidth;
+  const h = stage.clientHeight;
+  if (!w || !h) return;
+
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  const tan = Math.tan((camera.fov * Math.PI / 180) / 2);
+  const visible = Math.max(2 / 0.9, (foxWidth / 0.86) / camera.aspect);
+  const dist = visible / (2 * tan);
+
+  camera.position.set(0, visible * 0.465, dist);
+  camera.lookAt(0, visible * 0.465, 0);
+  camera.updateProjectionMatrix();
+}
+
+const resizeObserver = new ResizeObserver(() => resize());
+resizeObserver.observe(stage);
+window.addEventListener("resize", resize);
+
+const clock = new THREE.Clock();
+const motionAllowed = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const euler = new THREE.Euler(0, 0, 0, "YXZ");
+const tempMatrix4 = new THREE.Matrix4();
+
+function frame() {
+  const delta = clock.getDelta();
+  const dt = Math.min(delta, 0.05);
+  const t = clock.getElapsedTime();
+
+  const idle = performance.now() - lastMove > 3500;
+  if (idle && motionAllowed) {
+    aim.set(
+      Math.sin(t * 0.55) * 0.55,
+      Math.sin(t * 0.9 + 1) * 0.22 - 0.05
+    );
+  } else if (idle && !motionAllowed) {
+    aim.set(0, 0);
+  }
+
+  look.lerp(aim, 1 - Math.exp(-dt * 11));
+  turn.lerp(aim, 1 - Math.exp(-dt * 4.5));
+
+  euler.set(turn.y * headPitch, turn.x * headYaw, -turn.x * 0.05, "YXZ");
+  head.rotation.copy(euler);
+
+  tempMatrix4.makeRotationFromEuler(euler);
+  uHead.value.setFromMatrix4(tempMatrix4);
+
+  const ex = THREE.MathUtils.clamp(look.x * 1.25 - turn.x * 0.35, -1, 1);
+  const ey = THREE.MathUtils.clamp(look.y * 1.25 - turn.y * 0.35, -1, 1);
+
+  if (leftEyeMesh) {
+    leftEyeMesh.rotation.set(ey * eyePitch, ex * eyeYaw - leftEyeMesh.userData.side * eyeToe, 0, "YXZ");
+  }
+  if (rightEyeMesh) {
+    rightEyeMesh.rotation.set(ey * eyePitch, ex * eyeYaw - rightEyeMesh.userData.side * eyeToe, 0, "YXZ");
+  }
+
+  fox.rotation.y = turn.x * 0.1;
+  if (motionAllowed) {
+    fox.position.y = Math.sin(t * 1.7) * 0.008;
+    fox.scale.y = 1 + Math.sin(t * 1.7) * 0.006;
+  }
+
+  renderer.render(scene, camera);
+}
+</script>
+</body>
+</html>
