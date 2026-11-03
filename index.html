@@ -339,30 +339,20 @@
 
     
       <!-- 🌟 右下角交互：全息虚拟伴侣（支持鼠标视差追踪与姿态响应） -->
-      <aside id="cyber-companion" class="cyber-companion-widget" aria-label="OrangeVerse 全息伴侣">
-        <div class="companion-widget-card" id="companion-widget">
-          <header class="companion-widget-bar">
-            <div class="companion-status">
-              <span class="status-dot"></span>
-              <span class="status-text">AI Companion · 橘域伴侣</span>
-            </div>
-            <button id="companion-toggle" class="companion-toggle-btn" aria-label="折叠/展开伴侣" title="折叠/展开">_</button>
-          </header>
-
-          <div class="companion-display-box" id="companion-box">
-            <div class="companion-halo" id="companion-halo"></div>
-            <div class="companion-wrap" id="companion-wrap">
-              <img class="companion-pose active" src="/character/pose_0.jpg" alt="全息姿态0" />
-              <img class="companion-pose"        src="/character/pose_1.jpg" alt="全息姿态1" />
-              <img class="companion-pose"        src="/character/pose_2.jpg" alt="全息姿态2" />
-              <img class="companion-pose"        src="/character/pose_3.jpg" alt="全息姿态3" />
-              <div class="companion-scanlines"></div>
-            </div>
+      <aside id="cyber-companion" class="cyber-companion-floating" aria-label="OrangeVerse 全息伴侣" data-magnetic>
+        <div class="companion-orb-wrap" id="companion-wrap">
+          <div class="companion-glow-ring"></div>
+          <div class="companion-orb-lens">
+            <img class="companion-pose active" src="/character/avatar_pose_0.jpg" alt="全息姿态0" />
+            <img class="companion-pose"        src="/character/avatar_pose_1.jpg" alt="全息姿态1" />
+            <img class="companion-pose"        src="/character/avatar_pose_2.jpg" alt="全息姿态2" />
+            <img class="companion-pose"        src="/character/avatar_pose_3.jpg" alt="全息姿态3" />
+            <div class="companion-inner-shadow"></div>
           </div>
-          
-          <footer class="companion-footer">
-            <p class="companion-tip">移动鼠标 · 头部与眼球实时追踪</p>
-          </footer>
+          <div class="companion-mini-pill">
+            <span class="companion-live-dot"></span>
+            <span>橘域伴侣</span>
+          </div>
         </div>
       </aside>
 
