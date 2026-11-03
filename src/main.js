@@ -1,3 +1,4 @@
+import { mountVaporType } from "./vapor-type.js";
 import "./style.css";
 import "./exhibits.css";
 import { mountExhibit } from "./exhibits.js";
@@ -16,7 +17,29 @@ let island,
 document.title = `${profile.title} · 个人作品集`;
 const brand = document.querySelector('.brand > span:last-child');
 if (brand) brand.innerHTML = `${escapeHTML(profile.title)}<small>${escapeHTML(profile.subtitle || 'A WORLD OF CURIOSITY')}</small>`;
-document.querySelector('.welcome h1').innerHTML = `欢迎来到<br /><span>${escapeHTML(profile.title)}<span class="title-dot">。</span></span>`;
+const welcomeH1 = document.querySelector('.welcome h1');
+if (welcomeH1) {
+  welcomeH1.innerHTML = `<span class="welcome-lead-small">欢迎来到</span><span id="vapor-brand-heading" class="vapor-brand-heading" title="点击或拂过产生烟雾粒子交互"></span>`;
+  const vaporEl = document.getElementById("vapor-brand-heading");
+  if (vaporEl) {
+    mountVaporType(vaporEl, {
+      words: ["橘域", "OrangeVerse"],
+      color: "#FFFFFF",
+      vaporColor: "#aae0e4",
+      align: "left",
+      density: 1.25,
+      particleSize: 1.4,
+      spread: 1.5,
+      rise: 1.2,
+      turbulence: 0.85,
+      hold: 3.2,
+      interactive: true,
+      breath: 1.2,
+      clickAdvance: true,
+      area: "parent",
+    });
+  }
+}
 document.querySelector('.welcome-story').textContent = profile.intro || `你好，我是${profile.name}。欢迎来看看我的作品与经历。`;
 document.querySelector('meta[name="description"]').content = profile.intro || `${profile.name}的个人作品集`;
 $("world").setAttribute('aria-label', `${profile.title}三维场景`);
@@ -281,4 +304,17 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && foxModal && !foxModal.hidden) {
     closeFox();
   }
+});
+
+// ═════════════════════════════════════════════════════════════════════════
+// 初始化 Jakub Antalik 磁吸悬浮动画
+// ═════════════════════════════════════════════════════════════════════════
+import { initMagneticHover } from "./magnetic.js";
+
+// 对顶部胶囊按钮、行动呼吁大按钮以及营地气泡启用磁吸
+initMagneticHover("[data-magnetic]", {
+  distance: 70,
+  strength: 0.36,
+  damping: 0.16,
+  tilt: 0.12
 });
