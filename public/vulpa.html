@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<title>404 · Vulpa</title>
+<title>橘宝 · 3D 治愈情绪玩伴 · OrangeVerse</title>
 <meta name="theme-color" content="#fbdc80"/>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=Quicksand:wght@700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet"/>
 
 <script type="importmap">
 {
@@ -25,11 +25,12 @@
   --sky-mid: #fce595;
   --sky-low: #fef1c9;
   --mist: #fffaf0;
-  --ink: #121212;
-  --ink-soft: #6b6862;
-  --fox: #f28b3a;
-  --fox-deep: #e9741f;
-  --pad: clamp(18px, 4.2vw, 54px);
+  --ink: #1e1b18;
+  --ink-soft: #685e55;
+  --orange: #f28b3a;
+  --orange-deep: #e9741f;
+  --pink-blush: #ff5577;
+  --card-bg: rgba(255, 255, 255, 0.88);
 }
 
 *, *::before, *::after {
@@ -39,317 +40,580 @@
 html, body {
   height: 100%;
   margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 body {
-  font-family: "Manrope", system-ui, sans-serif;
+  font-family: "Plus Jakarta Sans", "Noto Sans SC", system-ui, sans-serif;
   color: var(--ink);
   background: var(--sky-top);
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
-.page {
+.pet-universe {
   position: relative;
+  width: 100vw;
   height: 100vh;
   height: 100dvh;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   overflow: hidden;
-  isolation: isolate;
   background:
     radial-gradient(120% 70% at 50% 0%, #fbd568 0%, rgba(251, 213, 104, 0) 60%),
     linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 38%, var(--sky-low) 66%, var(--mist) 90%);
 }
 
-.sky {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-
-.cloud {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(14px);
-  animation: drift 38s ease-in-out infinite alternate;
-  background:
-    radial-gradient(closest-side, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0)) 0% 70% / 46% 62% no-repeat,
-    radial-gradient(closest-side, rgba(255, 255, 255, .9), rgba(255, 255, 255, 0)) 34% 20% / 52% 78% no-repeat,
-    radial-gradient(closest-side, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0)) 78% 55% / 50% 70% no-repeat,
-    radial-gradient(closest-side, rgba(255, 255, 255, .8), rgba(255, 255, 255, 0)) 55% 100% / 90% 60% no-repeat;
-}
-
-.c1 { left: -9%; top: 33%; width: 30%; height: 30%; opacity: .75; }
-.c2 { left: 4%; top: 49%; width: 34%; height: 34%; opacity: .9; animation-duration: 46s; }
-.c3 { right: -8%; top: 22%; width: 30%; height: 34%; opacity: .85; animation-duration: 52s; animation-direction: alternate-reverse; }
-.c4 { right: 2%; top: 46%; width: 36%; height: 36%; opacity: .9; animation-duration: 42s; animation-direction: alternate-reverse; }
-.c5 { left: 8%; top: 27%; width: 14%; height: 12%; opacity: .45; }
-
-@keyframes drift {
-  from { transform: translateX(-1.5%); }
-  to { transform: translateX(1.5%); }
-}
-
-.mist {
-  position: absolute;
-  left: -10%;
-  right: -10%;
-  bottom: -6%;
-  height: 56%;
-  background:
-    radial-gradient(60% 70% at 18% 62%, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 70%),
-    radial-gradient(60% 70% at 82% 60%, rgba(255, 255, 255, .95), rgba(255, 255, 255, 0) 70%),
-    linear-gradient(180deg, rgba(255, 250, 240, 0) 0%, rgba(255, 250, 240, .85) 45%, var(--mist) 75%);
-}
-
-.top {
-  position: absolute;
-  inset: 0 0 auto 0;
-  z-index: 3;
+/* 顶部状态栏 */
+.pet-topbar {
+  position: relative;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: calc(var(--pad) * .72 + env(safe-area-inset-top)) var(--pad) 0;
+  padding: 16px 24px;
 }
 
-.brand {
-  inline-flex;
-  display: inline-flex;
+.pet-identity {
+  display: flex;
   align-items: center;
-  gap: 9px;
-  color: #fff;
-  text-decoration: none;
-  font: 700 clamp(24px, 2.5vw, 32px)/1 "Quicksand", "Manrope", sans-serif;
-  letter-spacing: -.02em;
-  border-radius: 10px;
-}
-.brand svg {
-  width: 1.22em;
-  height: 1.22em;
-  flex: none;
+  gap: 12px;
 }
 
-.login {
-  display: inline-flex;
+.pet-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f28b3a, #e9741f);
+  display: flex;
   align-items: center;
   justify-content: center;
-  height: clamp(42px, 4vw, 50px);
-  padding: 0 clamp(14px, 1.3vw, 18px);
-  color: #fff;
-  font: 600 clamp(15px, 1.35vw, 17px)/1 "Manrope", sans-serif;
-  letter-spacing: -.01em;
-  text-decoration: none;
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, .28));
-  border: 1px solid rgba(255, 255, 255, .7);
-  box-shadow: 0 6px 18px rgba(203, 150, 32, .22), inset 0 1px 0 rgba(255, 255, 255, .7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  text-shadow: 0 1px 2px rgba(176, 124, 20, .35);
-  transition: transform .2s ease, background .2s ease;
-}
-.login:hover {
-  transform: translateY(-1px);
-  background: linear-gradient(180deg, rgba(255, 255, 255, .62), rgba(255, 255, 255, .38));
+  font-size: 22px;
+  box-shadow: 0 4px 14px rgba(233, 116, 31, 0.35);
+  border: 2px solid #fff;
 }
 
-.stage {
-  position: relative;
-  flex: 1 1 auto;
-  min-height: 0;
-  container-type: size;
+.pet-name-box {
+  display: flex;
+  flex-direction: column;
 }
 
-.digits {
-  position: absolute;
-  left: 50%;
-  bottom: 3.5%;
-  transform: translateX(-50%) scaleX(.86);
-  margin: 0;
-  font-family: "Manrope", sans-serif;
+.pet-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pet-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #241a13;
+}
+
+.pet-badge {
+  font-size: 11px;
   font-weight: 700;
-  font-size: min(116cqh, 52cqw);
-  line-height: .73;
-  letter-spacing: -.012em;
-  white-space: nowrap;
-  color: rgba(255, 255, 255, .62);
-  mask-image: linear-gradient(180deg, #000 55%, rgba(0, 0, 0, .35) 100%);
-  -webkit-mask-image: linear-gradient(180deg, #000 55%, rgba(0, 0, 0, .35) 100%);
-  user-select: none;
-  pointer-events: none;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(242, 139, 58, 0.16);
+  color: #d85c0b;
+  border: 1px solid rgba(242, 139, 58, 0.35);
 }
 
-#fox {
+.pet-status-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #7a6e65;
+  margin-top: 2px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+}
+
+/* 好感度条 */
+.affection-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+}
+
+.affection-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pink-blush);
+}
+
+.affection-bar-bg {
+  width: 80px;
+  height: 8px;
+  background: #fae1ce;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.affection-bar-fill {
+  width: 88%;
+  height: 100%;
+  background: linear-gradient(90deg, #ff758c 0%, #ff5577 100%);
+  border-radius: 4px;
+  transition: width 0.4s ease-out;
+}
+
+.affection-val {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--pink-blush);
+}
+
+/* 控制按钮 */
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4b4139;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-pill-btn:hover {
+  background: #fff;
+  transform: translateY(-1px);
+}
+
+/* 核心 3D 画布 */
+.stage {
   position: absolute;
   inset: 0;
+  z-index: 2;
+  cursor: grab;
+}
+
+.stage:active {
+  cursor: grabbing;
+}
+
+#fox-canvas {
   width: 100%;
   height: 100%;
   display: block;
-  touch-action: pan-y;
-  opacity: 0;
-  transition: opacity .7s ease;
-}
-#fox.ready {
-  opacity: 1;
+  outline: none;
 }
 
-.shadow {
+/* 动态拟真漫画气泡 (Comic Speech Bubble) */
+.speech-bubble-anchor {
   position: absolute;
+  top: 26%;
   left: 50%;
-  bottom: 1.2%;
-  width: min(34cqh, 40cqw);
-  height: 3.2cqh;
-  transform: translateX(-50%);
-  background: radial-gradient(closest-side, rgba(196, 132, 40, .3), rgba(196, 132, 40, 0));
-  opacity: 0;
-  transition: opacity .7s ease;
+  transform: translate(-50%, -100%);
   pointer-events: none;
-}
-#fox.ready + .shadow {
-  opacity: 1;
+  z-index: 25;
 }
 
-.loading {
-  position: absolute;
-  left: 50%;
-  top: 52%;
-  transform: translate(-50%, -50%);
-  font: 600 14px/1 "Manrope", sans-serif;
-  color: rgba(140, 96, 18, .75);
-  letter-spacing: .02em;
-  transition: opacity .4s ease;
-}
-.loading.hide {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.copy {
+.speech-bubble {
   position: relative;
-  z-index: 2;
-  flex: none;
+  max-width: 380px;
+  min-width: 220px;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 20px;
+  box-shadow: 0 12px 35px rgba(220, 120, 30, 0.16);
+  border: 1.5px solid #fff;
   text-align: center;
-  padding: clamp(6px, 1.4vh, 16px) var(--pad) calc(clamp(14px, 2.3vh, 24px) + env(safe-area-inset-bottom));
-}
-.copy h1 {
-  margin: 0;
-  font: 600 clamp(29px, min(4.15vw, 7.4vh), 56px)/1.08 "Manrope", sans-serif;
-  letter-spacing: -.045em;
-  text-wrap: balance;
-}
-.copy p {
-  margin: clamp(6px, 1.3vh, 12px) 0 0;
-  font: 500 clamp(16px, min(1.95vw, 3.5vh), 26px)/1.25 "Manrope", sans-serif;
-  letter-spacing: -.03em;
-  color: var(--ink-soft);
-  text-wrap: balance;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #2b231c;
+  pointer-events: auto;
+  transform-origin: bottom center;
+  animation: bubblePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.home {
-  display: inline-flex;
+.speech-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+@keyframes bubblePop {
+  0% { transform: scale(0.6) translateY(15px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+/* 底部互动交互舱 (Interaction Deck) */
+.interaction-deck {
+  position: relative;
+  z-index: 30;
+  padding: 0 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.deck-island {
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  border-radius: 26px;
+  box-shadow: 0 20px 50px rgba(180, 100, 20, 0.14);
+  padding: 8px 12px;
+  display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: clamp(12px, 2.4vh, 20px);
-  height: clamp(44px, 6.6vh, 50px);
-  padding: 0 16px 0 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pet-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: rgba(255, 245, 235, 0.7);
+  border: 1px solid rgba(255, 175, 120, 0.35);
+  color: #3b2f26;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.pet-btn:hover {
+  background: #ff8c3b;
   color: #fff;
-  font: 600 clamp(15px, 1.35vw, 17px)/1 "Manrope", sans-serif;
-  letter-spacing: -.01em;
-  text-decoration: none;
-  border-radius: 13px;
-  background: linear-gradient(180deg, #f7a258 0%, var(--fox) 45%, var(--fox-deep) 100%);
-  box-shadow: 0 10px 22px rgba(233, 116, 31, .34), 0 2px 4px rgba(190, 86, 12, .28), inset 0 1px 0 rgba(255, 255, 255, .45);
-  text-shadow: 0 1px 1px rgba(160, 70, 6, .4);
-  transition: transform .2s ease, box-shadow .2s ease;
-}
-.home svg {
-  width: 18px;
-  height: 18px;
-  transition: transform .2s ease;
-}
-.home:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 26px rgba(233, 116, 31, .4), 0 2px 4px rgba(190, 86, 12, .28), inset 0 1px 0 rgba(255, 255, 255, .45);
-}
-.home:hover svg {
-  transform: translateX(-3px);
-}
-.home:active {
-  transform: translateY(0);
+  border-color: #ff8c3b;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 18px rgba(255, 120, 20, 0.35);
 }
 
-a:focus-visible {
-  outline: 3px solid #1a1a1a;
-  outline-offset: 3px;
+.pet-btn:active {
+  transform: translateY(1px) scale(0.97);
 }
 
-@media (max-width: 640px) {
-  .cloud { filter: blur(10px); }
-  .c1 { width: 60%; left: -24%; }
-  .c2 { width: 64%; left: -20%; }
-  .c3 { width: 60%; right: -24%; }
-  .c4 { width: 66%; right: -20%; }
-  .digits { font-size: min(110cqh, 72cqw); bottom: 13%; }
+/* 情绪树洞对话输入框 */
+.treehole-container {
+  pointer-events: auto;
+  width: min(560px, 92vw);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1.5px solid #fff;
+  border-radius: 22px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+  padding: 8px 12px 8px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-@media (max-height: 430px) {
-  .top { padding-top: 12px; }
-  .copy p { display: none; }
+
+.treehole-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #241a13;
 }
-@media (prefers-reduced-motion: reduce) {
-  .cloud { animation: none; }
-  .login, .home, .home svg, #fox, .shadow { transition: none; }
+
+.treehole-send-btn {
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff8c3b 0%, #ee6b15 100%);
+  border: none;
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(238, 107, 21, 0.35);
+  transition: all 0.2s;
+}
+
+.treehole-send-btn:hover {
+  transform: scale(1.05);
+}
+
+/* 互动手势浮动提示 */
+.pet-hint {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  opacity: 0.7;
+  transition: opacity 0.5s;
+}
+
+.hint-hand {
+  font-size: 26px;
+  animation: wiggle 2s infinite ease-in-out;
+}
+
+.hint-text {
+  font-size: 12px;
+  font-weight: 700;
+  color: #796c61;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(-15deg); }
+}
+
+/* 加载遮罩 */
+.loader-cover {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: #fbd873;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-weight: 700;
+  color: #8c4c1a;
+  transition: opacity 0.6s, visibility 0.6s;
+}
+
+.loader-cover.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 </style>
 </head>
 <body>
-<div class="page">
-  <div class="sky" aria-hidden="true">
-    <span class="cloud c5"></span>
-    <span class="cloud c1"></span>
-    <span class="cloud c3"></span>
-    <span class="cloud c2"></span>
-    <span class="cloud c4"></span>
-    <span class="mist"></span>
+
+<div class="pet-universe">
+  <!-- 加载状态 -->
+  <div class="loader-cover" id="loader-cover">
+    <div style="font-size:42px;animation:wiggle 1.5s infinite;">🦊</div>
+    <span>正在唤醒小狐狸...</span>
   </div>
-  <header class="top">
-    <a class="brand" href="/" aria-label="Vulpa home">
-      <svg viewBox="0 0 40 40" fill="currentColor">
-        <circle cx="20" cy="8.4" r="5.4"/>
-        <path d="M4.6 14.2c2.3-.9 4.6.1 5.7 2.4 1.7 3.6 5.3 6 9.7 6s8-2.4 9.7-6c1.1-2.3 3.4-3.3 5.7-2.4 2.4.9 3.4 3.5 2.4 5.9C34.7 28.1 27.9 33 20 33S5.3 28.1 2.2 20.1c-1-2.4 0-5 2.4-5.9Z"/>
-      </svg>
-      <span>Vulpa</span>
-    </a>
-    <a class="login" href="/login">Log on</a>
+
+  <!-- 顶部状态栏 -->
+  <header class="pet-topbar">
+    <div class="pet-identity">
+      <div class="pet-avatar">🦊</div>
+      <div class="pet-name-box">
+        <div class="pet-name-row">
+          <span class="pet-name">小狐狸 · 情绪玩伴</span>
+          <span class="pet-badge">DeepSeek 同款物理触感</span>
+        </div>
+        <div class="pet-status-row">
+          <span class="status-dot"></span>
+          <span id="pet-mood-desc">心情很好 · 正在好奇地看着你</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 亲密度槽 -->
+    <div class="affection-box">
+      <span class="affection-label">💖 亲密度</span>
+      <div class="affection-bar-bg">
+        <div class="affection-bar-fill" id="affection-bar"></div>
+      </div>
+      <span class="affection-val" id="affection-val">88%</span>
+    </div>
+
+    <div class="top-actions">
+      <button class="action-pill-btn" id="sound-btn">🔊 音效: 开</button>
+      <button class="action-pill-btn" id="reset-cam-btn">↺ 归位</button>
+    </div>
   </header>
-  <main class="stage">
-    <p class="digits" aria-hidden="true">404</p>
-    <canvas id="fox" role="img" aria-label="A little anxious fox with a map, following your pointer"></canvas>
-    <span class="shadow" aria-hidden="true"></span>
-    <span class="loading" id="loading">Calling the fox…</span>
+
+  <!-- 3D 核心舞台 -->
+  <main class="stage" id="stage" title="点击戳戳、持续摸摸头、或拖拽小狐狸玩耍">
+    <canvas id="fox-canvas"></canvas>
+
+    <div class="pet-hint" id="pet-hint">
+      <span class="hint-hand">🤏</span>
+      <span class="hint-text">戳戳肚皮 · 摸摸头 · 投喂大橘子</span>
+    </div>
+
+    <div class="speech-bubble-anchor" id="bubble-anchor">
+      <div class="speech-bubble" id="speech-bubble">
+        <span id="speech-text">嗨~ 代码写累了随时找我捏捏摸摸头哦！</span>
+        <span id="speech-emoji">🍊</span>
+      </div>
+    </div>
   </main>
-  <section class="copy">
-    <h1>Uh-oh! This map is wrong</h1>
-    <p>We’ll guide you back to a place you know</p>
-    <a class="home" href="/">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M15 5l-7 7 7 7"/>
-      </svg>
-      Take me home
-    </a>
-  </section>
+
+  <!-- 底部情绪互动工具舱 -->
+  <footer class="interaction-deck">
+    <div class="deck-island">
+      <button class="pet-btn" id="btn-pet"><span>🥰</span> 摸摸头</button>
+      <button class="pet-btn" id="btn-poke"><span>🤏</span> 捏捏脸</button>
+      <button class="pet-btn" id="btn-feed"><span>🍊</span> 投喂大橘子</button>
+      <button class="pet-btn" id="btn-hug"><span>🫂</span> 求抱抱</button>
+      <button class="pet-btn" id="btn-breathe"><span>🧘</span> 陪我深呼吸</button>
+      <button class="pet-btn" id="btn-sleep"><span>💤</span> 哄它打盹</button>
+    </div>
+
+    <div class="treehole-container">
+      <input type="text" id="treehole-input" class="treehole-input" placeholder="告诉小狐狸你的心情... (例如：好累、Bug改不完、求夸夸)" maxlength="60" />
+      <button id="treehole-send" class="treehole-send-btn">倾诉 💬</button>
+    </div>
+  </footer>
 </div>
 
 <script type="module">
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
-import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 
-const MODEL_URL = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261014_013004_603cedaa-048c-46da-a737-4c013ad994ae.glb";
+// ═════════════════════════════════════════════════════════════════════════
+// 1. Web Audio 算法音效引擎 (Duang~、呼噜声、吃橘子、颂钵微音)
+// ═════════════════════════════════════════════════════════════════════════
+class PetAudio {
+  constructor() {
+    this.enabled = true;
+    this.ctx = null;
+  }
+  init() {
+    if (this.ctx) return;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) this.ctx = new AudioCtx();
+  }
+  // 果冻 Q 弹音效 (Duang~ / Boing)
+  playBoing(pitch = 280) {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
 
-// Rig constants
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(pitch, t);
+    osc.frequency.exponentialRampToValueAtTime(pitch * 2.2, t + 0.08);
+    osc.frequency.exponentialRampToValueAtTime(pitch * 1.1, t + 0.22);
+
+    gain.gain.setValueAtTime(0.08, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.23);
+  }
+  // 舒服呼噜噜 (Purr)
+  playPurr() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const lfo = this.ctx.createOscillator();
+    const lfoGain = this.ctx.createGain();
+    const gain = this.ctx.createGain();
+
+    osc.type = "triangle";
+    osc.frequency.value = 110;
+
+    lfo.type = "sine";
+    lfo.frequency.value = 22;
+    lfoGain.gain.value = 45;
+
+    lfo.connect(lfoGain);
+    lfoGain.connect(osc.frequency);
+
+    gain.gain.setValueAtTime(0.04, t);
+    gain.gain.linearRampToValueAtTime(0.08, t + 0.3);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.85);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    lfo.start(t);
+    osc.start(t);
+    lfo.stop(t + 0.86);
+    osc.stop(t + 0.86);
+  }
+  // 吃橘子咀嚼声
+  playMunch() {
+    if (!this.enabled) return;
+    this.init();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    for (let i = 0; i < 3; i++) {
+      const dt = t + i * 0.12;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(450 + Math.random() * 80, dt);
+      osc.frequency.exponentialRampToValueAtTime(220, dt + 0.08);
+
+      gain.gain.setValueAtTime(0.06, dt);
+      gain.gain.exponentialRampToValueAtTime(0.0001, dt + 0.08);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(dt);
+      osc.stop(dt + 0.09);
+    }
+  }
+}
+const sound = new PetAudio();
+
+// ═════════════════════════════════════════════════════════════════════════
+// 2. 原版 Vulpa 3D 狐狸模型加载与 Shader 骨架搭建 (保持原版形象 100% 忠实)
+// ═════════════════════════════════════════════════════════════════════════
+const MODEL_URL = "/fox.glb";
+
+// 原版 Vulpa 骨架常数
 const neck = [0.98, 1.14];
 const pivot = [-0.165, 1.02, 0.15];
 const eyeL = [-0.34, 1.30, 0.474];
@@ -362,9 +626,9 @@ const headPitch = 0.24;
 const eyeYaw = 0.5;
 const eyePitch = 0.38;
 
-const canvas = document.getElementById("fox");
-const loading = document.getElementById("loading");
-const stage = document.querySelector(".stage");
+const canvas = document.getElementById("fox-canvas");
+const stage = document.getElementById("stage");
+const loaderCover = document.getElementById("loader-cover");
 
 const renderer = new THREE.WebGLRenderer({
   canvas,
@@ -388,7 +652,18 @@ const dirLight2 = new THREE.DirectionalLight(0xffe2a8, 0.8);
 dirLight2.position.set(3, 2.5, -4);
 scene.add(dirLight2);
 
-// Shared head matrix uniform
+// 核心果冻形变根节点 (用于 DeepSeek 大肥鱼同款的果冻挤压形变)
+const squishRoot = new THREE.Group();
+scene.add(squishRoot);
+
+const fox = new THREE.Group();
+squishRoot.add(fox);
+
+const head = new THREE.Group();
+head.position.set(pivot[0], pivot[1], pivot[2]);
+fox.add(head);
+
+// 共享头部矩阵 Uniform (用于原版顶点着色器形变)
 const uHead = { value: new THREE.Matrix3() };
 
 function bendHead(shader) {
@@ -418,63 +693,113 @@ function bendHead(shader) {
   );
 }
 
-// Eye texture
+// 动态眼睛贴图 Canvas (支持开心眨眼、摸头眯眼、戳脸等情绪表情)
 const eyeCanvas = document.createElement("canvas");
 eyeCanvas.width = 1024;
 eyeCanvas.height = 512;
 const ctx = eyeCanvas.getContext("2d");
-
-ctx.fillStyle = "#fffdf8";
-ctx.fillRect(0, 0, 1024, 512);
-
-// Outer dark disc r118
-ctx.beginPath();
-ctx.arc(256, 256, 118, 0, Math.PI * 2);
-ctx.fillStyle = "#4a2208";
-ctx.fill();
-
-// Iris disc r110 with radial gradient
-const grad = ctx.createRadialGradient(256, 282, 20, 256, 256, 110);
-grad.addColorStop(0, "#f2a04a");
-grad.addColorStop(0.55, "#c8661c");
-grad.addColorStop(1, "#7a3a0e");
-ctx.beginPath();
-ctx.arc(256, 256, 110, 0, Math.PI * 2);
-ctx.fillStyle = grad;
-ctx.fill();
-
-// Pupil r66
-ctx.beginPath();
-ctx.arc(256, 256, 66, 0, Math.PI * 2);
-ctx.fillStyle = "#140a04";
-ctx.fill();
-
-// White ellipse highlight at (222, 216)
-ctx.save();
-ctx.translate(222, 216);
-ctx.rotate(-0.5);
-ctx.beginPath();
-ctx.ellipse(0, 0, 24, 20, 0, 0, Math.PI * 2);
-ctx.fillStyle = "#ffffff";
-ctx.fill();
-ctx.restore();
-
-// Small white dot at (292, 296) r9
-ctx.beginPath();
-ctx.arc(292, 296, 9, 0, Math.PI * 2);
-ctx.fillStyle = "rgba(255,255,255,.85)";
-ctx.fill();
-
 const eyeTexture = new THREE.CanvasTexture(eyeCanvas);
 eyeTexture.colorSpace = THREE.SRGBColorSpace;
-eyeTexture.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
-const fox = new THREE.Group();
-scene.add(fox);
+let currentEyeMood = "normal"; // normal, happy, poked, sleepy
 
-const head = new THREE.Group();
-head.position.set(pivot[0], pivot[1], pivot[2]);
-fox.add(head);
+function drawEyeTexture() {
+  ctx.clearRect(0, 0, 1024, 512);
+
+  if (currentEyeMood === "normal") {
+    // 原版琥珀色灵动大眼
+    for (const cx of [256, 768]) {
+      ctx.fillStyle = "#fffdfa";
+      ctx.beginPath();
+      ctx.arc(cx, 256, 210, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx, 256, 118, 0, Math.PI * 2);
+      ctx.fillStyle = "#331604";
+      ctx.fill();
+
+      const grad = ctx.createRadialGradient(cx, 282, 20, cx, 256, 110);
+      grad.addColorStop(0, "#ffaa44");
+      grad.addColorStop(0.55, "#e66010");
+      grad.addColorStop(1, "#803005");
+      ctx.beginPath();
+      ctx.arc(cx, 256, 110, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(cx, 256, 66, 0, Math.PI * 2);
+      ctx.fillStyle = "#120802";
+      ctx.fill();
+
+      ctx.save();
+      ctx.translate(cx - 34, 216);
+      ctx.rotate(-0.5);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 24, 20, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "#ffffff";
+      ctx.fill();
+      ctx.restore();
+
+      ctx.beginPath();
+      ctx.arc(cx + 36, 296, 9, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255,.9)";
+      ctx.fill();
+    }
+  } else if (currentEyeMood === "happy") {
+    // 摸头弯弯月牙笑眼 ( ^ ▽ ^ )
+    for (const cx of [256, 768]) {
+      ctx.fillStyle = "#fffdfa";
+      ctx.beginPath();
+      ctx.arc(cx, 256, 210, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.lineWidth = 42;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#441c06";
+      ctx.beginPath();
+      ctx.arc(cx, 330, 130, Math.PI * 1.15, Math.PI * 1.85);
+      ctx.stroke();
+    }
+  } else if (currentEyeMood === "poked") {
+    // 被戳挤压眼 ( > < )
+    for (const [idx, cx] of [256, 768].entries()) {
+      ctx.fillStyle = "#fffdfa";
+      ctx.beginPath();
+      ctx.arc(cx, 256, 210, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.lineWidth = 44;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#441c06";
+      ctx.beginPath();
+      const dir = idx === 0 ? 1 : -1;
+      ctx.moveTo(cx - 90 * dir, 160);
+      ctx.lineTo(cx + 40 * dir, 256);
+      ctx.lineTo(cx - 90 * dir, 350);
+      ctx.stroke();
+    }
+  } else if (currentEyeMood === "sleepy") {
+    // 沉睡长睫毛 ( - _ - )
+    for (const cx of [256, 768]) {
+      ctx.fillStyle = "#fffdfa";
+      ctx.beginPath();
+      ctx.arc(cx, 256, 210, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.lineWidth = 36;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#441c06";
+      ctx.beginPath();
+      ctx.arc(cx, 220, 110, Math.PI * 0.15, Math.PI * 0.85);
+      ctx.stroke();
+    }
+  }
+
+  eyeTexture.needsUpdate = true;
+}
+drawEyeTexture();
 
 function makeEye(pos, side) {
   const socket = new THREE.Group();
@@ -495,20 +820,12 @@ function makeEye(pos, side) {
   return sphere;
 }
 
-let leftEyeMesh, rightEyeMesh;
-leftEyeMesh = makeEye(eyeL, -1);
-rightEyeMesh = makeEye(eyeR, 1);
-
+let leftEyeMesh = makeEye(eyeL, -1);
+let rightEyeMesh = makeEye(eyeR, 1);
 let foxWidth = 1;
 
-// Load GLB
-const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.6/");
-
+// 加载原版本地 fox.glb
 const loader = new GLTFLoader();
-loader.setDRACOLoader(dracoLoader);
-loader.setMeshoptDecoder(MeshoptDecoder);
-
 loader.load(
   MODEL_URL,
   (gltf) => {
@@ -522,9 +839,8 @@ loader.load(
     box.getSize(size);
     box.getCenter(centre);
 
+    foxWidth = size.x;
     const s = 2 / size.y;
-    foxWidth = size.x * s;
-
     const fit = new THREE.Matrix4()
       .makeScale(s, s, s)
       .multiply(new THREE.Matrix4().makeTranslation(-centre.x, -box.min.y, -centre.z));
@@ -534,13 +850,10 @@ loader.load(
         const geom = child.geometry.clone();
         geom.applyMatrix4(fit.clone().multiply(child.matrixWorld));
         geom.computeBoundingSphere();
-        
+
         const mat = child.material.clone();
         mat.metalness = 0;
         mat.roughness = 1;
-        if (mat.map) {
-          mat.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
-        }
         mat.onBeforeCompile = bendHead;
 
         const mesh = new THREE.Mesh(geom, mat);
@@ -550,24 +863,284 @@ loader.load(
     });
 
     resize();
-    canvas.classList.add("ready");
-    loading.classList.add("hide");
-    renderer.setAnimationLoop(frame);
+    loaderCover.classList.add("hide");
+    console.log("🦊 原版 Vulpa 3D 狐狸载入完成！");
   },
   undefined,
-  (error) => {
-    console.error(error);
-    loading.textContent = "Our fox got lost too. Please reload.";
+  (err) => {
+    console.error("Fox load error:", err);
+    loaderCover.textContent = "小狐狸还在赶来路上，请刷新重试~";
   }
 );
 
-// Pointer tracking
-const aim = new THREE.Vector2();
-const look = new THREE.Vector2();
-const turn = new THREE.Vector2();
-let lastMove = -1e9;
+// 投喂大橘子 (3D Orange)
+const orangeItem = new THREE.Group();
+const oBody = new THREE.Mesh(
+  new THREE.SphereGeometry(0.18, 20, 18),
+  new THREE.MeshStandardMaterial({ color: 0xff7700, roughness: 0.35 })
+);
+const oLeaf = new THREE.Mesh(
+  new THREE.ConeGeometry(0.05, 0.14, 8).rotateZ(0.8),
+  new THREE.MeshBasicMaterial({ color: 0x44bb55 })
+);
+oLeaf.position.set(0.04, 0.18, 0);
+orangeItem.add(oBody, oLeaf);
+orangeItem.visible = false;
+scene.add(orangeItem);
 
-function onPointer(e) {
+// 浮动爱心与星星粒子 (Hearts & Stars)
+const particles = [];
+const heartShape = new THREE.Shape();
+heartShape.moveTo(0, 0);
+heartShape.bezierCurveTo(0, 0.1, -0.15, 0.2, -0.15, 0.35);
+heartShape.bezierCurveTo(-0.15, 0.5, 0.05, 0.55, 0, 0.7);
+heartShape.bezierCurveTo(0.05, 0.55, 0.15, 0.5, 0.15, 0.35);
+heartShape.bezierCurveTo(0.15, 0.2, 0, 0.1, 0, 0);
+const heartGeo = new THREE.ShapeGeometry(heartShape);
+heartGeo.scale(0.28, -0.28, 0.28);
+const heartMat = new THREE.MeshBasicMaterial({ color: 0xff4477, transparent: true });
+const starMat = new THREE.MeshBasicMaterial({ color: 0xffd700, transparent: true });
+
+function spawnParticles(type = "heart", count = 6, origin = new THREE.Vector3(-0.165, 1.2, 0.2)) {
+  for (let i = 0; i < count; i++) {
+    const geo = type === "heart" ? heartGeo : new THREE.SphereGeometry(0.06, 12, 12);
+    const mat = (type === "heart" ? heartMat : starMat).clone();
+    const mesh = new THREE.Mesh(geo, mat);
+
+    mesh.position.copy(origin).add(new THREE.Vector3(
+      (Math.random() - 0.5) * 0.5,
+      (Math.random() - 0.2) * 0.3,
+      (Math.random() - 0.5) * 0.3
+    ));
+
+    const vel = new THREE.Vector3(
+      (Math.random() - 0.5) * 1.5,
+      1.1 + Math.random() * 1.6,
+      (Math.random() - 0.5) * 1.1
+    );
+
+    scene.add(mesh);
+    particles.push({ mesh, vel, life: 1.0, maxLife: 1.0 + Math.random() * 0.4 });
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// 3. DeepSeek 大肥鱼同款情绪玩伴动力学系统 (果冻挤压、摸头呼噜、对白)
+// ═════════════════════════════════════════════════════════════════════════
+const physics = {
+  // 果冻挤压体积守恒 (Squish & Squash)
+  squish: 1.0,
+  targetSquish: 1.0,
+  squishVel: 0,
+
+  // 视线追踪与头部朝向
+  aim: new THREE.Vector2(),
+  look: new THREE.Vector2(),
+  turn: new THREE.Vector2(),
+  lastMove: -1e9,
+
+  // 摸摸头检测
+  lastMousePos: new THREE.Vector2(),
+  strokeSpeed: 0,
+
+  // 状态
+  idleTimer: 0,
+  isSleeping: false,
+  isBreathingGuide: false,
+};
+
+const DIALOGUES = {
+  welcome: [
+    { t: "嗨~ 我是你的小狐狸！代码写累了随时找我捏捏摸摸头哦！", e: "🍊" },
+    { t: "今天过得怎么样？小狐狸一直在这里陪着你呢~", e: "✨" },
+    { t: "深呼吸一次，把所有的焦虑都吹走吧！", e: "🍃" }
+  ],
+  pet: [
+    { t: "呼噜呼噜... 摸头太舒服啦，耳朵都要化掉了~", e: "🥰" },
+    { t: "好喜欢你这样摸摸我，幸福感爆棚！💖", e: "🌸" },
+    { t: "舒服到想在草地上打一百个滚！", e: "✨" }
+  ],
+  poke: [
+    { t: "哎呀！duang~ 戳戳我好玩嘛！软乎乎吧！", e: "🤏" },
+    { t: "脸蛋都要被你捏扁啦~ 但好舒服！", e: "😆" },
+    { t: "被你戳得晕乎乎的，但是好开心！", e: "💫" }
+  ],
+  feed: [
+    { t: "嗷呜！大橘子太甜啦！元气值瞬间回满 100%！", e: "🍊" },
+    { t: "嚼嚼嚼... 吃饱饱了，更有力气守护你啦！", e: "😋" }
+  ],
+  hug: [
+    { t: "给你一个毛茸茸、暖烘烘的超大熊抱！抱紧紧~", e: "🫂" },
+    { t: "无论今天遇到什么，小狐狸永远是你的头号粉丝！", e: "🌟" }
+  ],
+  sleep: [
+    { t: "呼... 小狐狸打个小盹，醒来继续陪你打怪升级 z Z Z", e: "💤" }
+  ],
+  treehole: [
+    { k: ["累", "疲惫", "辛苦"], r: "辛苦啦我的大工程师！推开键盘，闭眼深呼吸，我把尾巴给你当软枕头好不好~" },
+    { k: ["bug", "报错", "崩", "不通过"], r: "Bug 只是调皮的小代码在捉迷藏！喝口温水歇歇眼睛，小狐狸保佑你下一次刷新直接全绿！" },
+    { k: ["夸", "棒", "厉害"], r: "你本来就超级超级优秀！能一步步走到这里的你，已经在悄悄发光啦！🌟" },
+    { k: ["难过", "伤心", "委屈"], r: "抱抱你呀... 难过的时候不用强撑着，揉揉我的胖下巴，所有不开心都会被毛茸茸融化掉！" }
+  ]
+};
+
+const bubble = document.getElementById("speech-bubble");
+const speechText = document.getElementById("speech-text");
+const speechEmoji = document.getElementById("speech-emoji");
+const moodDesc = document.getElementById("pet-mood-desc");
+const affectionBar = document.getElementById("affection-bar");
+const affectionVal = document.getElementById("affection-val");
+let affection = 88;
+
+function say(text, emoji = "🍊") {
+  speechText.textContent = text;
+  speechEmoji.textContent = emoji;
+  bubble.style.animation = "none";
+  bubble.offsetHeight;
+  bubble.style.animation = "bubblePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)";
+}
+
+function addAffection(num = 3) {
+  affection = Math.min(100, affection + num);
+  affectionBar.style.width = `${affection}%`;
+  affectionVal.textContent = `${affection}%`;
+}
+
+// A. 戳一戳果冻弹跳 (Poke Squish)
+function triggerPoke() {
+  physics.targetSquish = 0.65;
+  physics.squishVel = -3.5;
+  physics.idleTimer = 0;
+  wakeUp();
+
+  currentEyeMood = "poked";
+  drawEyeTexture();
+  setTimeout(() => {
+    if (currentEyeMood === "poked") {
+      currentEyeMood = "normal";
+      drawEyeTexture();
+    }
+  }, 750);
+
+  sound.playBoing(320);
+  spawnParticles("star", 5);
+  addAffection(2);
+
+  const item = DIALOGUES.poke[Math.floor(Math.random() * DIALOGUES.poke.length)];
+  say(item.t, item.e);
+  moodDesc.textContent = "被捏得 duang duang 弹跳中";
+}
+
+// B. 抚摸摸头 (Petting)
+function triggerPet() {
+  wakeUp();
+  currentEyeMood = "happy";
+  drawEyeTexture();
+
+  physics.targetSquish = 0.88;
+  sound.playPurr();
+  spawnParticles("heart", 6);
+  addAffection(4);
+
+  const item = DIALOGUES.pet[Math.floor(Math.random() * DIALOGUES.pet.length)];
+  say(item.t, item.e);
+  moodDesc.textContent = "被摸头治愈中 · 舒服到打呼噜";
+
+  setTimeout(() => {
+    if (currentEyeMood === "happy") {
+      currentEyeMood = "normal";
+      drawEyeTexture();
+    }
+  }, 1600);
+}
+
+// C. 投喂大橘子 (Feed Orange)
+function triggerFeed() {
+  wakeUp();
+  orangeItem.visible = true;
+  orangeItem.position.set(-0.165, 2.5, 0.8);
+  orangeItem.scale.set(0.1, 0.1, 0.1);
+
+  let p = 0;
+  const feedAnim = () => {
+    p += 0.05;
+    if (p <= 1) {
+      orangeItem.position.y = 2.5 - Math.sin(p * Math.PI * 0.5) * 1.7;
+      orangeItem.position.z = 0.8 - p * 0.4;
+      const s = Math.min(1, p * 1.5);
+      orangeItem.scale.set(s, s, s);
+      requestAnimationFrame(feedAnim);
+    } else {
+      orangeItem.visible = false;
+      sound.playMunch();
+      physics.targetSquish = 0.78;
+      spawnParticles("star", 8);
+      addAffection(6);
+      const item = DIALOGUES.feed[Math.floor(Math.random() * DIALOGUES.feed.length)];
+      say(item.t, item.e);
+      moodDesc.textContent = "吃完甜美大橘子 · 能量值爆表";
+    }
+  };
+  feedAnim();
+}
+
+// D. 哄睡与叫醒
+function triggerSleep() {
+  physics.isSleeping = true;
+  currentEyeMood = "sleepy";
+  drawEyeTexture();
+  const item = DIALOGUES.sleep[0];
+  say(item.t, item.e);
+  moodDesc.textContent = "打瞌睡入眠中 z Z Z";
+}
+
+function wakeUp() {
+  if (physics.isSleeping) {
+    physics.isSleeping = false;
+    currentEyeMood = "normal";
+    drawEyeTexture();
+    say("唔... 你叫醒我啦！揉揉眼睛继续陪你玩~", "✨");
+    moodDesc.textContent = "精神抖擞 · 满心欢喜";
+  }
+}
+
+// E. 陪我深呼吸
+function triggerBreathe() {
+  wakeUp();
+  physics.isBreathingGuide = !physics.isBreathingGuide;
+  if (physics.isBreathingGuide) {
+    document.getElementById("btn-breathe").textContent = "🛑 结束深呼吸";
+    say("跟随小狐狸的身体节奏：吸气（4秒）... 屏息（7秒）... 呼气（8秒）", "🧘");
+    moodDesc.textContent = "4-7-8 深度情绪疗愈冥想中";
+  } else {
+    document.getElementById("btn-breathe").textContent = "🧘 陪我深呼吸";
+    say("呼~ 感觉好些了吗？随时找我放松心情哦！", "🍃");
+    moodDesc.textContent = "平和放松 · 元气满满";
+  }
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// 4. 指针交互与自适应窗口
+// ═════════════════════════════════════════════════════════════════════════
+function resize() {
+  const rect = canvas.getBoundingClientRect();
+  const width = rect.width;
+  const height = rect.height;
+  if (!width || !height) return;
+
+  camera.aspect = width / height;
+  const vfov = 2 * Math.atan(Math.tan((camera.fov * Math.PI) / 360) * Math.max(1, 1 / camera.aspect));
+  const dist = (foxWidth * 0.9) / (2 * Math.tan(vfov / 2));
+  camera.position.set(0, 0.95, dist * 0.85);
+  camera.lookAt(0, 0.95, 0);
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(width, height, false);
+}
+window.addEventListener("resize", resize);
+
+// 视线追踪与摸头交互
+window.addEventListener("pointermove", (e) => {
   const rect = canvas.getBoundingClientRect();
   const faceWorld = new THREE.Vector3(pivot[0], eyeL[1], eyeL[2]);
   faceWorld.applyMatrix4(fox.matrixWorld);
@@ -577,85 +1150,180 @@ function onPointer(e) {
   const faceY = rect.top + (-faceWorld.y * 0.5 + 0.5) * rect.height;
 
   const reach = Math.max(window.innerWidth, window.innerHeight) * 0.42;
-  aim.x = THREE.MathUtils.clamp((e.clientX - faceX) / reach, -1, 1);
-  aim.y = THREE.MathUtils.clamp((e.clientY - faceY) / reach, -1, 1);
-  lastMove = performance.now();
-}
+  physics.aim.x = THREE.MathUtils.clamp((e.clientX - faceX) / reach, -1, 1);
+  physics.aim.y = THREE.MathUtils.clamp((e.clientY - faceY) / reach, -1, 1);
+  physics.lastMove = performance.now();
 
-window.addEventListener("pointermove", onPointer, { passive: true });
-window.addEventListener("pointerdown", onPointer, { passive: true });
-document.addEventListener("pointerleave", () => {
-  lastMove = -1e9;
-});
-
-function resize() {
-  const w = stage.clientWidth;
-  const h = stage.clientHeight;
-  if (!w || !h) return;
-
-  renderer.setSize(w, h, false);
-  camera.aspect = w / h;
-  const tan = Math.tan((camera.fov * Math.PI / 180) / 2);
-  const visible = Math.max(2 / 0.9, (foxWidth / 0.86) / camera.aspect);
-  const dist = visible / (2 * tan);
-
-  camera.position.set(0, visible * 0.465, dist);
-  camera.lookAt(0, visible * 0.465, 0);
-  camera.updateProjectionMatrix();
-}
-
-const resizeObserver = new ResizeObserver(() => resize());
-resizeObserver.observe(stage);
-window.addEventListener("resize", resize);
-
-const clock = new THREE.Clock();
-const motionAllowed = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-const euler = new THREE.Euler(0, 0, 0, "YXZ");
-const tempMatrix4 = new THREE.Matrix4();
-
-function frame() {
-  const delta = clock.getDelta();
-  const dt = Math.min(delta, 0.05);
-  const t = clock.getElapsedTime();
-
-  const idle = performance.now() - lastMove > 3500;
-  if (idle && motionAllowed) {
-    aim.set(
-      Math.sin(t * 0.55) * 0.55,
-      Math.sin(t * 0.9 + 1) * 0.22 - 0.05
-    );
-  } else if (idle && !motionAllowed) {
-    aim.set(0, 0);
+  // 摸摸头检测
+  const distToFace = Math.hypot(e.clientX - faceX, e.clientY - faceY);
+  if (distToFace < 140) {
+    const dx = e.clientX - physics.lastMousePos.x;
+    const dy = e.clientY - physics.lastMousePos.y;
+    physics.strokeSpeed += Math.hypot(dx, dy);
+    if (physics.strokeSpeed > 260) {
+      triggerPet();
+      physics.strokeSpeed = 0;
+    }
   }
 
-  look.lerp(aim, 1 - Math.exp(-dt * 11));
-  turn.lerp(aim, 1 - Math.exp(-dt * 4.5));
+  physics.lastMousePos.set(e.clientX, e.clientY);
+  physics.idleTimer = 0;
+  wakeUp();
+  document.getElementById("pet-hint").style.opacity = "0";
+}, { passive: true });
 
-  euler.set(turn.y * headPitch, turn.x * headYaw, -turn.x * 0.05, "YXZ");
+// 点击触发戳戳
+stage.addEventListener("pointerdown", (e) => {
+  if (e.target.id === "fox-canvas") {
+    triggerPoke();
+  }
+});
+
+// 绑定快捷按钮
+document.getElementById("btn-pet").addEventListener("click", triggerPet);
+document.getElementById("btn-poke").addEventListener("click", triggerPoke);
+document.getElementById("btn-feed").addEventListener("click", triggerFeed);
+document.getElementById("btn-hug").addEventListener("click", () => {
+  wakeUp();
+  physics.targetSquish = 0.88;
+  spawnParticles("heart", 8);
+  addAffection(5);
+  const item = DIALOGUES.hug[Math.floor(Math.random() * DIALOGUES.hug.length)];
+  say(item.t, item.e);
+});
+document.getElementById("btn-sleep").addEventListener("click", triggerSleep);
+document.getElementById("btn-breathe").addEventListener("click", triggerBreathe);
+
+// 树洞输入
+function handleTreehole() {
+  const input = document.getElementById("treehole-input");
+  const val = input.value.trim().toLowerCase();
+  if (!val) return;
+  input.value = "";
+  wakeUp();
+
+  let reply = "小狐狸认真听完啦！生活总有阴晴，但你永远拥有把今天过得温暖明亮的能力，小狐狸陪着你！💖";
+  for (const item of DIALOGUES.treehole) {
+    if (item.k.some(kw => val.includes(kw))) {
+      reply = item.r;
+      break;
+    }
+  }
+  say(reply, "🌟");
+  triggerPet();
+}
+
+document.getElementById("treehole-send").addEventListener("click", handleTreehole);
+document.getElementById("treehole-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") handleTreehole();
+});
+
+// 音效与归位按钮
+const soundBtn = document.getElementById("sound-btn");
+soundBtn.addEventListener("click", () => {
+  sound.enabled = !sound.enabled;
+  soundBtn.textContent = sound.enabled ? "🔊 音效: 开" : "🔈 音效: 关";
+  if (sound.enabled) sound.playBoing(360);
+});
+
+document.getElementById("reset-cam-btn").addEventListener("click", () => {
+  resize();
+  say("视角摆正啦，小狐狸一直在中心看着你！", "🦊");
+});
+
+// ═════════════════════════════════════════════════════════════════════════
+// 5. 渲染循环 (60+ FPS，结合原版头部 Shader 与果冻弹性)
+// ═════════════════════════════════════════════════════════════════════════
+const euler = new THREE.Euler(0, 0, 0, "YXZ");
+const tempMatrix4 = new THREE.Matrix4();
+let lastTime = performance.now();
+
+function frame(now) {
+  const dt = Math.min((now - lastTime) / 1000, 0.05);
+  lastTime = now;
+  const elapsed = now / 1000;
+
+  // A. 果冻弹性形变阻尼计算 (二阶阻尼谐振子)
+  const k = 190;
+  const c = 13;
+  const springF = -k * (physics.squish - physics.targetSquish);
+  const dampF = -c * physics.squishVel;
+  physics.squishVel += (springF + dampF) * dt;
+  physics.squish += physics.squishVel * dt;
+  physics.targetSquish += (1.0 - physics.targetSquish) * (1 - Math.exp(-dt * 6));
+
+  // 体积守恒挤压压扁
+  const sY = Math.max(0.45, physics.squish);
+  const sXZ = 1 / Math.sqrt(sY);
+  squishRoot.scale.set(sXZ, sY, sXZ);
+
+  // 深呼吸引导柔和膨胀
+  if (physics.isBreathingGuide) {
+    const breath = 1.0 + Math.sin(elapsed * 0.65) * 0.08;
+    squishRoot.scale.multiplyScalar(breath);
+  }
+
+  // B. 原版头部与视线注视追踪计算
+  const idle = performance.now() - physics.lastMove > 3000;
+  if (idle && !physics.isSleeping) {
+    physics.aim.set(
+      Math.sin(elapsed * 0.55) * 0.55,
+      Math.sin(elapsed * 0.9 + 1) * 0.22 - 0.05
+    );
+  }
+
+  physics.look.lerp(physics.aim, 1 - Math.exp(-dt * 11));
+  physics.turn.lerp(physics.aim, 1 - Math.exp(-dt * 4.5));
+
+  if (!physics.isSleeping) {
+    euler.set(physics.turn.y * headPitch, physics.turn.x * headYaw, -physics.turn.x * 0.05, "YXZ");
+  } else {
+    euler.set(0.35, 0.08, 0, "YXZ"); // 睡觉低头
+  }
+
   head.rotation.copy(euler);
-
   tempMatrix4.makeRotationFromEuler(euler);
   uHead.value.setFromMatrix4(tempMatrix4);
 
-  const ex = THREE.MathUtils.clamp(look.x * 1.25 - turn.x * 0.35, -1, 1);
-  const ey = THREE.MathUtils.clamp(look.y * 1.25 - turn.y * 0.35, -1, 1);
+  const ex = THREE.MathUtils.clamp(physics.look.x * 1.25 - physics.turn.x * 0.35, -1, 1);
+  const ey = THREE.MathUtils.clamp(physics.look.y * 1.25 - physics.turn.y * 0.35, -1, 1);
 
-  if (leftEyeMesh) {
+  if (leftEyeMesh && currentEyeMood === "normal") {
     leftEyeMesh.rotation.set(ey * eyePitch, ex * eyeYaw - leftEyeMesh.userData.side * eyeToe, 0, "YXZ");
   }
-  if (rightEyeMesh) {
+  if (rightEyeMesh && currentEyeMood === "normal") {
     rightEyeMesh.rotation.set(ey * eyePitch, ex * eyeYaw - rightEyeMesh.userData.side * eyeToe, 0, "YXZ");
   }
 
-  fox.rotation.y = turn.x * 0.1;
-  if (motionAllowed) {
-    fox.position.y = Math.sin(t * 1.7) * 0.008;
-    fox.scale.y = 1 + Math.sin(t * 1.7) * 0.006;
+  // C. 粒子生命周期
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.life -= dt;
+    p.mesh.position.addScaledVector(p.vel, dt);
+    p.vel.y -= 1.8 * dt;
+    p.mesh.scale.setScalar(Math.max(0, p.life / p.maxLife));
+    p.mesh.material.opacity = Math.max(0, p.life / p.maxLife);
+
+    if (p.life <= 0) {
+      scene.remove(p.mesh);
+      particles.splice(i, 1);
+    }
+  }
+
+  // D. 呼吸悬浮微动
+  fox.position.y = Math.sin(elapsed * 1.8) * 0.015;
+
+  // E. 自动打瞌睡
+  physics.idleTimer += dt;
+  if (physics.idleTimer > 14 && !physics.isSleeping && !physics.isBreathingGuide) {
+    triggerSleep();
   }
 
   renderer.render(scene, camera);
+  requestAnimationFrame(frame);
 }
+requestAnimationFrame(frame);
 </script>
+
 </body>
 </html>
