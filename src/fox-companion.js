@@ -4,18 +4,18 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { groundHeight } from "./island.js";
 
-const MODEL_URL = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261014_013004_603cedaa-048c-46da-a737-4c013ad994ae.glb";
+const MODEL_URL = "/fox.glb";
 
 export function createGuardianFox(scene, options = {}) {
   const foxGroup = new THREE.Group();
   // 放在小岛中心水池旁边的草坪坐标 (例如 x: 1.6, z: 0.8)
-  const posX = options.x ?? 1.8;
-  const posZ = options.z ?? 0.6;
+  const posX = options.x ?? 0.0;
+  const posZ = options.z ?? 2.0;
   const posY = groundHeight(posX, posZ) + 0.05;
   
   foxGroup.position.set(posX, posY, posZ);
   // 默认比例微调适配小岛小人 (小人高度约 1.2，狐狸缩放到约 0.95 高度)
-  const scale = options.scale ?? 0.48;
+  const scale = options.scale ?? 0.85;
   foxGroup.scale.set(scale, scale, scale);
   scene.add(foxGroup);
 
