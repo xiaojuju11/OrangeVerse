@@ -1,5 +1,16 @@
 import { defineConfig } from "vite";
 export default defineConfig({
-  server: { watch: { ignored: ["**/analysis/**"] } },
-  build: { rollupOptions: { output: { manualChunks: { three: ["three"] } } } },
+  base: "./",
+  server: {
+    host: "0.0.0.0",
+    port: 5173,
+    watch: { ignored: ["**/analysis/**"] },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: { three: ["three"] },
+      },
+    },
+  },
 });
