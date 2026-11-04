@@ -6,6 +6,8 @@ import { categories, themes, profile } from "./content.js";
 import { escapeHTML } from "./schema.js";
 import { createIsland } from "./island.js";
 import { ForestAudio } from "./audio.js";
+import { modalManager } from "./modal-manager.js";
+
 const $ = (id) => document.getElementById(id),
   visited = new Set(),
   audio = new ForestAudio();
@@ -14,9 +16,11 @@ let island,
   started = false,
   toastTimer,
   webglFailed = false;
+
 document.title = `${profile.title} · 个人作品集`;
 const brand = document.querySelector('.brand > span:last-child');
 if (brand) brand.innerHTML = `${escapeHTML(profile.title)}<small>${escapeHTML(profile.subtitle || 'A WORLD OF CURIOSITY')}</small>`;
+
 const welcomeH1 = document.querySelector('.welcome h1');
 if (welcomeH1) {
   welcomeH1.innerHTML = `<span class="welcome-lead-small">欢迎来到</span><span id="vapor-brand-heading" class="vapor-brand-heading" title="点击或拂过产生烟雾粒子交互"></span>`;
@@ -40,12 +44,14 @@ if (welcomeH1) {
     });
   }
 }
+
 document.querySelector('.welcome-story').textContent = profile.intro || `你好，我是${profile.name}。欢迎来看看我的作品与经历。`;
 document.querySelector('meta[name="description"]').content = profile.intro || `${profile.name}的个人作品集`;
 $("world").setAttribute('aria-label', `${profile.title}三维场景`);
 $("camp-total").textContent = String(categories.length).padStart(2,'0');
 $("channel").hidden = !profile.links.length;
 if(profile.links.length) $("channel").textContent = `${profile.links[0].label} ↗`;
+
 categories.forEach((c, i) => {
   const label = document.createElement("button");
   label.className = "camp-label";
@@ -53,11 +59,13 @@ categories.forEach((c, i) => {
   label.setAttribute("aria-label", `走向${escapeHTML(c.name)}`);
   label.innerHTML = `<span>${c.number}</span>${escapeHTML(c.short)}<i></i>`;
   $("camp-labels").append(label);
+
   const nav = document.createElement("button");
   nav.dataset.camp = i;
   nav.innerHTML = `<span>${c.number}</span>${escapeHTML(c.name)}`;
   nav.setAttribute("aria-label", `前往${escapeHTML(c.name)}`);
   $("category-nav").append(nav);
+
   const dot = document.createElement("button");
   dot.className = "map-site";
   dot.dataset.camp = i;
@@ -66,33 +74,34 @@ categories.forEach((c, i) => {
   dot.setAttribute("aria-label", `地图：${escapeHTML(c.name)}`);
   $("map-sites").append(dot);
 });
+
 function toast(text) {
   clearTimeout(toastTimer);
   $("toast").textContent = text;
   $("toast").hidden = false;
   toastTimer = setTimeout(() => ($("toast").hidden = true), 3600);
 }
+
 function begin() {
   started = true;
   document.body.classList.add("exploring");
   $("welcome").setAttribute("inert", "");
   $("walk-status").textContent = "点击地面行走 · 拖动环顾 · 走近微光发现故事";
 }
+
+// ═════════════════════════════════════════════════════════════════════════
+// 展品营地面板与统一弹窗调度
+// ═════════════════════════════════════════════════════════════════════════
 function closeWork() {
-  active = -1;
-  $("work").hidden = true;
-  document.body.classList.remove("panel-open");
-  document
-    .querySelectorAll("#category-nav button")
-    .forEach((b) => b.classList.remove("active"));
+  modalManager.close("work");
 }
+
 function openWork(i) {
   const c = categories[i];
   begin();
   active = i;
   visited.add(i);
-  $("work").hidden = false;
-  document.body.classList.add("panel-open");
+
   $("panel-number").textContent = c.number;
   $("panel-english").textContent = c.english;
   $("panel-category").textContent = `FIELD NOTES / ${c.number}`;
@@ -102,13 +111,56 @@ function openWork(i) {
   mountExhibit($("work-sections"), c.id);
   $("work").scrollTop = 0;
   $("visited-count").textContent = String(visited.size).padStart(2, "0");
+
   document.querySelectorAll("[data-camp]").forEach((b) => {
     const idx = Number(b.dataset.camp);
     b.classList.toggle("visited", visited.has(idx));
     b.classList.toggle("active", idx === i);
   });
   $("walk-status").textContent = `已抵达 · ${c.short}`;
+
+  modalManager.open("work");
 }
+
+// 注册面板与弹窗到 ModalManager (统一调度、互斥与层级管理)
+modalManager.register("work", {
+  element: $("work"),
+  closeBtn: [$("close-work"), $("continue")],
+  exclusive: true,
+  onOpen: () => document.body.classList.add("panel-open"),
+  onClose: () => {
+    active = -1;
+    document.body.classList.remove("panel-open");
+    document.querySelectorAll("#category-nav button").forEach((b) => b.classList.remove("active"));
+  }
+});
+
+modalManager.register("help", {
+  element: $("help-dialog"),
+  trigger: $("help"),
+  closeBtn: [$("close-help"), $("help-done")],
+  isDialog: true,
+  onOpen: () => island?.stop()
+});
+
+modalManager.register("resume", {
+  element: $("resume-modal"),
+  trigger: $("resume-btn"),
+  closeBtn: $("close-resume"),
+  backdrop: $("close-resume-backdrop"),
+  exclusive: true
+});
+
+$("print-resume")?.addEventListener("click", () => window.print());
+
+modalManager.register("fox", {
+  element: $("fox-modal"),
+  trigger: $("fox-portal-btn"),
+  closeBtn: $("close-fox-btn"),
+  backdrop: $("close-fox-backdrop"),
+  exclusive: true
+});
+
 function navigate(i) {
   begin();
   closeWork();
@@ -119,19 +171,18 @@ function navigate(i) {
   island?.travelTo(i);
   $("walk-status").textContent = `正在走向 · ${categories[i].short}`;
 }
-document
-  .querySelectorAll("[data-camp]")
-  .forEach((b) =>
-    b.addEventListener("click", () => navigate(Number(b.dataset.camp))),
-  );
+
+document.querySelectorAll("[data-camp]").forEach((b) =>
+  b.addEventListener("click", () => navigate(Number(b.dataset.camp))),
+);
+
 $("explore").addEventListener("click", begin);
-$("close-work").addEventListener("click", closeWork);
-$("continue").addEventListener("click", closeWork);
 $("overview").addEventListener("click", () => {
   closeWork();
   island?.overview();
   $("walk-status").textContent = `全岛视角 · ${categories.length} 个营地，随心出发`;
 });
+
 $("home").addEventListener("click", () => {
   closeWork();
   island?.stop();
@@ -140,30 +191,15 @@ $("home").addEventListener("click", () => {
   document.body.classList.remove("exploring");
   $("welcome").removeAttribute("inert");
 });
-$("channel").addEventListener("click", () => { const link = profile.links[0]; if(link) window.open(link.url,"_blank","noopener,noreferrer"); });
-const help = $("help-dialog");
-$("help").addEventListener("click", () => {
-  island?.stop();
-  help.showModal();
+
+$("channel").addEventListener("click", () => {
+  const link = profile.links[0];
+  if(link) window.open(link.url, "_blank", "noopener,noreferrer");
 });
-$("close-help").addEventListener("click", () => help.close());
-$("help-done").addEventListener("click", () => help.close());
-help.addEventListener("click", (e) => {
-  if (e.target === help) {
-    const r = help.getBoundingClientRect();
-    if (
-      e.clientX < r.left ||
-      e.clientX > r.right ||
-      e.clientY < r.top ||
-      e.clientY > r.bottom
-    )
-      help.close();
-  }
-});
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && !help.open && !$("evidence-dialog").open)
-    closeWork();
-});
+
+// ═════════════════════════════════════════════════════════════════════════
+// 主题切换与环境音
+// ═════════════════════════════════════════════════════════════════════════
 document.querySelectorAll(".theme-picker button").forEach((b) =>
   b.addEventListener("click", () => {
     const id = b.dataset.theme;
@@ -188,6 +224,7 @@ document.querySelectorAll(".theme-picker button").forEach((b) =>
     audio.setNight(id === "ocean");
   }),
 );
+
 $("sound").addEventListener("click", async () => {
   try {
     const enabled = await audio.toggle();
@@ -204,12 +241,14 @@ $("sound").addEventListener("click", async () => {
     toast("当前浏览器暂时无法播放环境音。");
   }
 });
+
 document.addEventListener("visibilitychange", () => {
   if (audio.context) {
     if (document.hidden) audio.context.suspend();
     else if (audio.enabled) audio.context.resume();
   }
 });
+
 document.querySelectorAll(".touch-pad button").forEach((b) => {
   const [x, z] = b.dataset.dir.split(",").map(Number);
   b.addEventListener("pointerdown", (e) => {
@@ -221,6 +260,10 @@ document.querySelectorAll(".touch-pad button").forEach((b) => {
   for (const event of ["pointerup", "pointercancel", "lostpointercapture"])
     b.addEventListener(event, () => island?.setTouchDirection(0, 0));
 });
+
+// ═════════════════════════════════════════════════════════════════════════
+// 初始化 3D 岛屿引擎
+// ═════════════════════════════════════════════════════════════════════════
 try {
   island = createIsland($("world"), {
     onReady: () => {
@@ -246,70 +289,14 @@ try {
 }
 
 // ═════════════════════════════════════════════════════════════════════════
-// 简历弹窗逻辑绑定
-// ═════════════════════════════════════════════════════════════════════════
-const resumeModal = $("resume-modal");
-const resumeBtn = $("resume-btn");
-const closeResumeBtn = $("close-resume");
-const closeResumeBackdrop = $("close-resume-backdrop");
-const printResumeBtn = $("print-resume");
-
-function openResume() {
-  if (resumeModal) resumeModal.hidden = false;
-}
-function closeResume() {
-  if (resumeModal) resumeModal.hidden = true;
-}
-
-if (resumeBtn) resumeBtn.addEventListener("click", openResume);
-if (closeResumeBtn) closeResumeBtn.addEventListener("click", closeResume);
-if (closeResumeBackdrop) closeResumeBackdrop.addEventListener("click", closeResume);
-if (printResumeBtn) printResumeBtn.addEventListener("click", () => window.print());
-
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && resumeModal && !resumeModal.hidden) {
-    closeResume();
-  }
-});
-
-// ═════════════════════════════════════════════════════════════════════════
-// 初始化伴侣与掘金阅读器模块
+// 模块启动 (伴侣、掘金阅读器、磁吸悬浮动效)
 // ═════════════════════════════════════════════════════════════════════════
 import { initCyberCompanion } from "./companion.js";
 import { initJuejinArticleViewer } from "./articles.js";
+import { initMagneticHover } from "./magnetic.js";
 
 initCyberCompanion();
 initJuejinArticleViewer();
-
-// ═════════════════════════════════════════════════════════════════════════
-// 3D 狐狸守护兽弹窗交互绑定
-// ═════════════════════════════════════════════════════════════════════════
-const foxModal = $("fox-modal");
-const foxPortalBtn = $("fox-portal-btn");
-const closeFoxBtn = $("close-fox-btn");
-const closeFoxBackdrop = $("close-fox-backdrop");
-
-function openFox() {
-  if (foxModal) foxModal.hidden = false;
-}
-function closeFox() {
-  if (foxModal) foxModal.hidden = true;
-}
-
-if (foxPortalBtn) foxPortalBtn.addEventListener("click", openFox);
-if (closeFoxBtn) closeFoxBtn.addEventListener("click", closeFox);
-if (closeFoxBackdrop) closeFoxBackdrop.addEventListener("click", closeFox);
-
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && foxModal && !foxModal.hidden) {
-    closeFox();
-  }
-});
-
-// ═════════════════════════════════════════════════════════════════════════
-// 初始化 Jakub Antalik 磁吸悬浮动画
-// ═════════════════════════════════════════════════════════════════════════
-import { initMagneticHover } from "./magnetic.js";
 
 // 对顶部胶囊按钮、行动呼吁大按钮以及营地气泡启用磁吸
 initMagneticHover("[data-magnetic]", {

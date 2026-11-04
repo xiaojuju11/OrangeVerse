@@ -2047,3 +2047,19 @@ body:not(.exploring) .walk-status {
   position: relative;
   z-index: 2;
 }
+
+
+/* ══════════════════════════════════════════════════════════════
+   统一弹窗激活时的小岛背景防护 (Modal Active Pointer Lock)
+   ══════════════════════════════════════════════════════════════ */
+body.modal-active #world {
+  pointer-events: none !important;
+}
+body.modal-active #camp-labels {
+  pointer-events: none !important;
+  opacity: 0.25;
+  transition: opacity 0.3s ease;
+}
+body.modal-active .edge-light {
+  opacity: 0.25;
+}
