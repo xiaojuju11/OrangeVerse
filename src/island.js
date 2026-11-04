@@ -895,6 +895,7 @@ void main(){
     );
     waterMat.uniforms.color.value.set(themes[id].water);
     shallowOcean.visible = dusk;
+    shallowOcean.setTheme?.(id);
     duskSky.visible = dusk;
     ocean.visible = !dusk;
     controls.maxPolarAngle = dusk ? Math.PI * 0.48 : CAMERA_LIMITS.maxPolar;
