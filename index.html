@@ -9,6 +9,9 @@
       content="欢迎来到漫游作品集。在森屿、沙洲和浅海自由漫游，发现创作、黑客松、论文与产品实践。"
     />
     <title>OrangeVerse · 橘域 · 个人作品集</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./src/style.css" />
     <link rel="stylesheet" href="./src/exhibits.css" />
   </head>
@@ -23,24 +26,26 @@
       </div>
       <header class="topbar">
         <button id="home" data-magnetic class="brand" aria-label="显示欢迎介绍">
-          <span class="brand-mark">t<span>·</span></span
+          <span class="brand-mark" aria-hidden="true"></span
           ><span class="brand-copy"
             >漫游作品集<small>A UNIVERSE OF CURIOSITY</small></span
           >
         </button>
         <div class="top-controls">
-          <a href="/" class="articles-nav-button" aria-label="返回时空门厅" title="返回人物形象视频门厅"><span>🚪</span> 门厅</a>
-          <button id="fox-portal-btn" data-magnetic class="fox-portal-button" aria-label="召唤小狐狸·情绪玩伴" title="打开 DeepSeek 同款 3D 情绪玩伴小狐狸"><span>🦊</span> 小狐狸 · 情绪玩伴</button>
-          <button id="articles-nav-btn" data-magnetic class="articles-nav-button" aria-label="查看掘金专栏与学习书本"><span>📚</span> 专栏 / 笔记</button>
-          <a href="/bookshelf.html" class="articles-nav-button shelf-btn-highlight" target="_blank" rel="noopener" aria-label="打开 3D 沉浸式知识书架" title="打开 VHS 磁带盒物理拟读书架"><span>📼</span> 3D 书架 ↗</a>
-          <button id="resume-btn" data-magnetic class="resume-nav-button" aria-label="查看个人在线简历"><span>📄</span> 简历 (Resume)</button>
+          <nav class="island-links" aria-label="橘域导航">
+            <a href="/" class="island-nav-link" aria-label="返回时空门厅">门厅</a>
+            <a href="./archive.html" class="island-nav-link island-archive-link">宇宙档案 <span aria-hidden="true">↗</span></a>
+            <button id="articles-nav-btn" class="island-nav-link" aria-label="查看掘金专栏与学习书本">专栏笔记</button>
+            <button id="resume-btn" class="island-nav-link" aria-label="查看个人在线简历">简历</button>
+            <button id="fox-portal-btn" class="island-nav-link" aria-label="召唤小狐狸·情绪玩伴">小狐狸</button>
+          </nav>
           <div class="theme-picker" role="group" aria-label="小岛主题">
             <button data-theme="forest" aria-pressed="true">
               <span>♧</span> 森屿</button
             ><button data-theme="desert" aria-pressed="false">
               <span>☼</span> 沙洲</button
             ><button data-theme="ocean" aria-pressed="false">
-              <span>≈</span> 浅海
+              <span>≈</span> 浅海黄昏
             </button>
           </div>
           <button
@@ -71,7 +76,7 @@
           欢迎来到<br /><span>OrangeVerse · 橘域<span class="title-dot">。</span></span>
         </h1>
         <p class="welcome-story">
-          一个小橘的 AI 全栈与 Vibe Coding 个人宇宙。漫游探索万界科技实习实战、GitHub 开源仓库、AI-Daily-Learning 知识书本与高赞专栏。
+          一个小橘的 AI 全栈与 Vibe Coding 个人宇宙。漫游探索 GitHub 开源仓库、AI-Daily-Learning 知识书本与技术专栏。
         </p>
         <div class="welcome-instructions">
           <p>
@@ -272,23 +277,7 @@
           </header>
 
           <div class="resume-body">
-            <!-- 模块 1：工作实践经历 -->
-            <section class="resume-section">
-              <div class="section-badge">💼 工作与实习实践</div>
-              <div class="resume-item">
-                <div class="item-header">
-                  <h3>万界科技 · AI 全栈实习工程师</h3>
-                  <span class="item-time">企业级实战</span>
-                </div>
-                <p class="item-desc">深入业务一线，负责企业级核心应用智能化赋能，主导大模型多轮交互、Coze 智能体工作流设计以及现代化全栈客户端交付。</p>
-                <ul class="item-points">
-                  <li><b>智能对话与工作流编排：</b>打通端到端智能化链路，结合 Coze 工作流自动化与高质量提示工程，消除幻觉与状态漂移。</li>
-                  <li><b>全栈架构交付：</b>推进前后端协同，保障高并发请求与大模型流式传输响应的稳定性与极致渲染性能。</li>
-                </ul>
-              </div>
-            </section>
-
-            <!-- 模块 2：核心代表开源项目 -->
+            <!-- 核心代表开源项目 -->
             <section class="resume-section">
               <div class="section-badge">🚀 精选开源与项目作品</div>
               
@@ -317,7 +306,7 @@
               </div>
             </section>
 
-            <!-- 模块 3：个人学习书本与技术专栏 -->
+            <!-- 个人学习书本与技术专栏 -->
             <section class="resume-section">
               <div class="section-badge">📚 个人学习书本与专栏沉淀</div>
               <div class="resume-item">
@@ -355,7 +344,7 @@
               <h2>📚 掘金技术专栏 & 《AI-Daily-Learning》书架</h2>
               <p class="article-header-sub">是你的小橘呀 · 掘力值 1571 · 15,500+ 阅读 · 550+ 点赞</p>
             </div>
-            <div style="display:flex;gap:8px;align-items:center;"><a href="/bookshelf.html" target="_blank" rel="noopener" class="juejin-profile-btn" style="background:#1F3FB0;color:#fff;border-color:#1F3FB0;"><span>📼</span> 开启 3D 实体书架 ↗</a><a href="https://juejin.cn/user/1989458366301708" target="_blank" rel="noopener" class="juejin-profile-btn">关注掘金主页 ↗</a></div>
+            <div style="display:flex;gap:8px;align-items:center;"><a href="./bookshelf.html" target="_blank" rel="noopener" class="juejin-profile-btn" style="background:#1F3FB0;color:#fff;border-color:#1F3FB0;"><span>📼</span> 开启 3D 实体书架 ↗</a><a href="https://juejin.cn/user/1989458366301708" target="_blank" rel="noopener" class="juejin-profile-btn">关注掘金主页 ↗</a></div>
           </header>
 
           <div class="article-modal-body">
@@ -379,7 +368,7 @@
         <div class="fox-modal-backdrop" id="close-fox-backdrop"></div>
         <div class="fox-modal-card">
           <button id="close-fox-btn" class="close-button" aria-label="关闭">×</button>
-          <iframe id="fox-iframe" src="/vulpa.html" class="fox-iframe" title="3D 守护狐狸"></iframe>
+          <iframe id="fox-iframe" src="./vulpa.html" loading="lazy" class="fox-iframe" title="3D 守护狐狸"></iframe>
         </div>
       </div>
 

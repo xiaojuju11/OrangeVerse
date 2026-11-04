@@ -1,0 +1,65 @@
+:root {
+  color-scheme: dark;
+  --ink: #e9f5ed;
+  --muted: #b0c8bf;
+  --sea: #092329;
+  --tide: #87e2cf;
+  --orange: #ffad69;
+  --line: #a9dbd13d;
+  --mono: Consolas, 'Microsoft YaHei', monospace;
+  font-family: system-ui, 'Microsoft YaHei', sans-serif;
+  background: var(--sea);
+  color: var(--ink);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: radial-gradient(ellipse at 77% 8%, #194449, transparent 38rem); }
+a { color: inherit; }
+a:focus-visible, input:focus-visible { outline: 2px solid var(--orange); outline-offset: 4px; }
+.wrap { width: min(1080px, calc(100% - 64px)); margin-inline: auto; }
+.masthead, .archive-footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 22px; }
+.masthead { border-bottom: 1px solid var(--line); }
+.brand { display: inline-flex; align-items: center; gap: 10px; font: 700 0.95rem var(--mono); text-decoration: none; }
+.brand span { width: 12px; height: 12px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 18px #ffad6955; }
+.text-link { color: var(--tide); font-size: 0.875rem; text-underline-offset: 5px; }
+.intro { position: relative; isolation: isolate; display: grid; align-content: center; min-height: 320px; padding-block: 54px; overflow: hidden; }
+.eyebrow { margin: 0 0 18px; color: var(--tide); font: 0.78rem var(--mono); letter-spacing: 0.12em; }
+.intro h1 { margin: 0; font: 700 clamp(3.5rem, 8vw, 7.5rem)/1.06 'Songti SC', SimSun, serif; letter-spacing: -0.06em; }
+.intro h1 span { color: var(--orange); margin-left: 0.04em; }
+.intro-copy { color: var(--muted); max-width: 31em; margin: 24px 0 0; line-height: 1.8; }
+.chart { position: absolute; z-index: -1; width: min(52%, 470px); right: 0; top: 50%; transform: translateY(-50%); stroke: #87e2cf66; }
+.planet { fill: #ffc28b; stroke: none; }
+.chart-point { fill: var(--tide); stroke: none; }
+
+.directory { border-top: 1px solid var(--line); }
+.directory-tools { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; padding-block: 16px; }
+.filters { display: flex; flex-wrap: wrap; gap: 4px; }
+.filters a { padding: 9px 14px; border: 1px solid transparent; border-radius: 3px; text-decoration: none; font-size: 0.9rem; color: var(--muted); }
+.filters a:hover { color: var(--ink); }
+.filters [aria-current] { background: var(--tide); color: var(--sea); font-weight: 700; }
+.search { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 0.85rem; }
+.search span { white-space: nowrap; }
+.search input { width: min(180px, 100%); border: 1px solid var(--line); border-radius: 3px; background: #0e3037; color: var(--ink); font: inherit; padding: 10px 12px; }
+.search input::placeholder { color: var(--muted); }
+.results-meta { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 0.875rem; }
+.results-meta p { margin: 0; }
+.archive-list { list-style: none; padding: 0; margin: 0; min-height: 144px; border-bottom: 1px solid var(--line); }
+.archive-list li { display: grid; grid-template-columns: 84px minmax(0, 1fr) auto; gap: 22px; align-items: start; border-top: 1px solid var(--line); padding: 20px 0; }
+.archive-list h2 { margin: 0; font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.5; overflow-wrap: anywhere; }
+.archive-list p { margin: 6px 0 0; color: var(--muted); font-size: 0.875rem; line-height: 1.65; overflow-wrap: anywhere; }
+.entry-label { width: fit-content; color: var(--tide); font: 0.78rem var(--mono); border: 1px solid var(--line); padding: 5px 10px; }
+.entry-link { font-size: 0.875rem; text-underline-offset: 5px; padding: 4px 2px; }
+.entry-link:hover, .text-link:hover { color: var(--orange); }
+.archive-footer { color: var(--muted); font-size: 0.8rem; }
+
+@media (max-width: 660px) {
+  .wrap { width: calc(100% - 36px); }
+  .intro { min-height: 260px; padding-block: 48px; }
+  .chart { width: 74%; right: -20%; opacity: 0.32; }
+  .intro-copy { max-width: 24em; }
+  .filters a { padding-inline: 10px; }
+  .search { width: 100%; }
+  .search input { flex: 1; min-width: 0; }
+  .archive-list li { grid-template-columns: 1fr auto; gap: 10px; }
+  .archive-list li > div { grid-column: 1 / -1; grid-row: 2; }
+}

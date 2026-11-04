@@ -4,7 +4,7 @@ import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
 import { groundHeight } from "./island.js";
 
-const MODEL_URL = "/fox.glb";
+const MODEL_URL = "./fox.glb";
 
 export function createGuardianFox(scene, options = {}) {
   const foxGroup = new THREE.Group();
@@ -179,7 +179,7 @@ export function createGuardianFox(scene, options = {}) {
     },
     undefined,
     (err) => {
-      console.error("Failed to load /fox.glb", err);
+      console.error(`Failed to load ${MODEL_URL}`, err);
     }
   );
 

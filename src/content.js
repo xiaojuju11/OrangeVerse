@@ -19,11 +19,11 @@ export const themes = {
     background: "#f3e1cc",
   },
   ocean: {
-    name: "浅海",
-    english: "OCEAN GARDEN",
-    caption: "潜入灵感，听见自己的回声。",
+    name: "浅海黄昏",
+    english: "OCEAN AT DUSK",
+    caption: "海面渐暗，岛上的灯亮了。",
     accent: "#527ea4",
     water: "#5a9fc5",
-    background: "#dce7f6",
+    background: "#8798ab",
   },
 };

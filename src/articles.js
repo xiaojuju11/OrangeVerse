@@ -17,7 +17,7 @@ export function initJuejinArticleViewer() {
   // 获取掘金文章数据
   async function loadArticles() {
     try {
-      const res = await fetch("/juejin_articles.json");
+      const res = await fetch("./juejin_articles.json");
       articlesData = await res.json();
       renderArticleList();
     } catch (e) {

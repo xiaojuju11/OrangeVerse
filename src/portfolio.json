@@ -4,7 +4,7 @@
     "name": "是你的小橘呀",
     "title": "OrangeVerse · 橘域",
     "subtitle": "A LITTLE WORLD OF VIBE CODING & AI",
-    "intro": "一个小橘的 AI 全栈与 Vibe Coding 个人宇宙。在这里漫游探索万界科技实习实践、GitHub 开源仓库、AI-Daily-Learning 知识书本、掘金技术专栏以及交互实验室。",
+    "intro": "一个小橘的 AI 全栈与 Vibe Coding 个人宇宙。在这里漫游探索GitHub 开源仓库、AI-Daily-Learning 知识书本、掘金技术专栏以及交互实验室。",
     "links": [
       {
         "label": "GitHub",
@@ -17,54 +17,6 @@
     ]
   },
   "modules": [
-    {
-      "id": "internship",
-      "name": "万界科技实战营",
-      "short": "实习实践",
-      "kind": "projects",
-      "english": "PRACTICE & ENGINEERING",
-      "intro": "万界科技 AI 全栈实习：将大模型多轮智能对话与现代全栈工程落地于真实业务场景。",
-      "description": "深入一线业务，负责 AI 赋能、多模型工作流编排以及现代化全栈客户端交付。",
-      "timeline": [
-        {
-          "period": "实习阶段",
-          "title": "万界科技 · AI 全栈实习工程师",
-          "text": "负责核心业务智能化赋能，探索 Agent 工作流编排、前端沉浸式交互及后端稳定交付。"
-        }
-      ],
-      "items": [
-        {
-          "title": "万界科技 · AI 全栈业务赋能与工程实践",
-          "summary": "在万界科技担任 AI 全栈实习工程师，深度参与大模型应用落地、全栈架构调优与智能体工作流设计。",
-          "kicker": "万界科技 · 实践营地",
-          "url": "https://github.com/xiaojuju11",
-          "metrics": [
-            {
-              "value": "AI + 全栈",
-              "label": "核心定位"
-            },
-            {
-              "value": "100%",
-              "label": "工程落地"
-            }
-          ],
-          "chapters": [
-            {
-              "title": "工程挑战",
-              "text": "如何将不可控的大模型输出与复杂的业务状态机融合，保证前端毫秒级渲染与后端流式传输的健壮性。"
-            },
-            {
-              "title": "技术架构与行动",
-              "text": "打通端到端智能化链路，结合 Coze 工作流自动化与高质量提示工程，重塑移动端与 Web 端的智能化人机交互体验。"
-            },
-            {
-              "title": "实战收获",
-              "text": "深刻理解了企业级 AI 应用落地的工程范式，从单纯的 Prompt 尝试迈向具备生产级韧性的 AI 全栈工程师。"
-            }
-          ]
-        }
-      ]
-    },
     {
       "id": "opensource",
       "name": "开源代码港湾",
