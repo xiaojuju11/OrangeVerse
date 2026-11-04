@@ -1,583 +1,640 @@
-/* The same collection lives in three different expedition journals. */
+/* ═════════════════════════════════════════════════════════════════════════
+   OrangeVerse 展品与营地卡片体系 (Exhibits & Curated Displays)
+   Design System: Ethereal Celestial Glassmorphism & High-Fashion Typography
+   ═════════════════════════════════════════════════════════════════════════ */
+
 body {
-  --paper: #fcfaf1;
-  --paper-deep: #e9eddd;
-  --ink: #304e41;
-  --line: #536e5324;
-  --soft: #718274;
-  --stamp: #597c56;
-  --glow: #d7e8be;
+  --paper: rgba(253, 251, 244, 0.90);
+  --paper-deep: rgba(236, 244, 238, 0.82);
+  --ink: #1c3832;
+  --line: rgba(54, 95, 74, 0.14);
+  --soft: #59786f;
+  --stamp: #316452;
+  --glow: rgba(215, 235, 210, 0.6);
 }
 body[data-theme="desert"] {
-  --paper: #fff5e8;
-  --paper-deep: #f0dfc3;
-  --ink: #684b36;
-  --line: #9873452b;
-  --soft: #92775f;
-  --stamp: #b07b44;
-  --glow: #efd2a0;
+  --paper: rgba(255, 250, 242, 0.92);
+  --paper-deep: rgba(246, 237, 222, 0.85);
+  --ink: #523720;
+  --line: rgba(147, 124, 96, 0.16);
+  --soft: #8a7057;
+  --stamp: #ab723b;
+  --glow: rgba(255, 225, 185, 0.6);
 }
 body[data-theme="ocean"] {
-  --paper: #f3fbff;
-  --paper-deep: #d8eaf1;
-  --ink: #35536b;
-  --line: #557d9b28;
-  --soft: #6b879c;
-  --stamp: #507ea1;
-  --glow: #b5ddea;
+  --paper: rgba(14, 32, 44, 0.90);
+  --paper-deep: rgba(20, 44, 60, 0.82);
+  --ink: #f0f7fb;
+  --line: rgba(135, 195, 225, 0.22);
+  --soft: #9bb6c6;
+  --stamp: #5aa4cf;
+  --glow: rgba(135, 195, 225, 0.4);
 }
+
+/* ─── 核心滑出展品画廊面板 (.work-panel) ─── */
 .work-panel {
-  width: min(590px, 47vw);
-  top: 96px;
-  bottom: 105px;
+  width: min(620px, 47vw);
+  top: 92px;
+  bottom: 96px;
   background: var(--paper);
-  border: 1px solid #ffffffb3;
+  backdrop-filter: blur(36px) saturate(190%);
+  -webkit-backdrop-filter: blur(36px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
   color: var(--ink);
-  box-shadow: 0 24px 75px #19372e24;
-  border-radius: 20px;
-  scroll-padding: 20px;
+  box-shadow: 0 32px 85px -15px rgba(18, 48, 38, 0.22), 0 2px 6px rgba(0,0,0,0.03), inset 0 1px 1px rgba(255, 255, 255, 0.95);
+  border-radius: 28px;
+  scroll-padding: 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
+body[data-theme="desert"] .work-panel {
+  border-color: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 32px 85px -15px rgba(80, 50, 25, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.95);
+}
+body[data-theme="ocean"] .work-panel {
+  border-color: rgba(135, 195, 225, 0.28);
+  box-shadow: 0 32px 90px -15px rgba(4, 12, 18, 0.55), inset 0 1px 1px rgba(135, 195, 225, 0.2);
+}
+
+.work-panel::-webkit-scrollbar {
+  width: 6px;
+}
+.work-panel::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 10px;
+}
+
 .work-panel .close-button {
   position: sticky;
   float: right;
-  top: 14px;
-  margin: 14px 15px -45px 0;
-  background: var(--paper);
+  top: 16px;
+  margin: 16px 18px -48px 0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
   color: var(--ink);
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   z-index: 5;
-  box-shadow: 0 2px 15px #0001;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.work-panel .close-button:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: rotate(90deg) scale(1.08);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+}
+body[data-theme="ocean"] .work-panel .close-button {
+  background: rgba(20, 44, 60, 0.75);
+  border-color: rgba(135, 195, 225, 0.3);
+  color: #f0f7fb;
+}
+
+/* ─── 展品头部景观幕封 (.panel-scene) ─── */
 .work-panel .panel-scene {
-  height: 88px;
-  border-radius: 20px 20px 0 0;
-  background-color: var(--paper-deep);
-  background-image: repeating-radial-gradient(
-    ellipse at 65% 160%,
-    transparent 0 13px,
-    #69865912 14px 15px,
-    transparent 16px 26px
-  );
+  height: 92px;
+  border-radius: 27px 27px 0 0;
+  background: linear-gradient(135deg, var(--paper-deep) 0%, var(--paper) 100%);
+  border-bottom: 1px solid var(--line);
   color: var(--stamp);
+  position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
 }
 .work-panel .panel-scene svg {
   height: 85px;
-  width: 170px;
-  left: auto;
-  right: 70px;
+  width: 180px;
+  position: absolute;
+  right: 65px;
   top: 0;
-  opacity: 0.65;
+  opacity: 0.55;
+  pointer-events: none;
 }
 .work-panel .panel-scene > span {
-  top: 12px;
-  font-size: 34px;
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  color: var(--stamp);
 }
 .work-panel .panel-scene > p {
-  bottom: 10px;
-  font-size: 8px;
-  color: var(--ink);
+  position: absolute;
+  bottom: 12px;
+  left: 28px;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  color: var(--soft);
 }
-body[data-theme="desert"] .work-panel .panel-scene {
-  background:
-    radial-gradient(ellipse at 30% 150%, #c9975c66 0 40%, transparent 40%),
-    radial-gradient(ellipse at 80% 120%, #e6be8a99 0 50%, transparent 50%),
-    var(--paper-deep);
-}
-body[data-theme="ocean"] .work-panel .panel-scene {
-  background:
-    repeating-radial-gradient(
-      ellipse at 10% -130%,
-      transparent 0 18px,
-      #6b9cb31c 19px 20px,
-      transparent 21px 30px
-    ),
-    var(--paper-deep);
-}
+
+/* ─── 面板内容排版 (.panel-body) ─── */
 .work-panel .panel-body {
-  padding: 24px 28px;
+  padding: 26px 32px 36px;
 }
 .work-panel .panel-body h2 {
-  font-size: 29px;
-  letter-spacing: 1px;
-  margin-bottom: 8px;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.24;
+  margin: 0 0 10px;
   color: var(--ink);
 }
 .work-panel .work-intro {
-  font-size: 13px;
-  margin-bottom: 3px;
+  font-size: 13.5px;
+  line-height: 1.75;
+  margin-bottom: 6px;
   color: var(--ink);
+  font-weight: 500;
 }
 .work-panel #work-description {
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 1.7;
   color: var(--soft);
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 .work-panel .panel-body .eyebrow {
-  color: var(--stamp);
+  margin-bottom: 12px;
 }
 .work-panel h3 {
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.55;
-  margin: 8px 0 12px;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  margin: 10px 0 14px;
 }
 .work-panel p {
   line-height: 1.85;
+  color: var(--ink);
 }
 .work-panel a {
   text-decoration: none;
   color: var(--ink);
 }
+
+/* ─── 高奢数据指标网格 (.ex-metrics) ─── */
 .ex-metrics {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 12px;
-  margin: 16px 0;
+  margin: 20px 0;
 }
 .ex-metrics > div {
-  border-left: 2px solid var(--stamp);
-  padding-left: 13px;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
+  transition: all 0.25s ease;
+}
+.ex-metrics > div:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+body[data-theme="ocean"] .ex-metrics > div {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(135, 195, 225, 0.16);
+}
+body[data-theme="ocean"] .ex-metrics > div:hover {
+  background: rgba(255, 255, 255, 0.12);
 }
 .ex-metrics strong {
-  font:
-    30px Georgia,
-    "Songti SC",
-    serif;
-  letter-spacing: -1px;
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  color: var(--stamp);
+  line-height: 1.1;
 }
 .ex-metrics span {
+  font-family: var(--font-sans);
   font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
   color: var(--soft);
 }
-.account-links {
+
+/* ─── 链接胶囊 (.account-links, .project-contact-links) ─── */
+.account-links,
+.project-contact-links {
   display: flex;
   gap: 8px;
-  margin: 21px 0 25px;
+  margin: 18px 0 22px;
+  flex-wrap: wrap;
 }
-.account-links a {
+.account-links a,
+.project-contact-links a {
   border: 1px solid var(--line);
-  border-radius: 30px;
-  padding: 8px 15px;
-  font-size: 11px;
-  transition: background 0.2s;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 100px;
+  padding: 8px 16px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .account-links a:hover,
-.choice-strip button:hover {
-  background: var(--paper-deep);
+.project-contact-links a:hover {
+  background: var(--stamp);
+  color: #fff;
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(49, 100, 82, 0.28);
 }
-.ex-kicker {
-  font-size: 9px;
-  letter-spacing: 1.6px;
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  color: var(--soft);
-  margin: 22px 0 12px;
+body[data-theme="ocean"] .account-links a,
+body[data-theme="ocean"] .project-contact-links a {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(135, 195, 225, 0.2);
+  color: #f0f7fb;
 }
-.ex-kicker > span {
-  letter-spacing: 0;
-  font-size: 10px;
-}
+
+/* ─── 章节与分类切换条 (.choice-strip) ─── */
 .choice-strip {
   display: flex;
   padding: 4px;
   border: 1px solid var(--line);
-  border-radius: 11px;
-  gap: 3px;
-  margin: 12px 0 17px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 100px;
+  gap: 4px;
+  margin: 14px 0 20px;
+  flex-wrap: wrap;
+}
+body[data-theme="ocean"] .choice-strip {
+  background: rgba(255, 255, 255, 0.05);
 }
 .choice-strip button {
   flex: 1;
-  font-size: 11px;
+  min-width: 80px;
+  font-size: 11.5px;
+  font-weight: 500;
   color: var(--soft);
-  padding: 10px 5px;
-  border-radius: 8px;
-  transition: background 0.2s;
+  padding: 8px 14px;
+  border-radius: 100px;
+  transition: all 0.2s ease;
+  overflow-wrap: anywhere;
+}
+.choice-strip button:hover {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.5);
 }
 .choice-strip button[aria-pressed="true"] {
-  background: var(--ink);
-  color: var(--paper);
-  box-shadow: 0 3px 8px #0001;
+  background: var(--stamp);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(49, 100, 82, 0.3);
 }
+
+/* ─── 展览图文双栏展示 (.screening) ─── */
 .screening {
   display: grid;
-  grid-template-columns: 43% 1fr;
+  grid-template-columns: 44% 1fr;
   gap: 22px;
   align-items: center;
+  margin-top: 16px;
 }
 .evidence {
   position: relative;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 16px;
   display: block;
   width: 100%;
   background: var(--paper-deep);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 14px 32px -8px rgba(18, 48, 38, 0.16);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .evidence img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .evidence:hover img {
-  transform: scale(1.035);
+  transform: scale(1.04);
 }
 .poster {
-  aspect-ratio: 3/4.7;
+  aspect-ratio: 3/4.5;
   transform: rotate(-1.5deg);
-  box-shadow: 0 7px 20px #1d302322;
+  box-shadow: 0 16px 36px -8px rgba(20, 45, 35, 0.22), 0 2px 6px rgba(0,0,0,0.04);
+}
+.poster:hover {
+  transform: rotate(0deg) scale(1.02);
+  box-shadow: 0 22px 48px -10px rgba(20, 45, 35, 0.3);
 }
 .poster img {
   object-fit: contain;
 }
 .zoom-hint {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: #fffdf1e8;
-  color: #324d41;
-  padding: 5px 8px;
-  font-size: 9px;
-  border-radius: 20px;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(255, 253, 241, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  color: #214337;
+  padding: 5px 11px;
+  font-size: 9.5px;
+  font-weight: 600;
+  border-radius: 100px;
   opacity: 0;
-  transition: opacity 0.2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: all 0.22s ease;
 }
 .evidence:hover .zoom-hint,
 .evidence:focus-visible .zoom-hint {
   opacity: 1;
+  transform: translateY(-2px);
 }
 .tiny-label {
-  font-size: 9px;
-  letter-spacing: 1px;
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
   color: var(--soft);
   display: block;
+  font-weight: 600;
   line-height: 1.8;
 }
 .work-panel .screening-copy h3 {
-  font-family: "Songti SC", serif;
-  font-size: 22px;
-  font-weight: 500;
-}
-.work-stat {
-  margin-top: 22px;
-  color: var(--stamp);
-  display: flex;
-  align-items: baseline;
-  gap: 5px;
-}
-.work-stat strong {
-  font:
-    30px Georgia,
-    "Songti SC",
-    serif;
-}
-.work-stat span {
-  font-size: 10px;
-}
-.screening-copy small,
-.award-card small {
-  font-size: 9px;
-  color: var(--soft);
-  line-height: 1.6;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.35;
+  margin: 6px 0 10px;
+  letter-spacing: -0.01em;
 }
 .action-link {
   display: inline-flex;
   align-items: center;
-  gap: 15px;
-  font-size: 11px;
-  border-bottom: 1px solid var(--stamp);
-  padding: 8px 0;
-  margin-top: 12px;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--stamp);
+  border-bottom: 1.5px solid var(--stamp);
+  padding: 6px 0;
+  margin-top: 14px;
+  transition: gap 0.2s ease;
 }
-.screening-copy .action-link {
-  display: flex;
-  width: max-content;
+.action-link:hover {
+  gap: 12px;
 }
-.field-fold {
-  border-top: 1px dashed var(--line);
-  padding: 14px 0;
-  font-size: 12px;
-  margin-top: 12px;
-}
-.field-fold summary {
-  cursor: pointer;
-  list-style: none;
-  display: flex;
-  justify-content: space-between;
-  font-weight: 500;
-}
-.field-fold[open] summary span {
-  transform: rotate(45deg);
-}
-.field-fold p {
-  font-size: 12px;
-  color: var(--ink);
-  margin: 13px 0 5px;
-}
-.field-fold small {
-  font-size: 10px;
-  color: var(--soft);
-  line-height: 1.8;
-}
-.field-fold ol {
-  padding-left: 20px;
-  line-height: 2.1;
-  font-size: 11px;
-}
+
+/* ─── 奖章徽章陈列架 (.medal-shelf, .medal) ─── */
 .medal-shelf {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
-  margin: 20px 0 23px;
+  grid-template-columns: repeat(auto-fit, minmax(75px, 1fr));
+  gap: 10px;
+  margin: 22px 0 26px;
 }
 .medal-shelf button {
   font-size: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   color: var(--soft);
-  padding: 10px 0;
-  border-radius: 12px;
+  padding: 12px 6px;
+  border-radius: 16px;
+  transition: all 0.25s ease;
+}
+.medal-shelf button:hover {
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--ink);
 }
 .medal {
-  font:
-    italic 26px Georgia,
-    serif;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 26px;
   display: grid;
   place-items: center;
-  width: 58px;
-  height: 58px;
-  border: 1px solid var(--stamp);
+  width: 60px;
+  height: 60px;
+  border: 1.5px solid var(--stamp);
   outline: 1px dashed var(--line);
-  outline-offset: -6px;
+  outline-offset: -5px;
   border-radius: 50%;
   position: relative;
-  transition:
-    transform 0.3s,
-    background 0.3s;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: var(--stamp);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .medal:after {
   content: "✦";
-  font-size: 12px;
+  font-size: 11px;
   position: absolute;
   bottom: -8px;
   background: var(--paper);
-  padding: 0 3px;
+  padding: 0 4px;
+  color: var(--stamp);
 }
 .medal-shelf button[aria-pressed="true"] {
   color: var(--ink);
-  background: var(--paper-deep);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
 }
 .medal-shelf button[aria-pressed="true"] .medal {
-  background: var(--stamp);
-  color: var(--paper);
-  transform: rotate(-7deg);
+  background: linear-gradient(135deg, var(--stamp) 0%, #224639 100%);
+  color: #fff;
+  border-color: transparent;
+  transform: rotate(-6deg) scale(1.08);
+  box-shadow: 0 10px 24px rgba(49, 100, 82, 0.35);
+}
+
+/* ─── 获奖奖项展示卡 (.award-card) ─── */
+.award-card {
+  margin-top: 16px;
 }
 .award-heading {
   display: flex;
-  gap: 15px;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 .award-heading strong {
-  font-family: "Songti SC", serif;
-  font-size: 23px;
+  font-family: var(--font-display);
+  font-size: 25px;
+  font-weight: 400;
   color: var(--stamp);
   white-space: nowrap;
 }
 .award-heading h3 {
-  margin-bottom: 0;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 400;
+  margin: 4px 0 0;
 }
 .award-photo {
   height: 270px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 16px 36px -8px rgba(18, 48, 38, 0.16);
 }
 .award-photo img {
   object-fit: contain;
 }
 .photo-caption {
-  font-family: "Songti SC", serif;
-  font-size: 14px;
-  margin-bottom: 4px;
+  font-family: var(--font-serif);
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-top: 12px;
 }
-.source-note {
-  font-size: 9px;
+
+/* ─── 项目精选卡片 (.project-cover) ─── */
+.project-cover {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.72) 0%, var(--paper-deep) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 20px;
+  padding: 24px 26px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 32px -8px rgba(20, 45, 35, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.project-cover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 40px -10px rgba(20, 45, 35, 0.14);
+}
+body[data-theme="ocean"] .project-cover {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(20, 44, 60, 0.6) 100%);
+  border-color: rgba(135, 195, 225, 0.22);
+}
+.project-icon {
+  font-family: var(--font-display);
+  font-size: 110px;
+  position: absolute;
+  right: 14px;
+  top: -8px;
+  opacity: 0.08;
+  pointer-events: none;
+}
+.project-cover h3 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 400;
+  margin: 8px 0 0;
+  letter-spacing: -0.015em;
+}
+.project-cover > p {
+  font-size: 12px;
   color: var(--soft);
-  margin-top: 20px;
+  margin: 6px 0 20px;
+  line-height: 1.65;
 }
+
+/* ─── 论文与期刊封面 (.journal-cover, .research-leaf) ─── */
 .journal-cover {
   display: flex;
-  gap: 20px;
+  gap: 22px;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  padding: 22px 0;
-  margin: 18px 0;
+  padding: 24px 0;
+  margin: 20px 0;
   align-items: center;
 }
 .journal-no {
-  font:
-    70px Georgia,
-    serif;
+  font-family: var(--font-display);
+  font-size: 72px;
+  font-weight: 400;
+  font-style: italic;
   color: var(--stamp);
   line-height: 1;
 }
 .journal-no small {
   display: block;
-  font: 8px sans-serif;
-  letter-spacing: 2px;
-  margin-top: 10px;
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  margin-top: 8px;
 }
 .work-panel .journal-cover h3 {
-  font-family: "Songti SC", serif;
-  font-size: 19px;
-  font-weight: 500;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
   margin-bottom: 6px;
 }
-.journal-cover p {
-  font-size: 10px;
-  color: var(--soft);
-  margin: 0;
-}
+
 .research-leaf {
   position: relative;
   min-height: 215px;
-  background: linear-gradient(135deg, var(--paper-deep), var(--paper));
-  padding: 27px 24px;
-  border-radius: 4px 24px 24px 4px;
-  border-left: 3px solid var(--stamp);
+  background: linear-gradient(135deg, var(--paper-deep) 0%, var(--paper) 100%);
+  padding: 28px 28px;
+  border-radius: 6px 24px 24px 6px;
+  border-left: 3.5px solid var(--stamp);
+  box-shadow: 0 12px 32px -8px rgba(20, 45, 35, 0.08);
   overflow: hidden;
 }
 .research-symbol {
   position: absolute;
-  right: 15px;
+  right: 16px;
   bottom: 0;
-  font: 140px Georgia;
-  opacity: 0.07;
+  font-family: var(--font-display);
+  font-size: 140px;
+  opacity: 0.06;
+  pointer-events: none;
 }
 .research-leaf h3 {
-  font-family: "Songti SC", serif;
-  font-size: 22px;
+  font-family: var(--font-display);
+  font-size: 23px;
   font-weight: 400;
   position: relative;
 }
 .research-leaf p {
-  font-size: 13px;
+  font-size: 13.5px;
+  line-height: 1.85;
   max-width: 95%;
   position: relative;
 }
-.paper-links {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 18px;
-  font-size: 11px;
-}
-.text-link {
-  font-size: 11px;
-  color: var(--ink);
-}
-.career-fold {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 24px;
-}
-.career-fold summary {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  cursor: pointer;
-  list-style: none;
-}
-.career-fold summary > span:last-child {
-  margin-left: auto;
-}
-.company-mark {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  background: var(--paper-deep);
-  color: var(--stamp);
-  border-radius: 10px;
-  font: italic 24px Georgia;
-}
-.career-fold b {
-  font-size: 13px;
-  font-weight: 500;
-}
-.career-fold small {
-  display: block;
-  font-size: 9px;
-  color: var(--soft);
-  margin-top: 4px;
-}
-.career-timeline {
-  padding: 10px 8px 0 16px;
-}
-.career-timeline article {
-  border-left: 1px solid var(--line);
-  padding: 5px 0 5px 15px;
-}
-.career-timeline h4 {
-  font-size: 12px;
-  margin: 8px 0;
-}
-.career-timeline p {
-  font-size: 11px;
-  color: var(--soft);
-}
-.project-cover {
-  background: var(--paper-deep);
-  border-radius: 12px;
-  padding: 21px 24px;
-  position: relative;
-  overflow: hidden;
-}
-.project-icon {
-  font: 110px Georgia;
-  position: absolute;
-  right: 13px;
-  top: -5px;
-  opacity: 0.12;
-}
-.project-cover h3 {
-  font-family: "Songti SC", serif;
-  font-size: 25px;
-  font-weight: 400;
-  margin: 8px 0 0;
-}
-.project-cover > p {
-  font-size: 11px;
-  color: var(--soft);
-  margin: 4px 0 20px;
-}
-.project-cover .ex-metrics {
-  margin-bottom: 0;
-}
-.project-cover .ex-metrics strong {
-  font-size: 24px;
-}
+
+/* ─── 故事章节步进路径 (.step-path, .case-step) ─── */
 .step-path {
   display: flex;
   gap: 8px;
-  margin: 25px 0 17px;
+  margin: 26px 0 18px;
   position: relative;
 }
 .step-path:before {
   content: "";
   position: absolute;
-  top: 15px;
-  left: 10%;
-  right: 10%;
+  top: 16px;
+  left: 8%;
+  right: 8%;
   height: 1px;
   background: var(--line);
 }
@@ -590,126 +647,191 @@ body[data-theme="ocean"] .work-panel .panel-scene {
   gap: 8px;
   font-size: 10px;
   color: var(--soft);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
 }
 .step-path b {
   border: 1px solid var(--line);
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   display: grid;
   place-items: center;
-  background: var(--paper);
-  font: 12px Georgia;
+  background: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-style: italic;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: all 0.25s ease;
 }
 .step-path button[aria-pressed="true"] {
   color: var(--ink);
+  font-weight: 600;
 }
 .step-path button[aria-pressed="true"] b {
   background: var(--stamp);
-  color: var(--paper);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 6px 16px rgba(49, 100, 82, 0.35);
+  transform: scale(1.1);
 }
 .case-step {
   min-height: 150px;
-  border-left: 2px solid var(--stamp);
-  padding: 8px 0 8px 17px;
+  border-left: 2.5px solid var(--stamp);
+  padding: 10px 0 10px 20px;
 }
 .case-step h3 {
-  font-size: 17px;
-  margin: 7px 0;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 400;
+  margin: 6px 0;
 }
 .case-step p {
-  font-size: 12px;
+  font-size: 12.5px;
   margin: 0;
+  line-height: 1.8;
   color: var(--ink);
 }
 .case-footer {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  margin: 15px 0;
-  font-size: 9px;
+  margin: 18px 0;
+  font-size: 10px;
   color: var(--soft);
 }
 .case-footer button {
   color: var(--stamp);
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 600;
   padding: 6px 0;
 }
-.trail-complete {
-  color: var(--stamp);
-}
+
+/* ─── 对话与作者连接卡 (.conversation-card) ─── */
 .conversation-card {
-  margin-top: 25px;
-  padding: 20px 22px;
-  background: var(--paper-deep);
-  border-radius: 12px;
+  margin-top: 26px;
+  padding: 22px 24px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.78) 0%, var(--paper-deep) 100%);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.05);
+}
+body[data-theme="ocean"] .conversation-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08) 0%, rgba(20, 44, 60, 0.6) 100%);
+  border-color: rgba(135, 195, 225, 0.2);
 }
 .conversation-card b {
-  font-family: "Songti SC", serif;
-  font-size: 18px;
-  font-weight: 500;
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 400;
+  color: var(--ink);
 }
 .conversation-card p {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--soft);
-  margin: 7px 0 0;
+  margin: 8px 0 0;
 }
-.work-panel .continue-button {
-  color: var(--ink);
-  margin-top: 20px;
-  border-color: var(--line);
+
+/* ─── 经历时间线折叠 (.career-fold, .career-timeline) ─── */
+.career-fold {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.4);
 }
+body[data-theme="ocean"] .career-fold {
+  background: rgba(255, 255, 255, 0.04);
+}
+.career-fold summary {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+  font-size: 13px;
+}
+.career-timeline article {
+  border-left: 1.5px solid var(--line);
+  padding: 6px 0 6px 18px;
+}
+.career-timeline h4 {
+  font-size: 13px;
+  margin: 6px 0;
+}
+
+/* ─── 图片放大 Lightbox (#evidence-dialog) ─── */
 #evidence-dialog {
-  border: 1px solid #fff7;
-  background: var(--paper);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 253, 246, 0.95);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
   color: var(--ink);
-  border-radius: 15px;
-  padding: 20px;
-  max-width: min(900px, 92vw);
-  max-height: 92svh;
+  border-radius: 24px;
+  padding: 24px;
+  max-width: min(920px, 92vw);
+  max-height: 90svh;
   overflow: auto;
+  box-shadow: 0 36px 90px -15px rgba(0, 0, 0, 0.4);
 }
 #evidence-dialog::backdrop {
-  background: #173633bb;
-  backdrop-filter: blur(7px);
+  background: rgba(10, 24, 28, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 #evidence-dialog img {
   max-width: 100%;
-  max-height: 78svh;
+  max-height: 75svh;
   object-fit: contain;
   display: block;
   margin: auto;
+  border-radius: 14px;
 }
 #evidence-dialog p {
-  font-size: 12px;
+  font-size: 13px;
   text-align: center;
+  color: var(--soft);
+  margin-top: 14px;
 }
 #close-evidence {
   position: sticky;
   top: 0;
   float: right;
-  width: 35px;
-  height: 35px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: var(--paper);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   color: var(--ink);
-  font-size: 25px;
+  font-size: 22px;
+  display: grid;
+  place-items: center;
   z-index: 1;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
 }
+#close-evidence:hover {
+  transform: rotate(90deg) scale(1.08);
+}
+
+/* ─── 进场动效 (.story-enter) ─── */
 .story-enter {
-  animation: exEnter 0.3s ease-out;
+  animation: exEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 @keyframes exEnter {
   from {
-    opacity: 0.35;
-    transform: translateY(6px);
+    opacity: 0.25;
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
+/* ─── 响应式布局优化 ─── */
 @media (max-width: 1100px) and (min-width: 701px) {
   .work-panel {
     width: 490px;
@@ -720,101 +842,33 @@ body[data-theme="ocean"] .work-panel .panel-scene {
 @media (max-width: 700px) {
   .work-panel {
     top: auto;
-    bottom: 88px;
+    bottom: 84px;
     width: calc(100% - 24px);
     right: 12px;
-    max-height: 68svh;
-    border-radius: 20px;
+    max-height: 70svh;
+    border-radius: 24px;
   }
   .work-panel .panel-scene {
-    height: 65px;
+    height: 70px;
+    padding: 0 20px;
   }
   .work-panel .panel-scene > span {
-    font-size: 25px;
-    top: 7px;
-  }
-  .work-panel .panel-scene > p {
-    font-size: 7px;
-    bottom: 8px;
-  }
-  .work-panel .panel-scene svg {
-    height: 60px;
-    right: 60px;
-    top: 0;
+    font-size: 28px;
   }
   .work-panel .panel-body {
-    padding: 20px;
+    padding: 20px 22px;
   }
   .work-panel .panel-body h2 {
-    font-size: 25px;
-  }
-  .work-panel .work-intro {
-    font-size: 12px;
-  }
-  .work-panel #work-description {
-    font-size: 10px;
-  }
-  .ex-metrics strong {
-    font-size: 27px;
-  }
-  .ex-kicker {
-    letter-spacing: 1px;
-    font-size: 8px;
-  }
-  .ex-kicker > span {
-    font-size: 9px;
+    font-size: 26px;
   }
   .screening {
+    grid-template-columns: 1fr;
     gap: 16px;
-    grid-template-columns: 43% 1fr;
   }
-  .work-panel .screening-copy h3 {
-    font-size: 18px;
-  }
-  .work-stat strong {
-    font-size: 25px;
-  }
-  .work-stat {
-    margin-top: 10px;
-  }
-  .medal {
-    width: 48px;
-    height: 48px;
-    font-size: 23px;
-  }
-  .medal-shelf button {
-    font-size: 9px;
-  }
-  .award-heading strong {
-    font-size: 21px;
-  }
-  .award-photo {
-    height: 230px;
-  }
-  .journal-no {
-    font-size: 50px;
-  }
-  .journal-cover {
-    gap: 13px;
-  }
-  .work-panel .journal-cover h3 {
-    font-size: 16px;
-  }
-  .project-cover {
-    padding: 18px;
-  }
-  .project-cover .ex-metrics strong {
-    font-size: 21px;
-  }
-  .research-leaf {
-    padding: 22px 18px;
-    min-height: 210px;
-  }
-  .research-leaf h3 {
-    font-size: 20px;
-  }
-  .case-footer {
-    align-items: flex-start;
+  .poster {
+    max-height: 220px;
+    width: fit-content;
+    margin: 0 auto;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -826,60 +880,3 @@ body[data-theme="ocean"] .work-panel .panel-scene {
     transition: none;
   }
 }
-/* Keep the first work and its result in the initial reading window. */
-.work-panel .panel-scene {
-  height: 64px;
-}
-.work-panel .panel-scene svg {
-  height: 62px;
-  right: 60px;
-}
-.work-panel .panel-scene > span {
-  top: 8px;
-  font-size: 27px;
-}
-.work-panel .panel-body {
-  padding-top: 18px;
-}
-.work-panel #work-description {
-  display: none;
-}
-.ex-metrics {
-  margin: 14px 0;
-}
-.account-links {
-  margin: 15px 0 18px;
-}
-.ex-kicker {
-  margin-top: 16px;
-}
-.poster {
-  height: 260px;
-  aspect-ratio: auto;
-}
-@media (max-width: 700px) {
-  .poster {
-    height: 228px;
-  }
-  .work-panel .panel-scene {
-    height: 57px;
-  }
-  .work-panel .panel-scene svg {
-    height: 54px;
-  }
-}
-@media(min-width:701px) and (max-height:780px){.welcome-note{display:none}}
-.choice-strip button,.medal-shelf button,.step-path button,.text-link,.case-footer button{background:transparent}
-
-.account-links { flex-wrap: wrap; }
-.project-contact-links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
-.text-only{display:block;padding:24px;background:var(--paper-deep);border-radius:15px;min-height:220px}
-.screening-copy > p{font-size:12px;color:var(--soft)}
-.choice-strip{flex-wrap:wrap}
-.choice-strip button{min-width:80px;overflow-wrap:anywhere}
-.medal-shelf{grid-template-columns:repeat(auto-fit,minmax(75px,1fr))}
-.step-path button{line-height:1.8;overflow-wrap:anywhere}
-.account-links:empty{display:none}
-.brand-copy{max-width:240px;overflow-wrap:anywhere}
-#camp-total{font-weight:inherit}
-@media(max-width:700px){.brand-copy{max-width:135px}.screening-copy .ex-metrics{display:block}.screening-copy .ex-metrics>div{margin:10px 0}}
