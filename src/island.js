@@ -1,6 +1,8 @@
 import { makeInteractiveHiker } from "./interactive-hiker.js";
 import { createGuardianFox } from "./fox-companion.js";
 import { createDuskSky, createShallowOcean, DUSK_SUN_COLOR, DUSK_SUN_POSITION } from "./shallow-ocean.js";
+import { createSakuraField } from "./sakura-field.js";
+import { createAIOrb } from "./ai-orb.js";
 import * as T from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
@@ -130,7 +132,7 @@ function mergeScenery(root) {
 }
 export function createIsland(
   container,
-  { onReady, onArrive, onLeave, onMove, onTheme, onBoundary } = {},
+  { onReady, onArrive, onLeave, onMove, onTheme, onBoundary, audio, toast } = {},
 ) {
   const renderer = new T.WebGLRenderer({
     antialias: true,
@@ -677,6 +679,10 @@ void main(){
   scene.add(player);
   // 🦊 3D 守护狐狸：刷新在小女孩正前方 (x: 0, z: 2.2)，面朝小女孩
   const guardianFox = createGuardianFox(scene, { x: 0.0, z: 2.2, scale: 0.85 });
+  // 🌸 落樱与飘叶流场系统 (danmana/sakura-idle)
+  const sakuraField = createSakuraField(scene, groundHeight);
+  // 🔮 AI 极光灵动球 (weeeha/AI-Orb)
+  const aiOrb = createAIOrb(scene, POND, audio, toast || onBoundary);
   let playerPosition = [...SPAWN];
   player.position.set(SPAWN[0], groundHeight(...SPAWN) + 0.06, SPAWN[1]);
   player.rotation.y = 0.25;
@@ -800,6 +806,10 @@ void main(){
       dragging = true;
     if (pointerDown) return;
     cast(e);
+    if (aiOrb && raycaster.intersectObject(aiOrb.core).length > 0) {
+      canvas.style.cursor = "pointer";
+      return;
+    }
     const hit = raycaster.intersectObjects(propRoots[theme].children, true)[0];
     hoverCategory = hit?.object.userData.category ?? -1;
     canvas.style.cursor = hoverCategory >= 0 ? "pointer" : "grab";
@@ -813,6 +823,10 @@ void main(){
     dragging = false;
     if (moved || e.button === 2) return;
     cast(e);
+    if (aiOrb && raycaster.intersectObject(aiOrb.core).length > 0) {
+      aiOrb.interact();
+      return;
+    }
     const prop = raycaster.intersectObjects(propRoots[theme].children, true)[0];
     if (prop) {
       travelTo(prop.object.userData.category);
@@ -923,6 +937,8 @@ void main(){
       sparkles.material.color.set("#ffdf80");
       sparkles.material.size = 0.24;
     }
+    sakuraField?.setTheme(id);
+    aiOrb?.setTheme(id);
     if (changed && isOverview) resetCamera();
     container.dataset.theme = id;
     onTheme?.(id);
@@ -1139,6 +1155,8 @@ void main(){
         light.userData.halo.material.opacity = lanternFade * 0.62;
       }
     }
+    sakuraField?.update(dt, t, reduced.matches);
+    aiOrb?.update(dt, t, reduced.matches);
     if (!reduced.matches) {
       const posAttr = sparkGeo.attributes.position;
       const arr = posAttr.array;

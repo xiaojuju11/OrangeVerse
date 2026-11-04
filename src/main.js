@@ -298,6 +298,8 @@ try {
       closeWork();
     },
     onBoundary: toast,
+    audio,
+    toast,
   });
 } catch (error) {
   console.error(error);
@@ -313,9 +315,11 @@ try {
 import { initCyberCompanion } from "./companion.js";
 import { initJuejinArticleViewer } from "./articles.js";
 import { initMagneticHover } from "./magnetic.js";
+import { initFloatingDock } from "./dock.js";
 
 initCyberCompanion();
 initJuejinArticleViewer();
+initFloatingDock({ audio, island });
 
 if (location.hash === "#resume") modalManager.open("resume");
 if (location.hash === "#ocean") {
