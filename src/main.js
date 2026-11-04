@@ -127,8 +127,12 @@ modalManager.register("work", {
   element: $("work"),
   closeBtn: [$("close-work"), $("continue")],
   exclusive: true,
-  onOpen: () => document.body.classList.add("panel-open"),
+  onOpen: () => {
+    audio.playHaptic("open");
+    document.body.classList.add("panel-open");
+  },
   onClose: () => {
+    audio.playHaptic("close");
     active = -1;
     document.body.classList.remove("panel-open");
     document.querySelectorAll("#category-nav button").forEach((b) => b.classList.remove("active"));
@@ -140,7 +144,11 @@ modalManager.register("help", {
   trigger: $("help"),
   closeBtn: [$("close-help"), $("help-done")],
   isDialog: true,
-  onOpen: () => island?.stop()
+  onOpen: () => {
+    audio.playHaptic("open");
+    island?.stop();
+  },
+  onClose: () => audio.playHaptic("close")
 });
 
 modalManager.register("resume", {
@@ -148,7 +156,9 @@ modalManager.register("resume", {
   trigger: $("resume-btn"),
   closeBtn: $("close-resume"),
   backdrop: $("close-resume-backdrop"),
-  exclusive: true
+  exclusive: true,
+  onOpen: () => audio.playHaptic("open"),
+  onClose: () => audio.playHaptic("close")
 });
 
 $("print-resume")?.addEventListener("click", () => window.print());
@@ -158,8 +168,17 @@ modalManager.register("fox", {
   trigger: $("fox-portal-btn"),
   closeBtn: $("close-fox-btn"),
   backdrop: $("close-fox-backdrop"),
-  exclusive: true
+  exclusive: true,
+  onOpen: () => audio.playHaptic("open"),
+  onClose: () => audio.playHaptic("close")
 });
+
+// 全局微触感音效：点击按钮与胶囊标签触发柔和木质马林巴触音
+document.addEventListener("click", (e) => {
+  if (e.target.closest("button, [data-magnetic], .theme-picker button, .camp-label, .overview-button")) {
+    audio.playHaptic("tap");
+  }
+}, { passive: true });
 
 function navigate(i) {
   begin();
@@ -297,6 +316,12 @@ import { initMagneticHover } from "./magnetic.js";
 
 initCyberCompanion();
 initJuejinArticleViewer();
+
+if (location.hash === "#resume") modalManager.open("resume");
+if (location.hash === "#ocean") {
+  document.querySelector('.theme-picker [data-theme="ocean"]')?.click();
+  if (!webglFailed) begin();
+}
 
 // 对顶部胶囊按钮、行动呼吁大按钮以及营地气泡启用磁吸
 initMagneticHover("[data-magnetic]", {

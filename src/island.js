@@ -1,5 +1,6 @@
 import { makeInteractiveHiker } from "./interactive-hiker.js";
 import { createGuardianFox } from "./fox-companion.js";
+import { createDuskSky, createShallowOcean, DUSK_SUN_COLOR, DUSK_SUN_POSITION } from "./shallow-ocean.js";
 import * as T from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { mergeGeometries } from "three/addons/utils/BufferGeometryUtils.js";
@@ -41,6 +42,21 @@ import {
 const TAU = Math.PI * 2,
   RADIUS = 13.8;
 export const POND = { x: -1.15, z: -0.65, r: 1.8 };
+
+function makeLampHalo() {
+  const size = 32;
+  const pixels = new Uint8Array(size * size * 4);
+  for (let i = 0; i < size * size; i++) {
+    const x = (i % size + 0.5) / size * 2 - 1;
+    const y = (Math.floor(i / size) + 0.5) / size * 2 - 1;
+    const alpha = Math.max(0, 1 - Math.hypot(x, y)) ** 3;
+    pixels.set([255, 255, 255, Math.round(alpha * 255)], i * 4);
+  }
+  const texture = new T.DataTexture(pixels, size, size);
+  texture.magFilter = T.LinearFilter;
+  texture.needsUpdate = true;
+  return texture;
+}
 export function groundHeight(x, z) {
   const r = Math.hypot(x, z);
   let y =
@@ -155,8 +171,9 @@ export function createIsland(
   controls.maxPolarAngle = CAMERA_LIMITS.maxPolar;
   const hemi = new T.HemisphereLight("#f1fcff", "#96b9a4", 1.5);
   scene.add(hemi);
+  const daylightPosition = [-12, 25, 16];
   const sun = new T.DirectionalLight("#fff2d5", 2.4);
-  sun.position.set(-12, 25, 16);
+  sun.position.set(...daylightPosition);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
   Object.assign(sun.shadow.camera, {
@@ -234,7 +251,36 @@ export function createIsland(
       color: { value: new T.Color(themes.forest.water) },
     },
     vertexShader: `varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-    fragmentShader: `uniform float time;uniform vec3 color;varying vec3 vP;void main(){vec2 p=vP.xz;float r=length(p);float waves=sin(r*2.7-time*.55+sin(atan(p.y,p.x)*7.)*.18)*.5+.5;float shore=exp(-pow((r-14.75)/.65,2.));float rings=pow(waves,15.)*exp(-max(0.,r-14.)*.09);float glint=pow(max(0.,sin(p.x*.9+time*.12)*cos(p.y*.8-time*.1)),24.);vec3 c=color+vec3(.12,.15,.13)*(rings*.5+glint*.2)+shore*vec3(.16,.16,.11);float far=smoothstep(30.,90.,r);c=mix(c,vec3(.79,.9,.91),far*.6);gl_FragColor=vec4(c,1.);
+    fragmentShader: `uniform float time;
+uniform vec3 color;
+varying vec3 vP;
+void main(){
+  vec2 p = vP.xz;
+  float r = length(p);
+  float tide = sin(time * 0.85) * 0.18;
+  float shoreBase = 14.6 + tide;
+  float foam1 = smoothstep(shoreBase - 0.55, shoreBase, r) * (1.0 - smoothstep(shoreBase, shoreBase + 0.35, r));
+  float foam2 = smoothstep(shoreBase + 0.22, shoreBase + 0.48, r) * (1.0 - smoothstep(shoreBase + 0.48, shoreBase + 0.9, r)) * 0.58;
+  float totalFoam = clamp(foam1 + foam2, 0.0, 1.0);
+  
+  float waveAngle = atan(p.y, p.x);
+  float waves = sin(r * 2.6 - time * 0.6 + sin(waveAngle * 6.0) * 0.22) * 0.5 + 0.5;
+  float waveRing = pow(waves, 11.0) * exp(-max(0.0, r - 14.0) * 0.08);
+  
+  float caust = sin(p.x * 1.6 + time * 0.45 + sin(p.y * 1.3 + time * 0.3) * 1.8) * cos(p.y * 1.6 - time * 0.4 + sin(p.x * 1.2 - time * 0.25) * 1.8);
+  caust = pow(max(0.0, caust), 5.0) * 0.24;
+  float glint = pow(max(0.0, sin(p.x * 0.9 + time * 0.14) * cos(p.y * 0.82 - time * 0.11)), 22.0);
+  
+  float depth = smoothstep(14.0, 40.0, r);
+  vec3 waterBase = mix(color, color * 0.76 + vec3(0.02, 0.05, 0.08), depth);
+  
+  vec3 foamColor = vec3(0.97, 0.99, 1.0);
+  vec3 c = mix(waterBase, foamColor, totalFoam * 0.9);
+  c += vec3(0.18, 0.22, 0.24) * (waveRing * 0.4 + caust + glint * 0.32);
+  
+  float far = smoothstep(32.0, 95.0, r);
+  c = mix(c, vec3(0.81, 0.91, 0.92), far * 0.65);
+  gl_FragColor = vec4(c, 1.0);
 #include <tonemapping_fragment>
 #include <colorspace_fragment>
 }`,
@@ -246,6 +292,10 @@ export function createIsland(
     [0, -0.7, 0],
   );
   ocean.castShadow = false;
+  const shallowOcean = createShallowOcean();
+  const duskSky = createDuskSky();
+  scene.add(shallowOcean, duskSky);
+  const duskLamps = [];
   const lakeMat = new T.MeshStandardMaterial({
     color: "#7cc9c7",
     roughness: 0.2,
@@ -502,6 +552,20 @@ export function createIsland(
     lampLight2.position.set(lamp2X, lamp2Y + 2.8, lamp2Z);
     props.add(lampLight2);
     if (id === "ocean") {
+      duskLamps.push(lampLight1, lampLight2);
+      const haloTexture = makeLampHalo();
+      for (const light of duskLamps) {
+        light.color.set("#ffc175");
+        light.distance = 6.2;
+        const halo = new T.Sprite(new T.SpriteMaterial({
+          map: haloTexture, color: "#ffab55", transparent: true,
+          depthWrite: false, blending: T.AdditiveBlending, opacity: 0,
+        }));
+        halo.position.copy(light.position);
+        halo.scale.setScalar(1.85);
+        props.add(halo);
+        light.userData.halo = halo;
+      }
       for (let i = 0; i < 6; i++) {
         const f = fish(root, i % 2 ? "#dfb88e" : "#a2c8d4", 0.35);
         f.userData.swimmer = i;
@@ -510,27 +574,60 @@ export function createIsland(
     }
     root.visible = id === "forest";
   }
+  function makeSporeTexture() {
+    const c = document.createElement("canvas");
+    c.width = 64;
+    c.height = 64;
+    const ctx = c.getContext("2d");
+    const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, "rgba(255, 255, 255, 1)");
+    g.addColorStop(0.2, "rgba(255, 240, 170, 0.9)");
+    g.addColorStop(0.55, "rgba(255, 205, 95, 0.35)");
+    g.addColorStop(1, "rgba(255, 180, 70, 0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 64, 64);
+    return new T.CanvasTexture(c);
+  }
+
   const beacons = [],
     labels = [...document.querySelectorAll(".camp-label")];
-  const sparkGeo = new T.BufferGeometry(),
-    sparkPositions = [];
-  for (let i = 0; i < 180; i++)
-    sparkPositions.push(
-      (random() - 0.5) * 26,
-      1 + random() * 3,
-      (random() - 0.5) * 26,
-    );
+  const sporeCount = 240;
+  const sparkPositions = new Float32Array(sporeCount * 3);
+  const sporeData = [];
+  const sporeRng = randFactory(317);
+  for (let i = 0; i < sporeCount; i++) {
+    const angle = sporeRng() * TAU;
+    const dist = 1.0 + sporeRng() * 12.8;
+    const x = Math.cos(angle) * dist;
+    const z = Math.sin(angle) * dist;
+    const y = groundHeight(x, z) + 0.35 + sporeRng() * 3.8;
+    sparkPositions[i * 3] = x;
+    sparkPositions[i * 3 + 1] = y;
+    sparkPositions[i * 3 + 2] = z;
+    sporeData.push({
+      baseX: x,
+      baseY: y,
+      baseZ: z,
+      phase: sporeRng() * TAU,
+      speedY: 0.18 + sporeRng() * 0.28,
+      rangeY: 0.8 + sporeRng() * 1.6,
+      speedWave: 0.3 + sporeRng() * 0.4,
+    });
+  }
+  const sparkGeo = new T.BufferGeometry();
   sparkGeo.setAttribute(
     "position",
-    new T.Float32BufferAttribute(sparkPositions, 3),
+    new T.BufferAttribute(sparkPositions, 3),
   );
   const sparkles = new T.Points(
     sparkGeo,
     new T.PointsMaterial({
       color: "#ffe082",
-      size: 0.085,
+      map: makeSporeTexture(),
+      size: 0.24,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.72,
+      blending: T.AdditiveBlending,
       depthWrite: false,
     }),
   );
@@ -609,6 +706,7 @@ export function createIsland(
   targetMarker.rotation.x = -Math.PI / 2;
   targetMarker.visible = false;
   let theme = "forest",
+    duskBegan = 0,
     path = [],
     near = -1,
     moveSpeed = 0,
@@ -635,7 +733,7 @@ export function createIsland(
     controls.maxDistance = narrow
       ? 80
       : Math.max(CAMERA_LIMITS.maxDistance, 54 / camera.aspect);
-    const targetPos = new T.Vector3(19, 25, 30)
+    const targetPos = new T.Vector3(19, theme === "ocean" ? 17 : 25, 30)
       .normalize()
       .multiplyScalar(distance)
       .add(new T.Vector3(0, 0.8, 0));
@@ -785,7 +883,10 @@ export function createIsland(
   });
   function setTheme(id) {
     if (!themes[id]) return;
+    const changed = theme !== id;
+    const dusk = id === "ocean";
     theme = id;
+    if (dusk && changed) duskBegan = performance.now();
     for (const [k, v] of Object.entries(biomes)) v.visible = k === id;
     landMat.color.set(palette[id].ground);
     sandMat.color.set(palette[id].sand);
@@ -793,14 +894,35 @@ export function createIsland(
       id === "forest" ? "#a6b393" : id === "desert" ? "#c4a883" : "#a6acc4",
     );
     waterMat.uniforms.color.value.set(themes[id].water);
+    shallowOcean.visible = dusk;
+    duskSky.visible = dusk;
+    ocean.visible = !dusk;
+    controls.maxPolarAngle = dusk ? Math.PI * 0.48 : CAMERA_LIMITS.maxPolar;
     scene.background.set(themes[id].background);
     scene.fog.color.copy(scene.background);
+    hemi.color.set(dusk ? "#b8c6eb" : "#f1fcff");
+    hemi.intensity = dusk ? 1.22 : 1.5;
+    sun.color.set(dusk ? DUSK_SUN_COLOR : "#fff2d5");
+    sun.position.set(...(dusk ? DUSK_SUN_POSITION : daylightPosition));
+    sun.intensity = dusk ? 2.15 : 2.4;
+    fill.intensity = dusk ? 0.55 : 0.8;
     hemi.groundColor.set(
       id === "desert" ? "#d3bd9c" : id === "ocean" ? "#9badcd" : "#96b9a4",
     );
     lakeMat.color.set(
-      id === "desert" ? "#87c0b1" : id === "ocean" ? "#7dadd1" : "#7cc9c7",
+      id === "desert" ? "#87c0b1" : dusk ? "#50849a" : "#7cc9c7",
     );
+    if (id === "ocean") {
+      sparkles.material.color.set("#7eeaf3");
+      sparkles.material.size = 0.28;
+    } else if (id === "desert") {
+      sparkles.material.color.set("#fed060");
+      sparkles.material.size = 0.22;
+    } else {
+      sparkles.material.color.set("#ffdf80");
+      sparkles.material.size = 0.24;
+    }
+    if (changed && isOverview) resetCamera();
     container.dataset.theme = id;
     onTheme?.(id);
   }
@@ -1008,7 +1130,26 @@ export function createIsland(
       lastViewKey = viewKey;
     }
     waterMat.uniforms.time.value = reduced.matches ? 0 : t;
-    sparkles.rotation.y = reduced.matches ? 0 : Math.sin(t * 0.08) * 0.025;
+    if (shallowOcean.visible) {
+      shallowOcean.update(t, reduced.matches);
+      const lanternFade = reduced.matches ? 1 : T.MathUtils.smoothstep(now - duskBegan, 0, 1100);
+      for (const light of duskLamps) {
+        light.intensity = T.MathUtils.lerp(0.85, 15, lanternFade);
+        light.userData.halo.material.opacity = lanternFade * 0.62;
+      }
+    }
+    if (!reduced.matches) {
+      const posAttr = sparkGeo.attributes.position;
+      const arr = posAttr.array;
+      for (let i = 0; i < sporeCount; i++) {
+        const s = sporeData[i];
+        arr[i * 3] = s.baseX + Math.sin(t * s.speedWave + s.phase) * 0.32;
+        arr[i * 3 + 1] = Math.max(0.25, s.baseY + Math.sin(t * s.speedY + s.phase) * s.rangeY);
+        arr[i * 3 + 2] = s.baseZ + Math.cos(t * s.speedWave * 0.8 + s.phase) * 0.32;
+      }
+      posAttr.needsUpdate = true;
+      sparkles.material.opacity = 0.58 + Math.sin(t * 1.4) * 0.18;
+    }
     lakeRings.forEach((r, i) => {
       r.scale.setScalar(reduced.matches ? 1 : 1 + Math.sin(t * 0.7 + i) * 0.12);
     });

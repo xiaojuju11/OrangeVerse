@@ -68,6 +68,11 @@ button {
     );
 }
 .topbar {
+  --nav-ink: #eff4ea;
+  --nav-muted: #ccdcd5;
+  --nav-panel: #0d282de8;
+  --nav-line: #c1e1d840;
+  --nav-sun: #ffc08b;
   position: absolute;
   top: 30px;
   left: 38px;
@@ -79,6 +84,7 @@ button {
   z-index: 5;
 }
 .topbar button,
+.topbar a,
 .topbar .theme-picker {
   pointer-events: auto;
 }
@@ -89,21 +95,24 @@ button {
   background: none;
   padding: 0;
   text-align: left;
+  color: #203d42;
 }
 .brand-mark {
-  font-family: Georgia, serif;
-  font-size: 43px;
-  font-style: italic;
-  line-height: 0.9;
-  letter-spacing: -6px;
-  color: var(--accent);
-  width: 35px;
-  height: 44px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid currentColor;
 }
-.brand-mark > span {
-  color: #d0a566;
-  display: inline-block;
-  transform: translate(4px, 2px);
+.brand-mark::before {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background: var(--nav-sun);
+  border-radius: 50%;
+  box-shadow: 0 0 12px #ffb06f7f;
 }
 .brand-copy {
   font-size: 15px;
@@ -121,24 +130,48 @@ button {
 .top-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
+.island-links,
 .theme-picker {
   display: flex;
-  gap: 3px;
-  padding: 5px;
-  background: #ffffefb5;
-  border: 1px solid #ffffffbd;
+  gap: 2px;
+  padding: 4px;
+  background: var(--nav-panel);
+  border: 1px solid var(--nav-line);
   border-radius: 28px;
-  box-shadow: 0 4px 20px #34534405;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 6px 24px #06202429;
+}
+.island-nav-link,
+.theme-picker button {
+  border-radius: 22px;
+  color: var(--nav-muted);
+  white-space: nowrap;
+  text-decoration: none;
+  background: transparent;
+  font-size: 12px;
+  line-height: 1.25;
+}
+.island-nav-link {
+  padding: 9px 12px;
+}
+.island-archive-link {
+  color: var(--nav-ink);
+  font-weight: 700;
+}
+.island-archive-link span { color: var(--nav-sun); }
+.island-nav-link:hover,
+.theme-picker button:hover {
+  background: #e0f5ea18;
+  color: var(--nav-ink);
+}
+.topbar :is(button, a):focus-visible {
+  outline: 2px solid var(--nav-sun);
+  outline-offset: 3px;
 }
 .theme-picker button {
-  padding: 9px 16px;
-  border-radius: 22px;
-  font-size: 12px;
-  letter-spacing: 1px;
-  background: transparent;
-  color: #69877d;
+  padding: 8px 12px;
   transition:
     background 0.3s,
     color 0.3s,
@@ -150,24 +183,23 @@ button {
   margin-right: 5px;
 }
 .theme-picker button[aria-pressed="true"] {
-  color: var(--accent);
-  background: #fffdf6;
-  box-shadow: 0 2px 8px #285c4310;
+  color: #29201a;
+  background: var(--nav-sun);
 }
 .round-button {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: #ffffefb5;
-  border: 1px solid #fff9;
+  background: var(--nav-panel);
+  border: 1px solid var(--nav-line);
   width: 39px;
   height: 39px;
   font-family: Georgia, serif;
   font-size: 18px;
-  color: #55786a;
+  color: var(--nav-ink);
 }
 .round-button:hover {
-  background: #fffdf5;
+  background: #214247;
 }
 .welcome {
   position: absolute;
@@ -854,6 +886,28 @@ body[data-theme="ocean"] {
   --ink: #435a78;
   --muted: #8291a8;
   --line: #526a921a;
+  --dusk-panel: #102b34df;
+  --dusk-line: #c1d9dc48;
+  --dusk-ink: #edf3ee;
+  --dusk-glow: #ffc08b;
+}
+body[data-theme="ocean"] :is(.brand, .brand-copy small, .world-caption > span, .world-caption p, .discovery > span) {
+  color: var(--dusk-ink);
+  text-shadow: 0 1px 5px #102b34;
+}
+body[data-theme="ocean"] :is(.camp-label, .overview-button, .minimap, .category-nav, .walk-status) {
+  background: var(--dusk-panel);
+  color: var(--dusk-ink);
+  border-color: var(--dusk-line);
+}
+body[data-theme="ocean"] :is(.camp-label > span:first-child, .category-nav button > span, .overview-button span) {
+  color: var(--dusk-glow);
+}
+body[data-theme="ocean"] :is(.category-nav button, .map-north, .map-caption) {
+  color: var(--dusk-ink);
+}
+body[data-theme="ocean"] :is(.camp-label:hover, .camp-label.near, .camp-label.hovered, .category-nav button:hover, .category-nav button.active) {
+  background: #244854;
 }
 body[data-theme="desert"] .edge-light {
   background:
@@ -867,15 +921,7 @@ body[data-theme="desert"] .edge-light {
     );
 }
 body[data-theme="ocean"] .edge-light {
-  background:
-    linear-gradient(90deg, #e9edf877, transparent 40%),
-    linear-gradient(
-      0deg,
-      #dce9f780,
-      transparent 22%,
-      transparent 80%,
-      #edf3fa88
-    );
+  background: linear-gradient(0deg, #0d273770, transparent 24%, transparent 85%, #162d3b42);
 }
 body[data-theme="desert"] .primary-button {
   background: #98724d;
@@ -1375,39 +1421,6 @@ body:not(.exploring) .walk-status {
 /* ═════════════════════════════════════════════════════════════════════════
    OrangeVerse 专属在线简历 (Resume Modal & Styling)
    ═════════════════════════════════════════════════════════════════════════ */
-.resume-nav-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 140, 50, 0.45);
-  background: linear-gradient(135deg, rgba(255, 138, 48, 0.18), rgba(255, 175, 64, 0.12));
-  color: #d8641a;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(230, 110, 20, 0.12);
-}
-[data-theme="desert"] .resume-nav-button {
-  color: #ad5a1d;
-  border-color: rgba(180, 100, 30, 0.35);
-}
-[data-theme="ocean"] .resume-nav-button {
-  color: #1a748c;
-  border-color: rgba(30, 150, 180, 0.35);
-  background: linear-gradient(135deg, rgba(40, 180, 210, 0.18), rgba(60, 210, 230, 0.12));
-}
-.resume-nav-button:hover {
-  transform: translateY(-1.5px);
-  border-color: rgba(255, 130, 30, 0.7);
-  box-shadow: 0 4px 14px rgba(240, 120, 30, 0.25);
-  background: linear-gradient(135deg, rgba(255, 138, 48, 0.28), rgba(255, 175, 64, 0.2));
-}
 
 .resume-modal {
   position: fixed;
@@ -1606,30 +1619,6 @@ body:not(.exploring) .walk-status {
 /* ═════════════════════════════════════════════════════════════════════════
    OrangeVerse 专栏按钮、掘金文章与全息伴侣组件 (Cyber Companion)
    ═════════════════════════════════════════════════════════════════════════ */
-.articles-nav-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(100, 160, 255, 0.4);
-  background: linear-gradient(135deg, rgba(80, 140, 255, 0.16), rgba(120, 180, 255, 0.1));
-  color: #2b6cb0;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(60, 120, 220, 0.12);
-}
-.articles-nav-button:hover {
-  transform: translateY(-1.5px);
-  border-color: rgba(90, 160, 255, 0.75);
-  box-shadow: 0 4px 14px rgba(60, 130, 240, 0.25);
-  background: linear-gradient(135deg, rgba(80, 140, 255, 0.26), rgba(120, 180, 255, 0.18));
-}
 
 /* ═════════════════════════════════════════════════════════════════════════
    OrangeVerse 极简水滴浮空伴侣 (Floating Holographic Orb)
@@ -1937,51 +1926,11 @@ body:not(.exploring) .walk-status {
 /* ══════════════════════════════════════════════════════════════
    3D 沉浸式知识书架 (VHS Hero) 导航入口样式
    ══════════════════════════════════════════════════════════════ */
-.shelf-btn-highlight {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: linear-gradient(135deg, #1F3FB0 0%, #10266e 100%) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-  box-shadow: 0 4px 14px rgba(31, 63, 176, 0.35);
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.shelf-btn-highlight:hover {
-  transform: translateY(-1.5px);
-  box-shadow: 0 6px 18px rgba(31, 63, 176, 0.45);
-}
 
 
 /* ═════════════════════════════════════════════════════════════════════════
    OrangeVerse 3D 守护狐狸入口按钮与全屏视界弹窗
    ═════════════════════════════════════════════════════════════════════════ */
-.fox-portal-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 140, 40, 0.5);
-  background: linear-gradient(135deg, rgba(255, 130, 30, 0.22), rgba(255, 180, 60, 0.15));
-  color: #e66000;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 2px 10px rgba(255, 120, 20, 0.18);
-}
-.fox-portal-button:hover {
-  transform: translateY(-1.5px);
-  border-color: rgba(255, 120, 20, 0.85);
-  box-shadow: 0 4px 16px rgba(255, 110, 20, 0.35);
-  background: linear-gradient(135deg, rgba(255, 130, 30, 0.32), rgba(255, 180, 60, 0.25));
-}
 
 .fox-modal {
   position: fixed;
@@ -2062,4 +2011,205 @@ body.modal-active #camp-labels {
 }
 body.modal-active .edge-light {
   opacity: 0.25;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   🌸 唯美晶莹毛玻璃与流光视觉体系 (Ethereal Frosted Glass & Liquid Sheen)
+   ══════════════════════════════════════════════════════════════ */
+
+/* 1. 顶栏晶莹悬浮胶囊 */
+.topbar {
+  --nav-panel: rgba(13, 38, 44, 0.68) !important;
+  --nav-line: rgba(255, 255, 255, 0.16) !important;
+}
+.island-links,
+.theme-picker {
+  background: rgba(13, 38, 44, 0.68) !important;
+  backdrop-filter: blur(18px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 8px 32px rgba(6, 20, 24, 0.28), inset 0 1px 1px rgba(255, 255, 255, 0.2) !important;
+}
+.fox-portal-button {
+  background: linear-gradient(135deg, rgba(255, 145, 60, 0.28) 0%, rgba(255, 80, 20, 0.18) 100%) !important;
+  backdrop-filter: blur(16px) saturate(170%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(170%) !important;
+  border: 1px solid rgba(255, 180, 80, 0.6) !important;
+  box-shadow: 0 6px 20px rgba(255, 120, 30, 0.25), inset 0 1px 1px rgba(255, 230, 180, 0.5) !important;
+  color: #fff8f0 !important;
+  border-radius: 28px !important;
+  padding: 8px 16px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.fox-portal-button:hover {
+  transform: translateY(-1.5px) scale(1.03);
+  box-shadow: 0 8px 28px rgba(255, 130, 40, 0.42), 0 0 16px rgba(255, 160, 60, 0.3), inset 0 1px 1px rgba(255, 240, 200, 0.7) !important;
+  border-color: rgba(255, 200, 120, 0.85) !important;
+}
+
+.shelf-btn-highlight {
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.25) 0%, rgba(56, 110, 180, 0.15) 100%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(140, 195, 255, 0.5) !important;
+  box-shadow: 0 6px 20px rgba(50, 130, 220, 0.22), inset 0 1px 1px rgba(210, 235, 255, 0.45) !important;
+  color: #f0f7ff !important;
+  border-radius: 28px !important;
+  padding: 8px 15px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.shelf-btn-highlight:hover {
+  transform: translateY(-1.5px) scale(1.03);
+  box-shadow: 0 8px 26px rgba(50, 130, 220, 0.38), inset 0 1px 1px #ffffff !important;
+}
+
+.resume-nav-button,
+.articles-nav-button {
+  background: rgba(16, 44, 50, 0.68) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 6px 20px rgba(6, 20, 24, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.16) !important;
+  border-radius: 28px !important;
+  padding: 8px 15px !important;
+  font-size: 13px !important;
+  color: #eaf3f0 !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.resume-nav-button:hover,
+.articles-nav-button:hover {
+  background: rgba(24, 60, 68, 0.85) !important;
+  transform: translateY(-1.5px);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 8px 24px rgba(6, 20, 24, 0.3) !important;
+}
+
+.round-button {
+  background: rgba(16, 44, 50, 0.68) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 6px 20px rgba(6, 20, 24, 0.22), inset 0 1px 1px rgba(255, 255, 255, 0.18) !important;
+  color: #eaf3f0 !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.round-button:hover {
+  transform: translateY(-1.5px) scale(1.08);
+  background: rgba(26, 64, 72, 0.88) !important;
+  box-shadow: 0 8px 24px rgba(6, 20, 24, 0.35) !important;
+}
+
+/* 2. 欢迎卡片与引导面板晶莹重塑 */
+.welcome {
+  background: rgba(255, 253, 245, 0.82) !important;
+  backdrop-filter: blur(24px) saturate(170%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(170%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 28px 72px rgba(20, 50, 46, 0.18), 0 4px 18px rgba(0, 0, 0, 0.04), inset 0 1px 2px rgba(255, 255, 255, 0.95) !important;
+  border-radius: 28px !important;
+  transition: opacity 0.4s ease, transform 0.4s ease !important;
+}
+.welcome .primary-button {
+  box-shadow: 0 10px 28px rgba(45, 85, 75, 0.28), inset 0 1px 1px rgba(255, 255, 255, 0.35) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.welcome .primary-button:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 14px 36px rgba(45, 85, 75, 0.38), inset 0 1px 1px rgba(255, 255, 255, 0.5) !important;
+}
+
+/* 3. 模态弹窗与画卷卡片唯美升级 */
+.resume-backdrop,
+.article-backdrop,
+.fox-modal-backdrop {
+  backdrop-filter: blur(18px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(140%) !important;
+  background: rgba(8, 18, 28, 0.6) !important;
+}
+
+.resume-card {
+  background: rgba(255, 253, 249, 0.94) !important;
+  backdrop-filter: blur(28px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 36px 90px rgba(10, 22, 38, 0.28), 0 0 0 1px rgba(215, 205, 185, 0.4), inset 0 1px 2px #ffffff !important;
+  border-radius: 26px !important;
+}
+
+.article-card {
+  background: rgba(251, 253, 255, 0.95) !important;
+  backdrop-filter: blur(28px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 36px 90px rgba(8, 20, 42, 0.3), 0 0 0 1px rgba(185, 215, 255, 0.45), inset 0 1px 2px #ffffff !important;
+  border-radius: 26px !important;
+}
+
+.work-panel {
+  background: rgba(255, 253, 245, 0.88) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.78) !important;
+  box-shadow: 0 28px 70px rgba(20, 48, 44, 0.18), inset 0 1px 2px rgba(255, 255, 255, 0.9) !important;
+  border-radius: 26px !important;
+}
+
+#help-dialog {
+  background: rgba(255, 253, 245, 0.92) !important;
+  backdrop-filter: blur(26px) !important;
+  -webkit-backdrop-filter: blur(26px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 0 32px 80px rgba(15, 40, 35, 0.25), inset 0 1px 2px #ffffff !important;
+  border-radius: 26px !important;
+}
+
+/* 4. 营地微光标签与雷达微缩图升级 */
+.camp-label {
+  background: rgba(255, 253, 245, 0.84) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.75) !important;
+  box-shadow: 0 8px 24px rgba(20, 45, 40, 0.14), inset 0 1px 1px rgba(255, 255, 255, 0.85) !important;
+  border-radius: 24px !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease !important;
+}
+.camp-label:hover {
+  transform: translate(-50%, -100%) scale(1.08) !important;
+  box-shadow: 0 12px 32px rgba(20, 45, 40, 0.24), inset 0 1px 1px #ffffff !important;
+}
+
+.minimap {
+  background: rgba(255, 253, 245, 0.8) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  box-shadow: 0 12px 36px rgba(20, 45, 40, 0.14), inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+  border-radius: 24px !important;
+}
+
+.overview-button {
+  background: rgba(255, 253, 245, 0.82) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  box-shadow: 0 8px 24px rgba(20, 45, 40, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.8) !important;
+  border-radius: 24px !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.overview-button:hover {
+  transform: translateY(-1.5px) scale(1.04);
+  box-shadow: 0 12px 30px rgba(20, 45, 40, 0.22) !important;
+}
+
+.bottom-bar {
+  background: rgba(255, 253, 245, 0.75) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 0 -8px 32px rgba(20, 45, 40, 0.08) !important;
 }
