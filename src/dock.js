@@ -1,7 +1,9 @@
 // Ethereal macOS-style floating magnification Dock for OrangeVerse.
 // Inspired by frontendfyi/macos-dock and CatsJuice/dockbar.
+// Features React Bits / Framesbase FolderFloat micro-interaction.
 
 import { modalManager } from './modal-manager.js';
+import { createFolderFloat } from './folder-float.js';
 
 export function initFloatingDock(options = {}) {
   const { audio, island } = options;
@@ -18,7 +20,7 @@ export function initFloatingDock(options = {}) {
     { id: 'dock-resume', label: '在线简历', icon: '📄', action: () => modalManager.open('resume') },
     { id: 'dock-articles', label: '掘金专栏', icon: '📚', action: () => modalManager.open('articles') },
     { id: 'dock-bookshelf', label: '3D 实体书架', icon: '📼', action: () => window.open('./bookshelf.html', '_blank') },
-    { id: 'dock-archive', label: '宇宙档案', icon: '🌌', action: () => window.location.href = './archive.html' },
+    { id: 'dock-folder-slot', isFolder: true },
     {
       id: 'dock-sound',
       label: '潮汐声景',
@@ -36,28 +38,45 @@ export function initFloatingDock(options = {}) {
 
   dockContainer.innerHTML = `
     <div class="dock-inner">
-      ${items.map(it => `
-        <button id="${it.id}" class="dock-item" aria-label="${it.label}" data-label="${it.label}">
-          <span class="dock-tooltip">${it.label}</span>
-          <span class="dock-icon">${it.icon}</span>
-        </button>
-      `).join('')}
+      ${items.map(it => {
+        if (it.isFolder) {
+          return `<div id="dock-folder-mount" class="dock-folder-mount"></div>`;
+        }
+        return `
+          <button id="${it.id}" class="dock-item" aria-label="${it.label}" data-label="${it.label}">
+            <span class="dock-tooltip">${it.label}</span>
+            <span class="dock-icon">${it.icon}</span>
+          </button>
+        `;
+      }).join('')}
     </div>
   `;
 
   document.body.appendChild(dockContainer);
 
+  // Mount the 3D FolderFloat into the dock slot
+  const folderMount = dockContainer.querySelector('#dock-folder-mount');
+  if (folderMount) {
+    createFolderFloat({
+      audio,
+      container: folderMount,
+      title: '宇宙档案夹 📁',
+    });
+  }
+
   const inner = dockContainer.querySelector('.dock-inner');
   const dockItems = [...dockContainer.querySelectorAll('.dock-item')];
 
-  // Action listeners
-  items.forEach((it, idx) => {
+  // Action listeners for standard buttons
+  items.filter(it => !it.isFolder).forEach((it, idx) => {
     const btn = dockItems[idx];
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      audio?.playHaptic('tap');
-      it.action(btn);
-    });
+    if (btn) {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        audio?.playHaptic('tap');
+        it.action(btn);
+      });
+    }
   });
 
   // Smooth magnification math
