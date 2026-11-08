@@ -7,6 +7,12 @@ import { escapeHTML } from "./schema.js";
 import { createIsland } from "./island.js";
 import { ForestAudio } from "./audio.js";
 import { modalManager } from "./modal-manager.js";
+import {
+  applyTheme,
+  loadSoundEnabled,
+  loadTheme,
+  saveSoundEnabled,
+} from "./preferences.js";
 
 const $ = (id) => document.getElementById(id),
   visited = new Set(),
@@ -219,43 +225,47 @@ $("channel").addEventListener("click", () => {
 // ═════════════════════════════════════════════════════════════════════════
 // 主题切换与环境音
 // ═════════════════════════════════════════════════════════════════════════
+// 主题画板：把面板插画集中到一处，供初始主题恢复与手动切换共用
+const THEME_DRAWINGS = {
+  forest:
+    '<path d="m38 98 74-75 76 75H38Zm74-75v75m0-47-30 47m30-47 28 47M27 99h178"/><circle cx="184" cy="30" r="12"/>',
+  desert:
+    '<path d="M8 94q45-44 90-5t130-9M7 110q80-43 146-5M121 81V31m0 20q-19 0-19-18m19 7q17 0 17-17"/><circle cx="190" cy="31" r="17"/>',
+  ocean:
+    '<path d="M12 84q18-12 36 0t36 0t36 0t36 0t36 0t36 0M12 104q18-12 36 0t36 0t36 0t36 0t36 0t36 0M91 65l20-17-20-17q49-24 72 17-23 39-72 17Z"/><circle cx="147" cy="45" r="2"/><circle cx="187" cy="22" r="5"/>',
+};
+
+// 统一入口：切换配色、文案、插画、3D 场景与夜间音阶，并写入本地偏好
+function selectTheme(id) {
+  const theme = applyTheme(id, { themes, island });
+  audio.setNight(theme === "ocean");
+  const art = $("panel-art");
+  const drawing = THEME_DRAWINGS[theme];
+  if (art && drawing) {
+    art.innerHTML = `<g stroke="currentColor" stroke-width="1.5" fill="none">${drawing}</g>`;
+  }
+  return theme;
+}
+
 document.querySelectorAll(".theme-picker button").forEach((b) =>
-  b.addEventListener("click", () => {
-    const id = b.dataset.theme;
-    document.body.dataset.theme = id;
-    document.documentElement.style.setProperty("--accent", themes[id].accent);
-    document
-      .querySelectorAll(".theme-picker button")
-      .forEach((btn) => btn.setAttribute("aria-pressed", String(btn === b)));
-    $("theme-english").textContent = themes[id].english;
-    $("theme-caption").textContent = themes[id].caption;
-    const art = $("panel-art");
-    const drawings = {
-      forest:
-        '<path d="m38 98 74-75 76 75H38Zm74-75v75m0-47-30 47m30-47 28 47M27 99h178"/><circle cx="184" cy="30" r="12"/>',
-      desert:
-        '<path d="M8 94q45-44 90-5t130-9M7 110q80-43 146-5M121 81V31m0 20q-19 0-19-18m19 7q17 0 17-17"/><circle cx="190" cy="31" r="17"/>',
-      ocean:
-        '<path d="M12 84q18-12 36 0t36 0t36 0t36 0t36 0t36 0M12 104q18-12 36 0t36 0t36 0t36 0t36 0t36 0M91 65l20-17-20-17q49-24 72 17-23 39-72 17Z"/><circle cx="147" cy="45" r="2"/><circle cx="187" cy="22" r="5"/>',
-    };
-    art.innerHTML = `<g stroke="currentColor" stroke-width="1.5" fill="none">${drawings[id]}</g>`;
-    island?.setTheme(id);
-    audio.setNight(id === "ocean");
-  }),
+  b.addEventListener("click", () => selectTheme(b.dataset.theme)),
 );
+
+// 把「开关是否开启」同步到按钮的 aria 状态与波形图标
+function syncSoundButton(enabled) {
+  $("sound").setAttribute("aria-pressed", String(enabled));
+  $("sound").setAttribute("aria-label", enabled ? "关闭环境音" : "开启环境音");
+  $("sound-waves").setAttribute(
+    "d",
+    enabled ? "M15 8c3 2 3 6 0 8m3-11c5 4 5 10 0 14" : "m16 9 5 6m0-6-5 6",
+  );
+}
 
 $("sound").addEventListener("click", async () => {
   try {
     const enabled = await audio.toggle();
-    $("sound").setAttribute("aria-pressed", String(enabled));
-    $("sound").setAttribute(
-      "aria-label",
-      enabled ? "关闭环境音" : "开启环境音",
-    );
-    $("sound-waves").setAttribute(
-      "d",
-      enabled ? "M15 8c3 2 3 6 0 8m3-11c5 4 5 10 0 14" : "m16 9 5 6m0-6-5 6",
-    );
+    syncSoundButton(enabled);
+    saveSoundEnabled(enabled);
   } catch {
     toast("当前浏览器暂时无法播放环境音。");
   }
@@ -321,11 +331,35 @@ initCyberCompanion();
 initJuejinArticleViewer();
 initFloatingDock({ audio, island });
 
-if (location.hash === "#resume") modalManager.open("resume");
-if (location.hash === "#ocean") {
-  document.querySelector('.theme-picker [data-theme="ocean"]')?.click();
-  if (!webglFailed) begin();
+// ═════════════════════════════════════════════════════════════════════════
+// 恢复上次访问的偏好：主题配色 与 环境音开关
+// ═════════════════════════════════════════════════════════════════════════
+const initialTheme = location.hash === "#ocean" ? "ocean" : loadTheme(themes);
+selectTheme(initialTheme);
+syncSoundButton(loadSoundEnabled());
+
+// 浏览器的自动播放策略要求「先有用户手势」才能出声，因此把恢复动作
+// 挂到首次指针/键盘交互上：命中一次后立即解绑，不影响正常开关逻辑。
+let soundRestored = false;
+function restoreSoundOnFirstGesture(event) {
+  if (soundRestored) return;
+  soundRestored = true;
+  window.removeEventListener("pointerdown", restoreSoundOnFirstGesture, true);
+  window.removeEventListener("keydown", restoreSoundOnFirstGesture, true);
+  // 用户刚刚手动点的正是音效按钮时，交给按钮自己的 handler 处理
+  if (event?.target?.closest?.("#sound")) return;
+  if (!loadSoundEnabled() || !audio.enabled) {
+    audio
+      .toggle()
+      .then(syncSoundButton)
+      .catch(() => {});
+  }
 }
+window.addEventListener("pointerdown", restoreSoundOnFirstGesture, true);
+window.addEventListener("keydown", restoreSoundOnFirstGesture, true);
+
+if (location.hash === "#resume") modalManager.open("resume");
+if (location.hash === "#ocean" && !webglFailed) begin();
 
 // 对顶部胶囊按钮、行动呼吁大按钮以及营地气泡启用磁吸
 initMagneticHover("[data-magnetic]", {
