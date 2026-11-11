@@ -9,6 +9,7 @@ import {
   createPreferenceStore,
   normalizeSound,
   normalizeTheme,
+  resolveDocument,
 } from "../src/preferences.js";
 
 const themes = {
@@ -152,4 +153,39 @@ test("applyTheme refuses unknown themes and keeps the fallback palette", () => {
 test("applyTheme works without any DOM or island (WebGL failure path)", () => {
   const applied = applyTheme("desert", { themes, persist: false });
   assert.equal(applied, "desert");
+});
+
+// 回归测试：曾经因为调用方漏传 document，切主题只换了 3D 岛屿，
+// 整站皮肤（body[data-theme]、底部主题文案、选择器 aria-pressed）全部不动。
+test("applyTheme falls back to the ambient document when none is injected", () => {
+  const doc = fakeDocument();
+  const hadDocument = "document" in globalThis;
+  const previous = globalThis.document;
+  globalThis.document = doc;
+  try {
+    applyTheme("desert", { themes, persist: false });
+  } finally {
+    if (hadDocument) globalThis.document = previous;
+    else delete globalThis.document;
+  }
+
+  assert.equal(doc.body.dataset.theme, "desert");
+  assert.equal(doc.documentElement.style.values["--accent"], "#aa6d3e");
+  assert.equal(doc.pressed.get("forest"), "false");
+  assert.equal(doc.elements.get("theme-english").textContent, "DESERT OASIS");
+  assert.equal(doc.elements.get("theme-caption").textContent, "沙洲");
+});
+
+test("resolveDocument prefers the injected document and degrades without one", () => {
+  const doc = fakeDocument();
+  assert.equal(resolveDocument(doc), doc);
+
+  const hadDocument = "document" in globalThis;
+  const previous = globalThis.document;
+  delete globalThis.document;
+  try {
+    assert.equal(resolveDocument(), undefined);
+  } finally {
+    if (hadDocument) globalThis.document = previous;
+  }
 });

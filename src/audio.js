@@ -108,6 +108,7 @@ export class ForestAudio {
 
     this.waveNode = whiteNoise;
     this.waveLfo = lfo;
+    this.waveFilter = filter;
   }
 
   chime() {
@@ -209,6 +210,18 @@ export class ForestAudio {
   }
 
   setNight(night) {
-    this.night = night;
+    const next = Boolean(night);
+    if (next === this.night) return;
+    this.night = next;
+    // 正在出声时同步把浪声滤到更闷的频段，否则切到浅海黄昏后
+    // 只有下次重新开启环境音才会变调（听起来像"主题没生效"）。
+    const filter = this.waveFilter;
+    if (this.context && filter && this.enabled) {
+      const target = next ? 320 : 480;
+      try {
+        filter.frequency.cancelScheduledValues(this.context.currentTime);
+        filter.frequency.setTargetAtTime(target, this.context.currentTime, 0.6);
+      } catch {}
+    }
   }
 }

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="OrangeVerse 橘域">
+  <defs>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd9a0" />
+      <stop offset="1" stop-color="#f08a3c" />
+    </linearGradient>
+    <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7cc9c7" />
+      <stop offset="1" stop-color="#3f7761" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#f6f2e8" />
+  <circle cx="32" cy="27" r="13" fill="url(#sun)" />
+  <path d="M0 41h64v7a16 16 0 0 1-16 16H16A16 16 0 0 1 0 48z" fill="url(#sea)" />
+  <path d="M0 41c8-3.2 13 2.6 21 .2S37.5 37.4 46 41s13 .4 18-1.4V41z" fill="#eef7f5" opacity=".85" />
+  <path d="M25 64c0-6.5 3-11.5 7-11.5S39 57.5 39 64z" fill="#2f5d4b" opacity=".55" />
+</svg>

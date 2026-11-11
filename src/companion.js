@@ -49,12 +49,23 @@ export function initCyberCompanion() {
   }, { passive: true });
 
   // 动效循环：平滑视差 + 呼吸
+  // 尊重「减少动态效果」：系统级无障碍偏好下不再做持续视差/游移，
+  // 仅保留指针移动时的姿态切换，避免前庭敏感用户被持续运动干扰。
+  const reduced = typeof matchMedia === 'function'
+    ? matchMedia('(prefers-reduced-motion: reduce)')
+    : null;
   let prevT = null;
+  let lastTransform = '';
   function loop(t) {
     if (prevT === null) prevT = t;
     const dt = Math.min((t - prevT) / 1000, 0.05);
     prevT = t;
     const elapsed = t / 1000;
+
+    if (container.hidden) {
+      requestAnimationFrame(loop);
+      return;
+    }
 
     // 空闲轻微眼神游走
     if (performance.now() - lastMove > 3000) {
@@ -76,12 +87,17 @@ export function initCyberCompanion() {
     const ry = lx * 6;
 
     if (wrap) {
-      wrap.style.transform = `perspective(800px) translate3d(${tx}px, ${ty}px, 0) rotateX(${rx}deg) rotateY(${ry}deg)`;
+      const next = `perspective(800px) translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, 0) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg)`;
+      // 插值进入静默期后数值会稳定，重复写同样的 transform 只会白白触发样式重算
+      if (next !== lastTransform) {
+        lastTransform = next;
+        wrap.style.transform = next;
+      }
     }
 
     requestAnimationFrame(loop);
   }
-  requestAnimationFrame(loop);
+  if (!reduced?.matches) requestAnimationFrame(loop);
 
   // 折叠 / 展开切换
   if (toggleBtn && widget) {

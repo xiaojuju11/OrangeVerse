@@ -106,13 +106,28 @@ export function saveSoundEnabled(enabled) {
 }
 
 /**
+ * 解析要操作的文档：优先使用显式注入的 document（测试友好），
+ * 其次回退到浏览器全局 document（SSR / Node 下为 undefined）。
+ *
+ * 之所以需要这层回退：调用方一旦漏传 `document`，`body[data-theme]`
+ * 与主题文案就会静默失效——只有 3D 岛屿换肤、整站皮肤不动。
+ *
+ * @param {Document} [doc]
+ * @returns {Document|undefined}
+ */
+export function resolveDocument(doc) {
+  if (doc) return doc;
+  return typeof document !== "undefined" ? document : undefined;
+}
+
+/**
  * 把主题应用到 DOM、CSS 变量与（可选的）3D 岛屿。
  * 不依赖 `island` 一定存在：WebGL 初始化失败时仍可切换配色与文案。
  *
  * @param {string} id 主题 id
  * @param {object} options
  * @param {Record<string, any>} options.themes 主题表
- * @param {Document} [options.document] 注入的文档（测试用）
+ * @param {Document} [options.document] 注入的文档（测试用；缺省取全局 document）
  * @param {{setTheme?: (id: string) => void}} [options.island] 岛屿实例
  * @param {boolean} [options.persist] 是否写入偏好存储
  * @returns {string} 实际生效的主题 id
@@ -122,17 +137,18 @@ export function applyTheme(id, { themes, document: doc, island, persist = true }
   const themeConfig = themes?.[theme];
   if (!themeConfig) return theme;
 
-  if (doc) {
-    if (doc.body?.dataset) doc.body.dataset.theme = theme;
-    if (doc.documentElement?.style?.setProperty) {
-      doc.documentElement.style.setProperty("--accent", themeConfig.accent);
+  const target = resolveDocument(doc);
+  if (target) {
+    if (target.body?.dataset) target.body.dataset.theme = theme;
+    if (target.documentElement?.style?.setProperty) {
+      target.documentElement.style.setProperty("--accent", themeConfig.accent);
     }
-    doc.querySelectorAll?.(".theme-picker button").forEach((button) => {
+    target.querySelectorAll?.(".theme-picker button").forEach((button) => {
       button.setAttribute("aria-pressed", String(button.dataset?.theme === theme));
     });
-    const english = doc.getElementById?.("theme-english");
+    const english = target.getElementById?.("theme-english");
     if (english) english.textContent = themeConfig.english;
-    const caption = doc.getElementById?.("theme-caption");
+    const caption = target.getElementById?.("theme-caption");
     if (caption) caption.textContent = themeConfig.caption;
   }
 

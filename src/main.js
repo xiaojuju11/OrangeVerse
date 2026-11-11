@@ -13,6 +13,7 @@ import {
   loadTheme,
   saveSoundEnabled,
 } from "./preferences.js";
+import { describeSoundState } from "./sound-state.js";
 
 const $ = (id) => document.getElementById(id),
   visited = new Set(),
@@ -237,7 +238,9 @@ const THEME_DRAWINGS = {
 
 // 统一入口：切换配色、文案、插画、3D 场景与夜间音阶，并写入本地偏好
 function selectTheme(id) {
-  const theme = applyTheme(id, { themes, island });
+  // 必须显式传入 document：整站皮肤依赖 body[data-theme] 与主题文案节点，
+  // 少了它只有 3D 岛屿换肤，选择器 aria-pressed / 底部文案都不会更新。
+  const theme = applyTheme(id, { themes, document, island });
   audio.setNight(theme === "ocean");
   const art = $("panel-art");
   const drawing = THEME_DRAWINGS[theme];
@@ -251,21 +254,27 @@ document.querySelectorAll(".theme-picker button").forEach((b) =>
   b.addEventListener("click", () => selectTheme(b.dataset.theme)),
 );
 
-// 把「开关是否开启」同步到按钮的 aria 状态与波形图标
+// 把「开关是否开启」同步到顶栏按钮与悬浮 Dock 的 aria 状态与波形图标
+let dockApi = null;
 function syncSoundButton(enabled) {
-  $("sound").setAttribute("aria-pressed", String(enabled));
-  $("sound").setAttribute("aria-label", enabled ? "关闭环境音" : "开启环境音");
-  $("sound-waves").setAttribute(
-    "d",
-    enabled ? "M15 8c3 2 3 6 0 8m3-11c5 4 5 10 0 14" : "m16 9 5 6m0-6-5 6",
-  );
+  const state = describeSoundState(enabled);
+  $("sound").setAttribute("aria-pressed", state.ariaPressed);
+  $("sound").setAttribute("aria-label", state.ariaLabel);
+  $("sound-waves").setAttribute("d", state.wavesPath);
+  dockApi?.syncSound(state.enabled);
+  return state.enabled;
+}
+
+// 唯一的环境音入口：切换 → 同步两处 UI → 落盘偏好
+async function applySound(enabled) {
+  const next = syncSoundButton(enabled);
+  saveSoundEnabled(next);
+  return next;
 }
 
 $("sound").addEventListener("click", async () => {
   try {
-    const enabled = await audio.toggle();
-    syncSoundButton(enabled);
-    saveSoundEnabled(enabled);
+    await applySound(await audio.toggle());
   } catch {
     toast("当前浏览器暂时无法播放环境音。");
   }
@@ -329,7 +338,12 @@ import { initFloatingDock } from "./dock.js";
 
 initCyberCompanion();
 initJuejinArticleViewer();
-initFloatingDock({ audio, island });
+dockApi = initFloatingDock({
+  audio,
+  island,
+  // Dock 的潮汐声景与顶栏按钮共用同一套同步与落盘逻辑
+  onSoundChange: (enabled) => applySound(enabled),
+});
 
 // ═════════════════════════════════════════════════════════════════════════
 // 恢复上次访问的偏好：主题配色 与 环境音开关
@@ -346,14 +360,15 @@ function restoreSoundOnFirstGesture(event) {
   soundRestored = true;
   window.removeEventListener("pointerdown", restoreSoundOnFirstGesture, true);
   window.removeEventListener("keydown", restoreSoundOnFirstGesture, true);
-  // 用户刚刚手动点的正是音效按钮时，交给按钮自己的 handler 处理
-  if (event?.target?.closest?.("#sound")) return;
-  if (!loadSoundEnabled() || !audio.enabled) {
-    audio
-      .toggle()
-      .then(syncSoundButton)
-      .catch(() => {});
-  }
+  // 用户刚刚手动点的正是某个音效开关时，交给它自己的 handler 处理，
+  // 否则「恢复 → 又一次 toggle」会把用户刚打开的声音立刻关掉。
+  if (event?.target?.closest?.("#sound, #dock-sound")) return;
+  // 只有当上次访问确实开着环境音时才恢复；默认静音的用户不该被第一条点击声吓到。
+  if (audio.enabled || !loadSoundEnabled()) return;
+  audio
+    .toggle()
+    .then(syncSoundButton)
+    .catch(() => {});
 }
 window.addEventListener("pointerdown", restoreSoundOnFirstGesture, true);
 window.addEventListener("keydown", restoreSoundOnFirstGesture, true);
