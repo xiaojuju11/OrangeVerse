@@ -7,6 +7,10 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
+    "vendor:three": "node scripts/vendor-three.mjs",
+    "predev": "npm run vendor:three",
+    "prebuild": "npm run vendor:three",
+    "pretest": "npm run vendor:three",
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {

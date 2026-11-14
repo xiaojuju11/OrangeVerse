@@ -25,14 +25,8 @@
   })();
 </script>
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
+<!-- three 与 addons 已由 scripts/vendor-three.mjs 打包到同源 /vendor/three.bundle.js：
+     不依赖任何外部 CDN，国内网络也能正常唤醒 3D 场景。 -->
 
 <style>
 :root {
@@ -449,6 +443,81 @@ body {
   visibility: hidden;
   pointer-events: none;
 }
+
+/* 窄屏（含手机端狐狸浮窗 95vw × 90vh）压缩顶栏与互动舱，给角色留出取景区 */
+@media (max-width: 620px) {
+  .pet-topbar {
+    padding: 10px 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .pet-identity {
+    gap: 8px;
+    min-width: 0;
+  }
+  .pet-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 17px;
+    border-width: 1.5px;
+  }
+  .pet-name {
+    font-size: 13px;
+  }
+  .pet-badge {
+    display: none;
+  }
+  .pet-status-row {
+    font-size: 10px;
+  }
+  .affection-box {
+    padding: 4px 8px;
+    gap: 6px;
+  }
+  .affection-label {
+    font-size: 10px;
+  }
+  .affection-bar-bg {
+    width: 44px;
+  }
+  .action-pill-btn {
+    height: 28px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+  .interaction-deck {
+    padding: 0 10px 10px;
+    gap: 6px;
+  }
+  .deck-island {
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 18px;
+  }
+  .pet-btn {
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+  .treehole-container {
+    width: 100%;
+    padding: 6px 8px 6px 12px;
+    border-radius: 16px;
+  }
+  .treehole-send-btn {
+    padding: 6px 12px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+  .speech-bubble-anchor {
+    top: 24%;
+  }
+  .speech-bubble {
+    min-width: 0;
+    max-width: 86vw;
+    padding: 9px 13px;
+    font-size: 12px;
+  }
+}
 </style>
 </head>
 <body>
@@ -527,8 +596,8 @@ body {
 </div>
 
 <script type="module">
-import * as THREE from "three";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import * as THREE from "/vendor/three.bundle.js";
+import { GLTFLoader } from "/vendor/three.bundle.js";
 
 // ═════════════════════════════════════════════════════════════════════════
 // 1. Web Audio 算法音效引擎 (Duang~、呼噜声、吃橘子、颂钵微音)
@@ -854,8 +923,9 @@ loader.load(
     box.getSize(size);
     box.getCenter(centre);
 
-    foxWidth = size.x;
+    // 归一化之后世界坐标里的宽度才是取景/命中检测该用的数值
     const s = 2 / size.y;
+    foxWidth = size.x * s;
     const fit = new THREE.Matrix4()
       .makeScale(s, s, s)
       .multiply(new THREE.Matrix4().makeTranslation(-centre.x, -box.min.y, -centre.z));
@@ -1047,7 +1117,7 @@ function triggerPoke() {
 }
 
 // B. 抚摸摸头 (Petting)
-function triggerPet() {
+function triggerPet({ silent = false } = {}) {
   wakeUp();
   currentEyeMood = "happy";
   drawEyeTexture();
@@ -1057,9 +1127,11 @@ function triggerPet() {
   spawnParticles("heart", 6);
   addAffection(4);
 
-  const item = DIALOGUES.pet[Math.floor(Math.random() * DIALOGUES.pet.length)];
-  say(item.t, item.e);
-  moodDesc.textContent = "被摸头治愈中 · 舒服到打呼噜";
+  if (!silent) {
+    const item = DIALOGUES.pet[Math.floor(Math.random() * DIALOGUES.pet.length)];
+    say(item.t, item.e);
+    moodDesc.textContent = "被摸头治愈中 · 舒服到打呼噜";
+  }
 
   setTimeout(() => {
     if (currentEyeMood === "happy") {
@@ -1137,6 +1209,24 @@ function triggerBreathe() {
 // ═════════════════════════════════════════════════════════════════════════
 // 4. 指针交互与自适应窗口
 // ═════════════════════════════════════════════════════════════════════════
+// 模型按高度归一化到 FOX_HEIGHT 个单位，整只狐狸居中放在 y ∈ [0, FOX_HEIGHT]
+const FOX_HEIGHT = 2;
+/** 画面上下各留一点呼吸位，避免耳朵顶到工具栏、脚爪贴住互动舱。 */
+const FRAME_PADDING = 10;
+
+/** 顶栏与底部互动舱之间的空白区域（相对 canvas 的像素坐标），角色只在这条带子里取景。 */
+function safeBand(rect) {
+  const topbar = document.querySelector(".pet-topbar");
+  const deck = document.querySelector(".interaction-deck");
+  const top = topbar ? Math.max(0, topbar.getBoundingClientRect().bottom - rect.top) : 0;
+  const bottom = deck
+    ? Math.min(rect.height, deck.getBoundingClientRect().top - rect.top)
+    : rect.height;
+  // 小屏或结构变动导致条带过窄时退回整屏，宁可贴边也不要把角色缩成一点。
+  if (bottom - top < rect.height * 0.3) return { top: 0, bottom: rect.height };
+  return { top, bottom };
+}
+
 function resize() {
   const rect = canvas.getBoundingClientRect();
   const width = rect.width;
@@ -1145,14 +1235,33 @@ function resize() {
 
   camera.aspect = width / height;
   const vfov = 2 * Math.atan(Math.tan((camera.fov * Math.PI) / 360) * Math.max(1, 1 / camera.aspect));
-  const dist = (foxWidth * 0.9) / (2 * Math.tan(vfov / 2));
-  camera.position.set(0, 0.95, dist * 0.85);
-  camera.lookAt(0, 0.95, 0);
+  const hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
+  const tanV = Math.tan(vfov / 2);
+  const tanH = Math.tan(hfov / 2);
+
+  // 修正前这里用未缩放的 foxWidth 算距离，模型被放大到 2 个单位后距离没跟着变，
+  // 屏幕上只剩一张怼脸的狐狸特写。现在同时按「高度装得下」和「宽度装得下」取较大距离。
+  const band = safeBand(rect);
+  const usableH = Math.max(band.bottom - band.top - FRAME_PADDING * 2, height * 0.3);
+  const distY = (FOX_HEIGHT * height) / (2 * tanV * usableH);
+  const distX = (Math.max(foxWidth, 0.6) * 1.06) / (2 * tanH);
+  const dist = Math.max(distY, distX);
+
+  // 把模型中心对齐到安全带中心：整体上移一点，给底部互动舱让位。
+  const visibleH = 2 * dist * tanV;
+  const bandCentre = (band.top + band.bottom) / 2;
+  const camY = FOX_HEIGHT / 2 - ((height / 2 - bandCentre) / height) * visibleH;
+
+  camera.position.set(0, camY, dist);
+  camera.lookAt(0, camY, 0);
   camera.updateProjectionMatrix();
 
   renderer.setSize(width, height, false);
 }
 window.addEventListener("resize", resize);
+// 字体加载会改变顶栏/互动舱高度，取景安全带要跟着重算
+window.addEventListener("load", resize);
+if (document.fonts?.ready) document.fonts.ready.then(resize).catch(() => {});
 
 // 视线追踪与摸头交互
 window.addEventListener("pointermove", (e) => {
@@ -1195,7 +1304,7 @@ stage.addEventListener("pointerdown", (e) => {
 });
 
 // 绑定快捷按钮
-document.getElementById("btn-pet").addEventListener("click", triggerPet);
+document.getElementById("btn-pet").addEventListener("click", () => triggerPet());
 document.getElementById("btn-poke").addEventListener("click", triggerPoke);
 document.getElementById("btn-feed").addEventListener("click", triggerFeed);
 document.getElementById("btn-hug").addEventListener("click", () => {
@@ -1224,8 +1333,10 @@ function handleTreehole() {
       break;
     }
   }
+  // 先播摸头的动画/音效，再说话：否则树洞回复会被摸头对白立即覆盖掉
+  triggerPet({ silent: true });
   say(reply, "🌟");
-  triggerPet();
+  moodDesc.textContent = "认真听你说完心里话 · 想给你一个拥抱";
 }
 
 document.getElementById("treehole-send").addEventListener("click", handleTreehole);

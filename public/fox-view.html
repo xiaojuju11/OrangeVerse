@@ -25,14 +25,8 @@
   })();
 </script>
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
+<!-- three 与 addons 已由 scripts/vendor-three.mjs 打包到同源 /vendor/three.bundle.js：
+     不依赖任何外部 CDN，国内网络也能正常唤醒 3D 场景。 -->
 
 <style>
 :root {
@@ -357,10 +351,10 @@ a:focus-visible {
 </div>
 
 <script type="module">
-import * as THREE from "three";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
-import { MeshoptDecoder } from "three/addons/libs/meshopt_decoder.module.js";
+import * as THREE from "/vendor/three.bundle.js";
+import { GLTFLoader } from "/vendor/three.bundle.js";
+import { DRACOLoader } from "/vendor/three.bundle.js";
+import { MeshoptDecoder } from "/vendor/three.bundle.js";
 
 const MODEL_URL = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261014_013004_603cedaa-048c-46da-a737-4c013ad994ae.glb";
 
