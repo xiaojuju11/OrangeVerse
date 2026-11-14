@@ -648,7 +648,8 @@ button {
 }
 .walk-status {
   position: absolute;
-  bottom: 103px;
+  /* 贴在悬浮 Dock 上沿：Dock 抬起多少，状态条就跟着抬多少（再留出放大动效的余量） */
+  bottom: calc(var(--dock-bottom) + var(--dock-lift) + var(--dock-h) + 34px);
   left: 50%;
   translate: -50% 0;
   font-size: 10px;
@@ -1260,7 +1261,8 @@ body[data-theme="ocean"] .panel-scene {
     top: -6px;
   }
   .walk-status {
-    bottom: 94px;
+    /* 同样要给悬浮 Dock 让位 */
+    bottom: calc(94px + var(--dock-lift));
     font-size: 8px;
     padding: 6px 10px;
     white-space: nowrap;
@@ -2310,9 +2312,17 @@ body.modal-active .edge-light {
 /* ══════════════════════════════════════════════════════════════
    🫧 macOS 风格悬浮晶莹毛玻璃 Dock (Ethereal Floating Dock)
    ══════════════════════════════════════════════════════════════ */
+:root {
+  /* Dock 的底距；窄屏会改小。 */
+  --dock-bottom: 24px;
+  /* 由 dock.js 实测后写入：Dock 自身高度、以及为避开页脚营地导航需要抬升的量。
+     缺省值按桌面端 Dock 的 60px 高估算，保证脚本未跑到时状态条也不会落进页脚里。 */
+  --dock-lift: 0px;
+  --dock-h: 60px;
+}
 .floating-dock {
   position: fixed;
-  bottom: 24px;
+  bottom: calc(var(--dock-bottom) + var(--dock-lift));
   left: 50%;
   transform: translateX(-50%);
   z-index: 95;
@@ -2385,8 +2395,8 @@ body.modal-active .floating-dock {
   transform: translateX(-50%) translateY(14px);
 }
 @media (max-width: 600px) {
-  .floating-dock {
-    bottom: 12px;
+  :root {
+    --dock-bottom: 12px;
   }
   .dock-inner {
     gap: 5px;

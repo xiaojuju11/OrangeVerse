@@ -189,5 +189,38 @@ export function initFloatingDock(options = {}) {
   // 初始图标按当前静音状态渲染，避免与顶栏按钮不一致
   syncSound(typeof audio?.enabled === 'boolean' ? audio.enabled : false);
 
+  // ───────────────────────────────────────────────────────────────────────
+  // 让位：悬浮 Dock 与页脚营地导航原本共用屏幕最底部同一条，
+  // Dock 一挂上来就把「开源仓库 / 学习书本 / Vibe 作品 / 关于」四个入口整块盖住，
+  // 状态条也被压在 Dock 底下。这里实测页脚顶部与 Dock 自身高度，
+  // 写成 CSS 变量让 Dock 抬到页脚之上、状态条再抬到 Dock 之上。
+  // ───────────────────────────────────────────────────────────────────────
+  const GAP_ABOVE_FOOTER = 10;
+  const bottomBar = document.querySelector('.bottom-bar');
+
+  function syncDockLift() {
+    if (!inner) return;
+    const styles = getComputedStyle(document.documentElement);
+    const dockBottom = parseFloat(styles.getPropertyValue('--dock-bottom')) || 0;
+    const height = inner.getBoundingClientRect().height;
+    const barTop = bottomBar
+      ? window.innerHeight - bottomBar.getBoundingClientRect().top
+      : 0;
+    const lift = Math.max(0, Math.ceil(barTop + GAP_ABOVE_FOOTER - dockBottom));
+
+    document.documentElement.style.setProperty('--dock-h', `${Math.round(height)}px`);
+    document.documentElement.style.setProperty('--dock-lift', `${lift}px`);
+  }
+
+  // 首帧布局 + 字体就位后再量一次，避免按回退字体算出偏小的页脚高度
+  syncDockLift();
+  requestAnimationFrame(syncDockLift);
+  window.addEventListener('resize', syncDockLift, { passive: true });
+  if (typeof ResizeObserver === 'function') {
+    const observer = new ResizeObserver(syncDockLift);
+    if (inner) observer.observe(inner);
+    if (bottomBar) observer.observe(bottomBar);
+  }
+
   return { element: dockContainer, syncSound };
 }
