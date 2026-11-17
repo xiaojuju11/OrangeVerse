@@ -135,7 +135,8 @@ export function createGuardianFox(scene, options = {}) {
 
   // 加载 GLB
   const dracoLoader = new DRACOLoader();
-  dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.6/");
+  // Draco 解码器已复制到 public/vendor/draco/（源自 three 同版本 gltf 目录），不再依赖 gstatic CDN
+  dracoLoader.setDecoderPath("/vendor/draco/");
   const loader = new GLTFLoader();
   loader.setDRACOLoader(dracoLoader);
   loader.setMeshoptDecoder(MeshoptDecoder);

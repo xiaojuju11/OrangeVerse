@@ -7,23 +7,7 @@
 <title>404 · Vulpa</title>
 <meta name="theme-color" content="#fbdc80"/>
 
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<!-- 网络字体改为 load 后异步注入：避免外网字体样式表阻塞首屏渲染、拖慢 load 事件 -->
-<script>
-  (function () {
-    var href =
-      "https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700&family=Quicksand:wght@700&display=swap";
-    function inject() {
-      var link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href = href;
-      document.head.appendChild(link);
-    }
-    if (document.readyState === "complete") inject();
-    else window.addEventListener("load", inject, { once: true });
-  })();
-</script>
+<link rel="stylesheet" href="/fonts/fonts.css" />
 
 <!-- three 与 addons 已由 scripts/vendor-three.mjs 打包到同源 /vendor/three.bundle.js：
      不依赖任何外部 CDN，国内网络也能正常唤醒 3D 场景。 -->
@@ -512,15 +496,13 @@ let foxWidth = 1;
 
 // Load GLB
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.6/");
+dracoLoader.setDecoderPath("/vendor/draco/");
 
 const loader = new GLTFLoader();
 loader.setDRACOLoader(dracoLoader);
 loader.setMeshoptDecoder(MeshoptDecoder);
 
-loader.load(
-  MODEL_URL,
-  (gltf) => {
+function applyGltf(gltf) {
     const model = gltf.scene;
     model.rotation.y = -Math.PI / 2 - 0.16;
     model.updateMatrixWorld(true);
@@ -562,13 +544,27 @@ loader.load(
     canvas.classList.add("ready");
     loading.classList.add("hide");
     renderer.setAnimationLoop(frame);
-  },
-  undefined,
-  (error) => {
+}
+
+// 主模型在 CloudFront，国内/离线环境可能拿不到：失败时回退仓库自带 ./fox.glb
+let primaryModelFailed = false;
+function loadModel(url, onFail) {
+  loader.load(url, applyGltf, undefined, (error) => {
     console.error(error);
+    onFail();
+  });
+}
+
+loadModel(MODEL_URL, () => {
+  if (primaryModelFailed) {
     loading.textContent = "Our fox got lost too. Please reload.";
+    return;
   }
-);
+  primaryModelFailed = true;
+  loadModel("./fox.glb", () => {
+    loading.textContent = "Our fox got lost too. Please reload.";
+  });
+});
 
 // Pointer tracking
 const aim = new THREE.Vector2();

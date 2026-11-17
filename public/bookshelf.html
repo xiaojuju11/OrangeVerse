@@ -8,23 +8,7 @@
   <meta name="description" content="一个小橘的 3D 知识书本与掘金专栏复盘书架。基于物理 3D 旋转、视差倾斜与水墨纸张破茧动效构建。">
   
   <!-- Web Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- 网络字体改为 load 后异步注入：避免外网字体样式表阻塞首屏渲染、拖慢 load 事件 -->
-  <script>
-    (function () {
-      var href =
-        "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap";
-      function inject() {
-        var link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = href;
-        document.head.appendChild(link);
-      }
-      if (document.readyState === "complete") inject();
-      else window.addEventListener("load", inject, { once: true });
-    })();
-  </script>
+      <link rel="stylesheet" href="/fonts/fonts.css" />
 
   <style>
     :root {
