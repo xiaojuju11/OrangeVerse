@@ -23,6 +23,7 @@ const forbiddenHosts = [
   'cdn.jsdelivr.net',
   'unpkg.com',
   'cdnjs.cloudflare.com',
+  'cloudfront.net',
 ];
 
 const scannedFiles = [

@@ -340,7 +340,8 @@ import { GLTFLoader } from "/vendor/three.bundle.js";
 import { DRACOLoader } from "/vendor/three.bundle.js";
 import { MeshoptDecoder } from "/vendor/three.bundle.js";
 
-const MODEL_URL = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20261014_013004_603cedaa-048c-46da-a737-4c013ad994ae.glb";
+// 模型使用仓库自带的 ./fox.glb（与 404/vulpa 同一模型、同一套骨架常数），不依赖任何外链 CDN
+const MODEL_URL = "./fox.glb";
 
 // Rig constants
 const neck = [0.98, 1.14];
@@ -546,8 +547,7 @@ function applyGltf(gltf) {
     renderer.setAnimationLoop(frame);
 }
 
-// 主模型在 CloudFront，国内/离线环境可能拿不到：失败时回退仓库自带 ./fox.glb
-let primaryModelFailed = false;
+// 本地模型加载失败时只提示重载
 function loadModel(url, onFail) {
   loader.load(url, applyGltf, undefined, (error) => {
     console.error(error);
@@ -556,14 +556,7 @@ function loadModel(url, onFail) {
 }
 
 loadModel(MODEL_URL, () => {
-  if (primaryModelFailed) {
-    loading.textContent = "Our fox got lost too. Please reload.";
-    return;
-  }
-  primaryModelFailed = true;
-  loadModel("./fox.glb", () => {
-    loading.textContent = "Our fox got lost too. Please reload.";
-  });
+  loading.textContent = "Our fox got lost too. Please reload.";
 });
 
 // Pointer tracking
